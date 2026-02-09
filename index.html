@@ -2,7 +2,6 @@
 <html dir="rtl" lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fleet Master Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
@@ -11,10 +10,9 @@
         body { font-family: 'Tajawal', sans-serif; background: #0f172a; color: white; }
         .taxi-gold { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #000; }
         .nav-tab { cursor: pointer; padding: 1.2rem 1rem; color: #94a3b8; border-bottom: 3px solid transparent; transition: 0.3s; }
-        .nav-active { color: #fbbf24; border-bottom-color: #fbbf24; font-weight: bold; background: rgba(251, 191, 36, 0.05); }
+        .nav-active { color: #fbbf24; border-bottom-color: #fbbf24; font-weight: bold; }
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 20px; padding: 25px; }
-        input, select { background: #0f172a !important; color: white !important; border: 1px solid #334155 !important; padding: 12px; border-radius: 10px; width: 100%; outline: none; }
-        input:focus, select:focus { border-color: #fbbf24 !important; }
+        input, select { background: #0f172a !important; color: white !important; border: 1px solid #334155 !important; padding: 12px; border-radius: 10px; width: 100%; }
         .hidden { display: none; }
         th { color: #fbbf24; padding: 15px; text-align: right; border-bottom: 2px solid #334155; }
         td { padding: 15px; border-bottom: 1px solid #1e293b; }
@@ -23,12 +21,12 @@
 <body class="pb-10">
 
     <nav class="bg-black border-b border-yellow-500/20 sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 flex justify-between items-center text-xs md:text-base">
+        <div class="max-w-6xl mx-auto px-4 flex justify-between items-center">
             <div class="flex items-center gap-2 py-4">
                 <div class="taxi-gold px-2 py-1 rounded font-black">FM</div>
                 <span class="text-yellow-500 font-bold hidden md:block">FLEET MASTER</span>
             </div>
-            <div class="flex">
+            <div class="flex overflow-x-auto">
                 <div onclick="showModule('Revenues')" id="n-Revenues" class="nav-tab nav-active">الإيرادات</div>
                 <div onclick="showModule('Expenses')" id="n-Expenses" class="nav-tab">المصاريف</div>
                 <div onclick="showModule('Cars')" id="n-Cars" class="nav-tab">السيارات</div>
@@ -49,9 +47,9 @@
         <div id="view-add" class="card">
             <form id="mainForm" onsubmit="handleFormSubmit(event)">
                 <input type="hidden" name="sheetName" id="current-sheet" value="Revenues">
-                <div id="form-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    </div>
-                <button type="submit" id="submit-btn" class="taxi-gold w-full mt-10 py-4 rounded-xl font-black text-lg shadow-2xl transition hover:scale-[1.01]">حفظ البيانات</button>
+                <input type="hidden" name="ID" id="edit-id">
+                <div id="form-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                <button type="submit" id="submit-btn" class="taxi-gold w-full mt-10 py-4 rounded-xl font-black text-lg">حفظ البيانات</button>
             </form>
         </div>
 
@@ -68,15 +66,14 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwYQywgvfpI5XLIjfHkl6XashRy9W7SUK8NKVuUpRUy0-ZDnfYE2_cmnHJOmctkbQGv/exec";
         let currentModule = "Revenues";
+        let currentRows = [];
 
         function callAPI(action, sheet = '') {
             return new Promise((resolve) => {
                 const cb = 'cb_' + Math.round(Math.random() * 1000000);
                 const script = document.createElement('script');
                 window[cb] = (data) => {
-                    delete window[cb];
-                    document.body.removeChild(script);
-                    resolve(data);
+                    delete window[cb]; document.body.removeChild(script); resolve(data);
                 };
                 script.src = `${API_URL}?action=${action}&sheetName=${sheet}&callback=${cb}`;
                 document.body.appendChild(script);
@@ -88,27 +85,22 @@
             document.getElementById('current-sheet').value = m;
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('nav-active'));
             document.getElementById('n-' + m).classList.add('nav-active');
-            const titles = {'Revenues': 'الإيرادات', 'Expenses': 'المصاريف', 'Cars': 'السيارات', 'Drivers': 'السائقين'};
-            document.getElementById('module-title').innerText = titles[m];
             await renderFields();
             switchTab('add');
         }
 
         async function renderFields() {
             const container = document.getElementById('form-container');
-            container.innerHTML = '<p class="col-span-full text-center p-10">جاري التحميل...</p>';
-            
+            container.innerHTML = 'جاري التحميل...';
             const drivers = await callAPI('getDrivers');
             const cars = await callAPI('getCars');
-            const dOpts = drivers.map(d => `<option value="${d}">${d}</option>`).join('');
-            const cOpts = cars.map(c => `<option value="${c}">${c}</option>`).join('');
-
+            
             let html = '';
             if (currentModule === 'Revenues') {
                 html = `
                     <div><label>التاريخ</label><input type="date" name="Date" required value="${new Date().toISOString().split('T')[0]}"></div>
-                    <div><label>رقم السيارة</label><select name="Car_No">${cOpts}</select></div>
-                    <div><label>اسم السائق</label><select name="Driver_name">${dOpts}</select></div>
+                    <div><label>رقم السيارة</label><select name="Car_No">${cars.map(c => `<option>${c}</option>`).join('')}</select></div>
+                    <div><label>اسم السائق</label><select name="Driver_name">${drivers.map(d => `<option>${d}</option>`).join('')}</select></div>
                     <div><label>الفئة</label><select name="Category"><option>ضمان</option><option>مخالفات</option><option>أخرى</option></select></div>
                     <div><label>المبلغ (JD)</label><input type="number" step="0.01" name="Amount" required></div>
                     <div><label>طريقة الدفع</label><select name="Method"><option>Cash</option><option>Cliq</option><option>Transfer</option><option>Bank</option></select></div>
@@ -116,21 +108,15 @@
                     <div class="md:col-span-2"><label>ملاحظات</label><input type="text" name="Notes"></div>`;
             } else if (currentModule === 'Expenses') {
                 html = `
-                    <div><label>التاريخ</label><input type="date" name="Date" required value="${new Date().toISOString().split('T')[0]}"></div>
-                    <div><label>رقم السيارة</label><select name="Car_No">${cOpts}</select></div>
+                    <div><label>التاريخ</label><input type="date" name="Date" required></div>
+                    <div><label>رقم السيارة</label><select name="Car_No">${cars.map(c => `<option>${c}</option>`).join('')}</select></div>
                     <div><label>نوع المصروف</label><input type="text" name="Expense_Type" required></div>
                     <div><label>المبلغ</label><input type="number" step="0.01" name="Amount" required></div>
                     <div class="md:col-span-2"><label>ملاحظات</label><input type="text" name="Notes"></div>`;
             } else if (currentModule === 'Cars') {
-                html = `
-                    <div><label>رقم اللوحة</label><input type="text" name="Plate_No" required></div>
-                    <div><label>الموديل</label><input type="text" name="Model"></div>
-                    <div><label>المالك</label><input type="text" name="Owner"></div>`;
+                html = `<div><label>رقم اللوحة</label><input type="text" name="Plate_No" required></div><div><label>الموديل</label><input type="text" name="Model"></div><div><label>المالك</label><input type="text" name="Owner"></div>`;
             } else if (currentModule === 'Drivers') {
-                html = `
-                    <div><label>اسم السائق</label><input type="text" name="Name" required></div>
-                    <div><label>رقم الهاتف</label><input type="text" name="Phone"></div>
-                    <div><label>رقم الرخصة</label><input type="text" name="License_No"></div>`;
+                html = `<div><label>اسم السائق</label><input type="text" name="Name" required></div><div><label>رقم الهاتف</label><input type="text" name="Phone"></div><div><label>رقم الرخصة</label><input type="text" name="License_No"></div>`;
             }
             container.innerHTML = html;
         }
@@ -139,23 +125,34 @@
             const isAdd = mode === 'add';
             document.getElementById('view-add').classList.toggle('hidden', !isAdd);
             document.getElementById('view-list').classList.toggle('hidden', isAdd);
-            document.getElementById('btn-add').className = isAdd ? 'taxi-gold px-6 py-2 rounded-lg font-bold shadow-lg' : 'text-slate-400 px-6 py-2 rounded-lg font-bold hover:bg-slate-800';
-            document.getElementById('btn-list').className = !isAdd ? 'taxi-gold px-6 py-2 rounded-lg font-bold shadow-lg' : 'text-slate-400 px-6 py-2 rounded-lg font-bold hover:bg-slate-800';
             if (!isAdd) loadData();
         }
 
         async function loadData() {
             const head = document.getElementById('table-head');
             const body = document.getElementById('table-body');
-            body.innerHTML = '<tr><td colspan="10" class="text-center p-20 italic text-slate-500 text-sm">جاري التحميل...</td></tr>';
-            const data = await callAPI('getRows', currentModule);
-            if (data.length > 0) {
-                const keys = Object.keys(data[0]);
-                head.innerHTML = keys.map(k => `<th>${k}</th>`).join('');
-                body.innerHTML = data.map(row => `<tr class="hover:bg-slate-800 transition">${keys.map(k => `<td>${row[k] || '-'}</td>`).join('')}</tr>`).join('');
-            } else {
-                body.innerHTML = '<tr><td colspan="10" class="text-center p-20 text-slate-500">لا توجد بيانات</td></tr>';
-            }
+            body.innerHTML = '<tr><td colspan="10" class="text-center p-20 italic">جاري جلب البيانات...</td></tr>';
+            currentRows = await callAPI('getRows', currentModule);
+            if (currentRows.length > 0) {
+                const keys = Object.keys(currentRows[0]);
+                head.innerHTML = keys.map(k => `<th>${k}</th>`).join('') + '<th>إجراء</th>';
+                body.innerHTML = currentRows.map((row, idx) => `
+                    <tr>${keys.map(k => `<td>${row[k] || '-'}</td>`).join('')}
+                    <td><button onclick="fillEdit(${idx})" class="text-yellow-500 font-bold"><i class="fas fa-edit"></i> تعديل</button></td></tr>
+                `).join('');
+            } else { body.innerHTML = '<tr><td colspan="10" class="text-center p-20">لا توجد بيانات</td></tr>'; }
+        }
+
+        function fillEdit(idx) {
+            const data = currentRows[idx];
+            switchTab('add');
+            document.getElementById('edit-id').value = data.ID || data.id;
+            const form = document.getElementById('mainForm');
+            Object.keys(data).forEach(key => {
+                const input = form.querySelector(`[name="${key}"]`);
+                if (input) input.value = data[key];
+            });
+            document.getElementById('submit-btn').innerText = "تحديث البيانات";
         }
 
         function handleFormSubmit(event) {
@@ -164,8 +161,9 @@
             btn.disabled = true; btn.innerHTML = "جاري الحفظ...";
             fetch(API_URL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(new FormData(event.target)) })
                 .then(() => {
-                    alert("تم الحفظ!");
+                    alert("تمت العملية!");
                     event.target.reset();
+                    document.getElementById('edit-id').value = "";
                     btn.disabled = false; btn.innerHTML = "حفظ البيانات";
                     switchTab('list');
                 });
