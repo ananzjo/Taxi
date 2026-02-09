@@ -3,158 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة الأسطول الشامل</title>
+    <title>Fleet Master | نظام إدارة التاكسي</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #f3f4f6; }
-        .tab-active { border-bottom: 4px solid #2563eb; color: #2563eb; background-color: #eff6ff; }
-        .nav-btn-active { background-color: #2563eb; color: white; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #f8f9fa; }
+        .taxi-yellow { background-color: #FACC15; } /* لون التاكسي الأصفر */
+        .taxi-dark { background-color: #1A1A1A; }   /* الأسود الملكي */
+        .card-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
+        .nav-active { border-bottom: 4px solid #1A1A1A; color: #1A1A1A; font-weight: bold; }
+        .btn-taxi { background-color: #FACC15; color: #1A1A1A; transition: all 0.3s; }
+        .btn-taxi:hover { background-color: #EAB308; transform: translateY(-2px); }
+        input, select, textarea { border: 1px solid #e2e8f0 !important; }
+        input:focus, select:focus { border-color: #FACC15 !important; outline: none; ring: 2px; ring-color: #FACC15; }
         .hidden { display: none; }
     </style>
 </head>
-<body class="pb-10">
+<body class="pb-12">
 
-    <nav class="bg-white shadow-sm border-b mb-8 sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 flex justify-between h-16 items-center">
-            <div class="flex items-center gap-2">
-                <i class="fas fa-truck-monster text-blue-600 text-2xl"></i>
-                <span class="text-xl font-bold text-gray-800">أسطول النقل</span>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="switchMainModule('revenues')" id="navRev" class="nav-btn-active px-4 py-2 rounded-lg font-bold transition">الإيرادات</button>
-                <button onclick="switchMainModule('expenses')" id="navExp" class="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg font-bold transition">المصاريف</button>
+    <nav class="taxi-yellow shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-3">
+                    <div class="bg-black text-yellow-400 p-2 rounded-lg">
+                        <i class="fas fa-taxi fa-lg"></i>
+                    </div>
+                    <span class="text-xl font-bold text-black tracking-tight">FLEET MASTER</span>
+                </div>
+                <div class="hidden md:flex gap-6 text-black font-medium">
+                    <button onclick="switchModule('rev')" id="n-rev" class="nav-active py-5 px-2">الإيرادات</button>
+                    <button onclick="switchModule('exp')" id="n-exp" class="py-5 px-2 hover:text-gray-700">المصاريف</button>
+                    <button onclick="switchModule('drv')" id="n-drv" class="py-5 px-2 hover:text-gray-700">السائقين</button>
+                    <button onclick="switchModule('car')" id="n-car" class="py-5 px-2 hover:text-gray-700">السيارات</button>
+                </div>
             </div>
         </div>
     </nav>
 
-    <div class="max-w-4xl mx-auto px-4">
+    <div class="md:hidden flex justify-around bg-white border-b taxi-yellow text-xs font-bold py-2 shadow-sm">
+        <button onclick="switchModule('rev')"><i class="fas fa-money-bill-wave block text-lg"></i>إيراد</button>
+        <button onclick="switchModule('exp')"><i class="fas fa-gas-pump block text-lg"></i>مصروف</button>
+        <button onclick="switchModule('drv')"><i class="fas fa-users block text-lg"></i>سائقين</button>
+        <button onclick="switchModule('car')"><i class="fas fa-car block text-lg"></i>سيارات</button>
+    </div>
+
+    <div class="max-w-5xl mx-auto px-4 mt-8">
         
-        <div id="moduleRevenues">
-            <div class="flex mb-6 bg-white rounded-2xl shadow-sm border p-1 overflow-hidden">
-                <button onclick="switchTab('add', 'Rev')" id="tabAddRev" class="flex-1 py-3 text-center font-bold tab-active rounded-xl">إضافة إيراد</button>
-                <button onclick="switchTab('list', 'Rev')" id="tabListRev" class="flex-1 py-3 text-center font-bold text-gray-400 rounded-xl">سجل الإيرادات</button>
-            </div>
-            
-            <div id="containerAddRev" class="bg-white rounded-3xl shadow-xl border p-6 md:p-8">
-                <form id="revenueForm" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div id="m-rev" class="animate-fadeIn">
+            <header class="flex justify-between items-end mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">إدارة الإيرادات</h1>
+                    <p class="text-gray-500 text-sm">تسجيل الدخل اليومي لكل سيارة</p>
+                </div>
+                <div class="flex bg-white rounded-lg shadow p-1">
+                    <button onclick="switchTab('add', 'Rev')" id="tA-Rev" class="px-4 py-2 rounded-md taxi-yellow font-bold text-sm">إضافة</button>
+                    <button onclick="switchTab('list', 'Rev')" id="tL-Rev" class="px-4 py-2 rounded-md font-bold text-sm text-gray-400">السجلات</button>
+                </div>
+            </header>
+
+            <div id="cA-Rev" class="bg-white rounded-2xl p-6 md:p-8 card-shadow border border-gray-100">
+                <form id="f-Rev" class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <input type="hidden" name="id">
-                    <div><label class="block text-sm font-bold mb-1">التاريخ</label><input type="date" name="date" required class="w-full border p-3 rounded-xl bg-gray-50 outline-none focus:border-blue-500"></div>
-                    <div><label class="block text-sm font-bold mb-1">رقم السيارة</label><select name="carNo" class="carList w-full border p-3 rounded-xl bg-gray-50 outline-none focus:border-blue-500"></select></div>
-                    <div><label class="block text-sm font-bold mb-1">اسم السائق</label><select name="driverName" class="driverList w-full border p-3 rounded-xl bg-gray-50 outline-none focus:border-blue-500"></select></div>
-                    <div><label class="block text-sm font-bold mb-1">الفئة</label><select name="category" class="w-full border p-3 rounded-xl bg-gray-50 outline-none"><option>ضمان</option><option>مخالفات</option><option>أخرى</option></select></div>
-                    <div><label class="block text-sm font-bold mb-1">المبلغ (JD)</label><input type="number" step="0.01" name="amount" required class="w-full border p-3 rounded-xl bg-gray-50 outline-none"></div>
-                    <div><label class="block text-sm font-bold mb-1">طريقة الدفع</label><select name="method" class="w-full border p-3 rounded-xl bg-gray-50 outline-none"><option>Cash</option><option>Cliq</option><option>Transfer</option></select></div>
-                    <div class="md:col-span-2"><label class="block text-sm font-bold mb-1">ملاحظات</label><textarea name="notes" class="w-full border p-3 rounded-xl bg-gray-50 outline-none"></textarea></div>
-                    <button type="submit" class="md:col-span-2 bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 shadow-lg">حفظ الإيراد</button>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-gray-700"><i class="far fa-calendar-alt ml-1 text-yellow-500"></i> التاريخ</label>
+                        <input type="date" name="date" required class="w-full p-3 rounded-xl bg-gray-50 focus:bg-white transition">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-gray-700"><i class="fas fa-car-side ml-1 text-yellow-500"></i> رقم السيارة</label>
+                        <select name="carNo" class="c-list w-full p-3 rounded-xl bg-gray-50 focus:bg-white"></select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-gray-700"><i class="fas fa-user-tie ml-1 text-yellow-500"></i> السائق</label>
+                        <select name="driverName" class="d-list w-full p-3 rounded-xl bg-gray-50 focus:bg-white"></select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-gray-700"><i class="fas fa-coins ml-1 text-yellow-500"></i> المبلغ (JD)</label>
+                        <input type="number" step="0.01" name="amount" required class="w-full p-3 rounded-xl bg-gray-50 focus:bg-white font-bold text-lg">
+                    </div>
+                    <div class="md:col-span-2 space-y-2">
+                        <label class="text-sm font-bold text-gray-700"><i class="far fa-sticky-note ml-1 text-yellow-500"></i> ملاحظات</label>
+                        <input type="text" name="notes" class="w-full p-3 rounded-xl bg-gray-50">
+                    </div>
+                    <button type="submit" class="md:col-span-3 btn-taxi font-bold py-4 rounded-xl shadow-lg text-lg mt-2">
+                        <i class="fas fa-save ml-2"></i> حفظ الإيراد اليومي
+                    </button>
                 </form>
             </div>
-
-            <div id="containerListRev" class="hidden bg-white rounded-3xl shadow-xl border overflow-hidden">
-                <table class="w-full text-right"><thead class="bg-gray-50 text-xs text-gray-500"><tr><th class="p-4">التاريخ</th><th class="p-4">السيارة</th><th class="p-4">المبلغ</th><th class="p-4 text-center">إجراء</th></tr></thead><tbody id="tableRev"></tbody></table>
+            <div id="cL-Rev" class="hidden bg-white rounded-2xl card-shadow overflow-hidden border">
+                <table class="w-full text-right"><thead class="bg-gray-50 text-gray-500"><tr><th class="p-4">التاريخ</th><th class="p-4">السيارة</th><th class="p-4">المبلغ</th><th class="p-4 text-center">تعديل</th></tr></thead><tbody id="tbl-Rev"></tbody></table>
             </div>
         </div>
 
-        <div id="moduleExpenses" class="hidden">
-            <div class="flex mb-6 bg-white rounded-2xl shadow-sm border p-1 overflow-hidden">
-                <button onclick="switchTab('add', 'Exp')" id="tabAddExp" class="flex-1 py-3 text-center font-bold tab-active rounded-xl">إضافة مصروف</button>
-                <button onclick="switchTab('list', 'Exp')" id="tabListExp" class="flex-1 py-3 text-center font-bold text-gray-400 rounded-xl">سجل المصاريف</button>
-            </div>
-
-            <div id="containerAddExp" class="bg-white rounded-3xl shadow-xl border p-6 md:p-8">
-                <form id="expenseForm" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div id="m-exp" class="hidden animate-fadeIn">
+            <header class="flex justify-between items-end mb-6">
+                <div><h1 class="text-2xl font-bold text-gray-800">المصاريف والصيانة</h1><p class="text-gray-500 text-sm">متابعة كافة التكاليف التشغيلية</p></div>
+                <div class="flex bg-white rounded-lg shadow p-1">
+                    <button onclick="switchTab('add', 'Exp')" id="tA-Exp" class="px-4 py-2 rounded-md taxi-yellow font-bold text-sm">إضافة</button>
+                    <button onclick="switchTab('list', 'Exp')" id="tL-Exp" class="px-4 py-2 rounded-md font-bold text-sm text-gray-400">السجلات</button>
+                </div>
+            </header>
+            <div id="cA-Exp" class="bg-white rounded-2xl p-6 md:p-8 card-shadow border">
+                <form id="f-Exp" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <input type="hidden" name="id">
-                    <div><label class="block text-sm font-bold mb-1">التاريخ</label><input type="date" name="date" required class="w-full border p-3 rounded-xl bg-gray-50 outline-none focus:border-red-500"></div>
-                    <div><label class="block text-sm font-bold mb-1">المبلغ (JD)</label><input type="number" step="0.01" name="amount" required class="w-full border p-3 rounded-xl bg-gray-50 outline-none focus:border-red-500"></div>
-                    <div><label class="block text-sm font-bold mb-1">السيارة (من B)</label><select name="car" class="carList w-full border p-3 rounded-xl bg-gray-50 outline-none"></select></div>
-                    <div><label class="block text-sm font-bold mb-1">السائق (من B)</label><select name="driver" class="driverList w-full border p-3 rounded-xl bg-gray-50 outline-none"></select></div>
-                    <div><label class="block text-sm font-bold mb-1">البائع</label><input type="text" name="vendor" required class="w-full border p-3 rounded-xl bg-gray-50 outline-none"></div>
-                    <div><label class="block text-sm font-bold mb-1">المسؤول</label><input type="text" name="admin" value="Admin_Logged_In" readonly class="w-full border p-3 rounded-xl bg-gray-100 outline-none text-gray-500"></div>
-                    <div class="md:col-span-2"><label class="block text-sm font-bold mb-1">ملاحظات</label><textarea name="notes" class="w-full border p-3 rounded-xl bg-gray-50 outline-none"></textarea></div>
-                    <button type="submit" class="md:col-span-2 bg-red-600 text-white font-bold py-4 rounded-2xl hover:bg-red-700 shadow-lg transition">حفظ المصروف</button>
+                    <div class="space-y-2"><label class="text-sm font-bold text-gray-700">التاريخ</label><input type="date" name="date" required class="w-full p-3 rounded-xl bg-gray-50"></div>
+                    <div class="space-y-2"><label class="text-sm font-bold text-gray-700">المبلغ (JD)</label><input type="number" step="0.01" name="amount" required class="w-full p-3 rounded-xl bg-gray-50 font-bold text-red-600 text-lg"></div>
+                    <div class="space-y-2"><label class="text-sm font-bold text-gray-700">السيارة</label><select name="car" class="c-list w-full p-3 rounded-xl bg-gray-50"></select></div>
+                    <div class="space-y-2"><label class="text-sm font-bold text-gray-700">البائع / الجهة</label><input type="text" name="vendor" required class="w-full p-3 rounded-xl bg-gray-50"></div>
+                    <div class="md:col-span-2 space-y-2"><label class="text-sm font-bold text-gray-700">ملاحظات</label><textarea name="notes" class="w-full p-3 rounded-xl bg-gray-50"></textarea></div>
+                    <button type="submit" class="md:col-span-2 bg-black text-white font-bold py-4 rounded-xl shadow-lg hover:bg-gray-800 transition">حفظ المصروف</button>
                 </form>
             </div>
+            <div id="cL-Exp" class="hidden bg-white rounded-2xl card-shadow overflow-hidden border"><table class="w-full text-right"><thead class="bg-gray-50"><tr><th class="p-4 text-gray-500">التاريخ</th><th class="p-4 text-gray-500">السيارة</th><th class="p-4 text-gray-500">المبلغ</th><th class="p-4 text-center text-gray-500">تعديل</th></tr></thead><tbody id="tbl-Exp"></tbody></table></div>
+        </div>
 
-            <div id="containerListExp" class="hidden bg-white rounded-3xl shadow-xl border overflow-hidden">
-                <table class="w-full text-right"><thead class="bg-gray-50 text-xs text-gray-500"><tr><th class="p-4">التاريخ</th><th class="p-4">السيارة</th><th class="p-4">المبلغ</th><th class="p-4">البائع</th><th class="p-4 text-center">إجراء</th></tr></thead><tbody id="tableExp"></tbody></table>
+        <div id="m-drv" class="hidden animate-fadeIn">
+            <header class="flex justify-between items-end mb-6">
+                <div><h1 class="text-2xl font-bold text-gray-800">إدارة السائقين</h1><p class="text-gray-500 text-sm">بيانات السائقين والوثائق الرسمية</p></div>
+                <div class="flex bg-white rounded-lg shadow p-1">
+                    <button onclick="switchTab('add', 'Drv')" id="tA-Drv" class="px-4 py-2 rounded-md taxi-yellow font-bold text-sm">إضافة سائق</button>
+                    <button onclick="switchTab('list', 'Drv')" id="tL-Drv" class="px-4 py-2 rounded-md font-bold text-sm text-gray-400">القائمة</button>
+                </div>
+            </header>
+            <div id="cA-Drv" class="bg-white rounded-2xl p-6 card-shadow border">
+                <form id="f-Drv" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <input type="hidden" name="id">
+                    <div class="md:col-span-2"><label class="text-sm font-bold">الاسم الرباعي</label><input type="text" name="name" required class="w-full p-3 rounded-xl bg-gray-50"></div>
+                    <div><label class="text-sm font-bold">الرقم الوطني</label><input type="number" name="nationalId" required class="w-full p-3 rounded-xl bg-gray-50"></div>
+                    <div><label class="text-sm font-bold">رقم الهاتف</label><input type="number" name="phone" required class="w-full p-3 rounded-xl bg-gray-50"></div>
+                    <div class="md:col-span-2"><label class="text-sm font-bold">عنوان السكن</label><input type="text" name="address" required class="w-full p-3 rounded-xl bg-gray-50"></div>
+                    <div class="md:col-span-2"><label class="text-sm font-bold">رابط الخريطة (URL)</label><input type="url" name="mapUrl" placeholder="https://..." class="w-full p-3 rounded-xl bg-gray-50"></div>
+                    <button type="submit" class="md:col-span-2 btn-taxi font-bold py-4 rounded-xl">حفظ البيانات</button>
+                </form>
             </div>
+            <div id="cL-Drv" class="hidden bg-white rounded-2xl shadow overflow-hidden border"><table class="w-full text-right"><thead class="bg-gray-50"><tr><th class="p-4 text-gray-500">الاسم</th><th class="p-4 text-gray-500">الهاتف</th><th class="p-4 text-center text-gray-500">إجراء</th></tr></thead><tbody id="tbl-Drv"></tbody></table></div>
+        </div>
+
+        <div id="m-car" class="hidden animate-fadeIn">
+            <header class="flex justify-between items-end mb-6">
+                <div><h1 class="text-2xl font-bold text-gray-800">أسطول السيارات</h1><p class="text-gray-500 text-sm">متابعة التراخيص والمواصفات</p></div>
+                <div class="flex bg-white rounded-lg shadow p-1">
+                    <button onclick="switchTab('add', 'Car')" id="tA-Car" class="px-4 py-2 rounded-md taxi-yellow font-bold text-sm">إضافة سيارة</button>
+                    <button onclick="switchTab('list', 'Car')" id="tL-Car" class="px-4 py-2 rounded-md font-bold text-sm text-gray-400">القائمة</button>
+                </div>
+            </header>
+            <div id="cA-Car" class="bg-white rounded-2xl p-6 card-shadow border">
+                <form id="f-Car" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <input type="hidden" name="id">
+                    <div><label class="text-sm font-bold">رقم اللوحة</label><input type="text" name="plateNo" required class="w-full p-3 rounded-xl bg-gray-50"></div>
+                    <div><label class="text-sm font-bold">نوع السيارة</label><input type="text" name="type" required class="w-full p-3 rounded-xl bg-gray-50"></div>
+                    <div><label class="text-sm font-bold">الموديل (السنة)</label><input type="number" name="model" required class="w-full p-3 rounded-xl bg-gray-50"></div>
+                    <div><label class="text-sm font-bold">انتهاء الترخيص</label><input type="date" name="expiry" required class="w-full p-3 rounded-xl bg-gray-50"></div>
+                    <div class="md:col-span-2"><label class="text-sm font-bold">رقم الشاصي</label><input type="text" name="chassis" class="w-full p-3 rounded-xl bg-gray-50"></div>
+                    <button type="submit" class="md:col-span-2 taxi-dark text-white font-bold py-4 rounded-xl hover:bg-gray-800 transition shadow-lg">حفظ السيارة</button>
+                </form>
+            </div>
+            <div id="cL-Car" class="hidden bg-white rounded-2xl shadow overflow-hidden border"><table class="w-full text-right"><thead class="bg-gray-50"><tr><th class="p-4 text-gray-500">اللوحة</th><th class="p-4 text-gray-500">النوع</th><th class="p-4 text-center text-gray-500">تعديل</th></tr></thead><tbody id="tbl-Car"></tbody></table></div>
         </div>
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWcW9uabODjpEqAjIuc4A8nOn0kLNInvaSukiyW20S-nBwZDtX1YI42wjJZEpNFzT7/exec";
+        // ضع رابط السكريبت الخاص بك هنا
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_YOUR_URL_HERE/exec";
 
-        window.onload = function() {
+        window.onload = () => {
             document.querySelectorAll('input[type="date"]').forEach(i => i.value = new Date().toISOString().split('T')[0]);
-            loadLists();
+            loadAllDropdowns();
         };
 
-        function switchMainModule(mod) {
-            document.getElementById('moduleRevenues').classList.toggle('hidden', mod !== 'revenues');
-            document.getElementById('moduleExpenses').classList.toggle('hidden', mod !== 'expenses');
-            document.getElementById('navRev').className = mod === 'revenues' ? 'nav-btn-active px-4 py-2 rounded-lg font-bold shadow-md' : 'bg-gray-100 text-gray-600 px-4 py-2 rounded-lg font-bold';
-            document.getElementById('navExp').className = mod === 'expenses' ? 'nav-btn-active px-4 py-2 rounded-lg font-bold shadow-md' : 'bg-gray-100 text-gray-600 px-4 py-2 rounded-lg font-bold';
+        // تبديل الأقسام الرئيسية (إيرادات، مصاريف، سائقين، سيارات)
+        function switchModule(m) {
+            ['rev', 'exp', 'drv', 'car'].forEach(i => {
+                document.getElementById('m-'+i).classList.toggle('hidden', i !== m);
+                document.getElementById('n-'+i).classList.toggle('nav-active', i === m);
+            });
         }
 
+        // تبديل الألسنة الداخلية (إضافة، سجلات)
         function switchTab(type, mod) {
             const isAdd = type === 'add';
-            document.getElementById(`containerAdd${mod}`).classList.toggle('hidden', !isAdd);
-            document.getElementById(`containerList${mod}`).classList.toggle('hidden', isAdd);
-            document.getElementById(`tabAdd${mod}`).className = isAdd ? "flex-1 py-3 text-center font-bold tab-active rounded-xl" : "flex-1 py-3 text-center font-bold text-gray-400 rounded-xl";
-            document.getElementById(`tabList${mod}`).className = !isAdd ? "flex-1 py-3 text-center font-bold tab-active rounded-xl" : "flex-1 py-3 text-center font-bold text-gray-400 rounded-xl";
-            if(!isAdd) mod === 'Rev' ? loadTableData('getRevenues', 'tableRev') : loadTableData('getExpenses', 'tableExp');
+            document.getElementById(`cA-${mod}`).classList.toggle('hidden', !isAdd);
+            document.getElementById(`cL-${mod}`).classList.toggle('hidden', isAdd);
+            document.getElementById(`tA-${mod}`).className = isAdd ? "px-4 py-2 rounded-md taxi-yellow font-bold text-sm" : "px-4 py-2 rounded-md font-bold text-sm text-gray-400";
+            document.getElementById(`tL-${mod}`).className = !isAdd ? "px-4 py-2 rounded-md taxi-yellow font-bold text-sm" : "px-4 py-2 rounded-md font-bold text-sm text-gray-400";
+            if(!isAdd) fetchTable(mod);
         }
 
-        async function loadLists() {
-            const [dRes, cRes] = await Promise.all([fetch(SCRIPT_URL+"?action=getDrivers"), fetch(SCRIPT_URL+"?action=getCars")]);
-            const drivers = await dRes.json(); const cars = await cRes.json();
-            const dOptions = '<option value="">اختر...</option>' + drivers.map(d => `<option value="${d}">${d}</option>`).join('');
-            const cOptions = '<option value="">اختر...</option>' + cars.map(c => `<option value="${c}">${c}</option>`).join('');
-            document.querySelectorAll('.driverList').forEach(s => s.innerHTML = dOptions);
-            document.querySelectorAll('.carList').forEach(s => s.innerHTML = cOptions);
+        // جلب القوائم المنسدلة لمرة واحدة
+        async function loadAllDropdowns() {
+            try {
+                const [drivers, cars] = await Promise.all([
+                    fetch(SCRIPT_URL + "?action=getDrivers").then(res => res.json()),
+                    fetch(SCRIPT_URL + "?action=getCars").then(res => res.json())
+                ]);
+                const dHtml = '<option value="">-- اختر السائق --</option>' + drivers.map(d => `<option value="${d}">${d}</option>`).join('');
+                const cHtml = '<option value="">-- اختر السيارة --</option>' + cars.map(c => `<option value="${c}">${c}</option>`).join('');
+                document.querySelectorAll('.d-list').forEach(s => s.innerHTML = dHtml);
+                document.querySelectorAll('.c-list').forEach(s => s.innerHTML = cHtml);
+            } catch (e) { console.error("Drop-down loading error"); }
         }
 
-        async function loadTableData(action, tableId) {
-            const tbody = document.getElementById(tableId);
-            tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-gray-400 italic">جاري التحديث...</td></tr>';
-            const res = await fetch(`${SCRIPT_URL}?action=${action}`);
-            const data = await res.json();
-            tbody.innerHTML = data.map(row => `
-                <tr class="border-b hover:bg-gray-50 transition">
-                    <td class="p-4 text-sm">${row.date}</td>
-                    <td class="p-4 font-bold text-gray-700">${row.carNo || row.car}</td>
-                    <td class="p-4 font-bold ${action === 'getRevenues' ? 'text-green-600' : 'text-red-600'}">${row.amount} JD</td>
-                    ${action === 'getExpenses' ? `<td class="p-4 text-sm">${row.vendor}</td>` : ''}
-                    <td class="p-4 text-center">
-                        <button onclick='editRecord(${JSON.stringify(row)}, "${action === 'getRevenues' ? 'Rev' : 'Exp'}")' class="text-blue-600 p-2 hover:bg-blue-100 rounded-lg"><i class="fas fa-edit"></i></button>
-                    </td>
-                </tr>
-            `).join('');
+        // جلب البيانات للجداول
+        async function fetchTable(mod) {
+            const actions = {Rev: 'getRevenues', Exp: 'getExpenses', Drv: 'getDriversList', Car: 'getCarsList'};
+            const tbody = document.getElementById(`tbl-${mod}`);
+            tbody.innerHTML = '<tr><td colspan="4" class="p-10 text-center text-gray-300 italic"><i class="fas fa-spinner fa-spin ml-2"></i> جاري تحديث البيانات...</td></tr>';
+            
+            try {
+                const res = await fetch(SCRIPT_URL + "?action=" + actions[mod]);
+                const data = await res.json();
+                
+                tbody.innerHTML = data.map(r => `
+                    <tr class="border-b hover:bg-yellow-50 transition-colors">
+                        <td class="p-4 text-sm font-bold text-gray-800">${r.date || r.name || r.plateNo}</td>
+                        <td class="p-4 text-sm text-gray-600">${r.carNo || r.car || r.phone || r.type}</td>
+                        <td class="p-4 text-sm font-bold ${mod==='Rev'?'text-green-600':mod==='Exp'?'text-red-600':''}">${mod==='Drv' || mod==='Car' ? (r.address || r.model) : r.amount + ' JD'}</td>
+                        <td class="p-4 text-center">
+                            <button onclick='editRecord(${JSON.stringify(r)}, "${mod}")' class="bg-gray-100 p-2 rounded-lg hover:bg-black hover:text-white transition">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch(e) { tbody.innerHTML = '<tr><td colspan="4" class="p-10 text-center text-red-400">خطأ في الاتصال بالسيرفر</td></tr>'; }
         }
 
+        // تعديل سجل موجود
         function editRecord(data, mod) {
             switchTab('add', mod);
-            const form = document.getElementById(mod === 'Rev' ? 'revenueForm' : 'expenseForm');
+            const form = document.getElementById(`f-${mod}`);
             Object.keys(data).forEach(key => { if(form[key]) form[key].value = data[key]; });
+            const btn = form.querySelector('button[type="submit"]');
+            btn.innerHTML = `<i class="fas fa-sync-alt ml-2"></i> تحديث السجل رقم ${data.id}`;
+            btn.classList.replace('taxi-dark', 'bg-blue-600');
+            btn.classList.add('bg-blue-600', 'text-white');
         }
 
+        // إرسال النماذج (حفظ البيانات)
         document.querySelectorAll('form').forEach(form => {
             form.onsubmit = async function(e) {
                 e.preventDefault();
                 const btn = this.querySelector('button[type="submit"]');
-                const originalText = btn.innerText;
-                btn.disabled = true; btn.innerText = "جاري الحفظ...";
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-circle-notch fa-spin ml-2"></i> جاري الحفظ...';
+
+                const actMap = { 'f-Rev': 'saveRevenue', 'f-Exp': 'saveExpense', 'f-Drv': 'saveDriver', 'f-Car': 'saveCar' };
                 const params = new URLSearchParams(new FormData(this));
-                params.append('action', this.id === 'revenueForm' ? 'saveRevenue' : 'saveExpense');
-                params.append('collector', 'Admin'); // Default for now
+                params.append('action', actMap[this.id]);
+                params.append('collector', 'Admin'); params.append('admin', 'Admin');
+
                 try {
                     await fetch(SCRIPT_URL + "?" + params.toString(), { method: 'POST' });
-                    alert("تم الحفظ!"); this.reset();
-                    if(this.id === 'revenueForm') switchTab('list', 'Rev'); else switchTab('list', 'Exp');
-                } catch(e) { alert("خطأ!"); }
-                btn.disabled = false; btn.innerText = originalText;
-            };
+                    alert("✅ تم الحفظ بنجاح!");
+                    this.reset();
+                    document.querySelectorAll('input[type="date"]').forEach(i => i.value = new Date().toISOString().split('T')[0]);
+                    btn.innerHTML = originalText;
+                    const mod = this.id.split('-')[1];
+                    switchTab('list', mod);
+                } catch(e) { alert("❌ حدث خطأ أثناء الحفظ"); }
+                btn.disabled = false;
+            }
         });
     </script>
 </body>
