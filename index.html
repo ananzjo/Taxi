@@ -12,7 +12,7 @@
         .taxi-gold { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #000; }
         .nav-tab { cursor: pointer; padding: 1.2rem 1rem; color: #94a3b8; border-bottom: 3px solid transparent; transition: 0.3s; }
         .nav-active { color: #fbbf24; border-bottom-color: #fbbf24; font-weight: bold; background: rgba(251, 191, 36, 0.05); }
-        .card { background: #1e293b; border: 1px solid #334155; border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 20px; padding: 25px; }
         input, select { background: #0f172a !important; color: white !important; border: 1px solid #334155 !important; padding: 12px; border-radius: 10px; width: 100%; outline: none; }
         input:focus, select:focus { border-color: #fbbf24 !important; }
         .hidden { display: none; }
@@ -23,12 +23,12 @@
 <body class="pb-10">
 
     <nav class="bg-black border-b border-yellow-500/20 sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 flex justify-between items-center">
+        <div class="max-w-6xl mx-auto px-4 flex justify-between items-center text-xs md:text-base">
             <div class="flex items-center gap-2 py-4">
-                <div class="taxi-gold px-2 py-1 rounded font-black text-xl">FM</div>
+                <div class="taxi-gold px-2 py-1 rounded font-black">FM</div>
                 <span class="text-yellow-500 font-bold hidden md:block">FLEET MASTER</span>
             </div>
-            <div class="flex overflow-x-auto">
+            <div class="flex">
                 <div onclick="showModule('Revenues')" id="n-Revenues" class="nav-tab nav-active">الإيرادات</div>
                 <div onclick="showModule('Expenses')" id="n-Expenses" class="nav-tab">المصاريف</div>
                 <div onclick="showModule('Cars')" id="n-Cars" class="nav-tab">السيارات</div>
@@ -39,10 +39,10 @@
 
     <div class="max-w-6xl mx-auto px-4 mt-8">
         <div class="flex justify-between items-center mb-8">
-            <h2 id="module-title" class="text-2xl font-bold border-r-4 border-yellow-500 pr-3 uppercase">الإيرادات</h2>
-            <div class="bg-slate-800 p-1 rounded-xl flex gap-1 shadow-inner">
-                <button onclick="switchTab('add')" id="btn-add" class="taxi-gold px-6 py-2 rounded-lg font-bold">إضافة</button>
-                <button onclick="switchTab('list')" id="btn-list" class="text-slate-400 px-6 py-2 rounded-lg font-bold">عرض</button>
+            <h2 id="module-title" class="text-xl md:text-2xl font-bold border-r-4 border-yellow-500 pr-3 uppercase">الإيرادات</h2>
+            <div class="bg-slate-800 p-1 rounded-xl flex gap-1 shadow-inner text-sm">
+                <button onclick="switchTab('add')" id="btn-add" class="taxi-gold px-4 py-2 rounded-lg font-bold">إضافة</button>
+                <button onclick="switchTab('list')" id="btn-list" class="text-slate-400 px-4 py-2 rounded-lg font-bold">عرض</button>
             </div>
         </div>
 
@@ -51,18 +51,14 @@
                 <input type="hidden" name="sheetName" id="current-sheet" value="Revenues">
                 <div id="form-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     </div>
-                <button type="submit" id="submit-btn" class="taxi-gold w-full mt-10 py-4 rounded-xl font-black text-lg shadow-2xl transition hover:scale-[1.01]">
-                    تأكيد وحفظ البيانات
-                </button>
+                <button type="submit" id="submit-btn" class="taxi-gold w-full mt-10 py-4 rounded-xl font-black text-lg shadow-2xl transition hover:scale-[1.01]">حفظ البيانات</button>
             </form>
         </div>
 
         <div id="view-list" class="hidden card overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-right">
-                    <thead class="bg-slate-900">
-                        <tr id="table-head"></tr>
-                    </thead>
+                    <thead class="bg-slate-900"><tr id="table-head"></tr></thead>
                     <tbody id="table-body" class="text-slate-300"></tbody>
                 </table>
             </div>
@@ -70,10 +66,9 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbzdUK1A6sCPmIPp7AA--mgiLh6Q42ef_7VjM2cmq_IZddyFEJV0dV21jJe5C5V0lzUqgw/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbwYQywgvfpI5XLIjfHkl6XashRy9W7SUK8NKVuUpRUy0-ZDnfYE2_cmnHJOmctkbQGv/exec";
         let currentModule = "Revenues";
 
-        // وظيفة JSONP لجلب البيانات
         function callAPI(action, sheet = '') {
             return new Promise((resolve) => {
                 const cb = 'cb_' + Math.round(Math.random() * 1000000);
@@ -88,86 +83,90 @@
             });
         }
 
-        // التبديل بين الشاشات
         async function showModule(m) {
             currentModule = m;
             document.getElementById('current-sheet').value = m;
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('nav-active'));
             document.getElementById('n-' + m).classList.add('nav-active');
-            document.getElementById('module-title').innerText = m === 'Revenues' ? 'الإيرادات' : m === 'Expenses' ? 'المصاريف' : m === 'Cars' ? 'السيارات' : 'السائقين';
-            
+            const titles = {'Revenues': 'الإيرادات', 'Expenses': 'المصاريف', 'Cars': 'السيارات', 'Drivers': 'السائقين'};
+            document.getElementById('module-title').innerText = titles[m];
             await renderFields();
             switchTab('add');
         }
 
-        // بناء حقول الشاشة ديناميكياً
         async function renderFields() {
             const container = document.getElementById('form-container');
-            container.innerHTML = '<p class="col-span-full text-center p-10">جاري تجهيز الحقول...</p>';
+            container.innerHTML = '<p class="col-span-full text-center p-10">جاري التحميل...</p>';
             
             const drivers = await callAPI('getDrivers');
             const cars = await callAPI('getCars');
+            const dOpts = drivers.map(d => `<option value="${d}">${d}</option>`).join('');
+            const cOpts = cars.map(c => `<option value="${c}">${c}</option>`).join('');
 
+            let html = '';
             if (currentModule === 'Revenues') {
-                container.innerHTML = `
-                    <div><label class="text-slate-400 text-sm mb-2 block">التاريخ</label><input type="date" name="Date" required value="${new Date().toISOString().split('T')[0]}"></div>
-                    <div><label class="text-slate-400 text-sm mb-2 block">رقم السيارة</label><select name="Car_No">${cars.map(c => `<option>${c}</option>`).join('')}</select></div>
-                    <div><label class="text-slate-400 text-sm mb-2 block">السائق</label><select name="Driver_name">${drivers.map(d => `<option>${d}</option>`).join('')}</select></div>
-                    <div><label class="text-slate-400 text-sm mb-2 block">الفئة</label><select name="Category"><option>ضمان</option><option>مخالفات</option><option>أخرى</option></select></div>
-                    <div><label class="text-slate-400 text-sm mb-2 block">المبلغ (JD)</label><input type="number" step="0.01" name="Amount" required></div>
-                    <div><label class="text-slate-400 text-sm mb-2 block">طريقة الدفع</label><select name="Method"><option>Cash</option><option>Cliq</option><option>Transfer</option><option>Bank</option></select></div>
-                    <div><label class="text-slate-400 text-sm mb-2 block">المحصل</label><input type="text" name="Collector" value="Admin" readonly class="opacity-50"></div>
-                    <div class="md:col-span-2"><label class="text-slate-400 text-sm mb-2 block">ملاحظات</label><input type="text" name="Notes"></div>
-                `;
-            } else {
-                // شاشات تلقائية لبقية الجداول
-                container.innerHTML = `<p class="col-span-full text-center p-10 text-slate-500">سيتم عرض حقول ${currentModule} بناءً على أعمدة الإكسل...</p>`;
+                html = `
+                    <div><label>التاريخ</label><input type="date" name="Date" required value="${new Date().toISOString().split('T')[0]}"></div>
+                    <div><label>رقم السيارة</label><select name="Car_No">${cOpts}</select></div>
+                    <div><label>اسم السائق</label><select name="Driver_name">${dOpts}</select></div>
+                    <div><label>الفئة</label><select name="Category"><option>ضمان</option><option>مخالفات</option><option>أخرى</option></select></div>
+                    <div><label>المبلغ (JD)</label><input type="number" step="0.01" name="Amount" required></div>
+                    <div><label>طريقة الدفع</label><select name="Method"><option>Cash</option><option>Cliq</option><option>Transfer</option><option>Bank</option></select></div>
+                    <div><label>المحصل</label><input type="text" name="Collector" value="Admin" readonly></div>
+                    <div class="md:col-span-2"><label>ملاحظات</label><input type="text" name="Notes"></div>`;
+            } else if (currentModule === 'Expenses') {
+                html = `
+                    <div><label>التاريخ</label><input type="date" name="Date" required value="${new Date().toISOString().split('T')[0]}"></div>
+                    <div><label>رقم السيارة</label><select name="Car_No">${cOpts}</select></div>
+                    <div><label>نوع المصروف</label><input type="text" name="Expense_Type" required></div>
+                    <div><label>المبلغ</label><input type="number" step="0.01" name="Amount" required></div>
+                    <div class="md:col-span-2"><label>ملاحظات</label><input type="text" name="Notes"></div>`;
+            } else if (currentModule === 'Cars') {
+                html = `
+                    <div><label>رقم اللوحة</label><input type="text" name="Plate_No" required></div>
+                    <div><label>الموديل</label><input type="text" name="Model"></div>
+                    <div><label>المالك</label><input type="text" name="Owner"></div>`;
+            } else if (currentModule === 'Drivers') {
+                html = `
+                    <div><label>اسم السائق</label><input type="text" name="Name" required></div>
+                    <div><label>رقم الهاتف</label><input type="text" name="Phone"></div>
+                    <div><label>رقم الرخصة</label><input type="text" name="License_No"></div>`;
             }
+            container.innerHTML = html;
         }
 
-        // التبديل بين الإضافة والجدول
         async function switchTab(mode) {
             const isAdd = mode === 'add';
             document.getElementById('view-add').classList.toggle('hidden', !isAdd);
             document.getElementById('view-list').classList.toggle('hidden', isAdd);
             document.getElementById('btn-add').className = isAdd ? 'taxi-gold px-6 py-2 rounded-lg font-bold shadow-lg' : 'text-slate-400 px-6 py-2 rounded-lg font-bold hover:bg-slate-800';
             document.getElementById('btn-list').className = !isAdd ? 'taxi-gold px-6 py-2 rounded-lg font-bold shadow-lg' : 'text-slate-400 px-6 py-2 rounded-lg font-bold hover:bg-slate-800';
-
             if (!isAdd) loadData();
         }
 
-        // تحميل البيانات من الإكسل للجدول
         async function loadData() {
             const head = document.getElementById('table-head');
             const body = document.getElementById('table-body');
-            body.innerHTML = '<tr><td colspan="10" class="text-center p-20 italic text-slate-500">جاري جلب البيانات من السحابة...</td></tr>';
-            
+            body.innerHTML = '<tr><td colspan="10" class="text-center p-20 italic text-slate-500 text-sm">جاري التحميل...</td></tr>';
             const data = await callAPI('getRows', currentModule);
             if (data.length > 0) {
                 const keys = Object.keys(data[0]);
                 head.innerHTML = keys.map(k => `<th>${k}</th>`).join('');
-                body.innerHTML = data.map(row => `
-                    <tr class="hover:bg-slate-800 transition">
-                        ${keys.map(k => `<td>${row[k] || '-'}</td>`).join('')}
-                    </tr>
-                `).join('');
+                body.innerHTML = data.map(row => `<tr class="hover:bg-slate-800 transition">${keys.map(k => `<td>${row[k] || '-'}</td>`).join('')}</tr>`).join('');
             } else {
-                body.innerHTML = '<tr><td colspan="10" class="text-center p-20 text-slate-500">لا توجد بيانات مسجلة في شيت ${currentModule}</td></tr>';
+                body.innerHTML = '<tr><td colspan="10" class="text-center p-20 text-slate-500">لا توجد بيانات</td></tr>';
             }
         }
 
-        // حفظ البيانات
         function handleFormSubmit(event) {
             event.preventDefault();
             const btn = document.getElementById('submit-btn');
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
-
-            const params = new URLSearchParams(new FormData(event.target));
-            fetch(API_URL, { method: 'POST', mode: 'no-cors', body: params })
+            btn.disabled = true; btn.innerHTML = "جاري الحفظ...";
+            fetch(API_URL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(new FormData(event.target)) })
                 .then(() => {
-                    alert("تم الحفظ بنجاح!");
+                    alert("تم الحفظ!");
                     event.target.reset();
-                    btn.disabled = false; btn.innerHTML = "تأكيد وحفظ البيانات";
+                    btn.disabled = false; btn.innerHTML = "حفظ البيانات";
                     switchTab('list');
                 });
         }
