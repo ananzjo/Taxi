@@ -2,140 +2,197 @@
 <html dir="rtl" lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>نظام Fleet Master | النسخة المستقرة</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fleet Master | إدارة الإيرادات</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #0f172a; color: white; }
-        .taxi-gold { background: #fbbf24; color: black; font-weight: bold; }
-        input, select { background: #1e293b; color: white; border: 1px solid #334155; padding: 10px; border-radius: 8px; width: 100%; }
-        .hidden { display: none; }
-        .nav-active { color: #fbbf24; border-bottom: 2px solid #fbbf24; }
+        body { font-family: 'Tajawal', sans-serif; background: #0f172a; color: white; }
+        .gold-gradient { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); }
+        .input-style { background: #1e293b; border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px; width: 100%; outline: none; transition: 0.3s; }
+        .input-style:focus { border-color: #fbbf24; box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2); }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4 sm:p-8">
 
-    <nav class="flex justify-between items-center bg-black p-4 rounded-xl border border-yellow-500/20 mb-8">
-        <div class="text-yellow-500 font-bold text-xl">FLEET MASTER</div>
-        <div class="flex gap-6">
-            <button onclick="showModule('rev')" id="n-rev" class="nav-active">الإيرادات</button>
-            <button onclick="showModule('car')" id="n-car">السيارات</button>
+    <div class="max-w-5xl mx-auto">
+        <header class="flex justify-between items-center mb-10 bg-slate-900 p-6 rounded-2xl border-b-2 border-yellow-500 shadow-xl">
+            <div>
+                <h1 class="text-2xl font-bold text-yellow-500 tracking-tight">FLEET MASTER</h1>
+                <p class="text-slate-400 text-sm">نظام إدارة الأسطول الذكي</p>
+            </div>
+            <div class="text-left">
+                <span class="text-xs text-slate-500 block">المستخدم الحالي</span>
+                <span id="display-user" class="font-bold text-white uppercase tracking-wider">Admin</span>
+            </div>
+        </header>
+
+        <div class="flex gap-2 mb-8 bg-slate-900 p-1 rounded-xl w-fit">
+            <button onclick="switchMode('add')" id="btn-add" class="gold-gradient text-black px-6 py-2 rounded-lg font-bold transition-all shadow-lg">إدخال إيراد</button>
+            <button onclick="switchMode('list')" id="btn-list" class="text-slate-400 px-6 py-2 rounded-lg font-bold hover:bg-slate-800">عرض السجلات</button>
         </div>
-    </nav>
 
-    <div class="max-w-4xl mx-auto">
-        
-        <section id="m-rev">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">إدارة الإيرادات</h2>
-                <div class="bg-slate-800 p-1 rounded-lg">
-                    <button onclick="switchTab('form')" id="b-form" class="taxi-gold px-4 py-1 rounded shadow">إضافة</button>
-                    <button onclick="switchTab('table')" id="b-table" class="px-4 py-1 rounded">عرض</button>
-                </div>
-            </div>
-
-            <div id="view-form" class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
-                <form id="revForm" onsubmit="handleForm(event)">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div><label class="block mb-2 text-slate-400">التاريخ</label><input type="date" name="date" id="today" required></div>
-                        <div><label class="block mb-2 text-slate-400">السيارة</label><select name="carNo" id="cars-list"><option>تحميل...</option></select></div>
-                        <div><label class="block mb-2 text-slate-400">السائق</label><select name="driverName" id="drivers-list"><option>تحميل...</option></select></div>
-                        <div><label class="block mb-2 text-slate-400">المبلغ</label><input type="number" step="0.01" name="amount" required></div>
+        <div id="section-add" class="card animate-fadeIn">
+            <form id="revenueForm" onsubmit="handleFormSubmit(event)">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-slate-400 text-sm mb-2">التاريخ (Date)</label>
+                        <input type="date" name="Date" id="date-field" class="input-style" required>
                     </div>
-                    <button type="submit" id="submit-btn" class="w-full taxi-gold mt-8 py-4 rounded-xl hover:opacity-90 transition font-bold text-lg">حفظ البيانات</button>
-                </form>
-            </div>
 
-            <div id="view-table" class="hidden bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
-                <table class="w-full text-right">
-                    <thead class="bg-slate-900 text-yellow-500">
-                        <tr><th class="p-4">التاريخ</th><th class="p-4">السيارة</th><th class="p-4">المبلغ</th></tr>
-                    </thead>
-                    <tbody id="table-content"></tbody>
-                </table>
-            </div>
-        </section>
+                    <div>
+                        <label class="block text-slate-400 text-sm mb-2">رقم السيارة (Plate No)</label>
+                        <select name="Car_No" id="car-select" class="input-style" required>
+                            <option value="">-- اختر السيارة --</option>
+                        </select>
+                    </div>
 
-        <section id="m-car" class="hidden text-center p-20 bg-slate-800 rounded-2xl">
-            <p class="text-slate-400 text-lg">قائمة السيارات قيد التحديث...</p>
-        </section>
+                    <div>
+                        <label class="block text-slate-400 text-sm mb-2">اسم السائق (Driver)</label>
+                        <select name="Driver_name" id="driver-select" class="input-style" required>
+                            <option value="">-- اختر السائق --</option>
+                        </select>
+                    </div>
 
+                    <div>
+                        <label class="block text-slate-400 text-sm mb-2">الفئة (Category)</label>
+                        <select name="Category" class="input-style" required>
+                            <option value="ضمان">ضمان</option>
+                            <option value="مخالفات">مخالفات</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-400 text-sm mb-2">المبلغ بالدينار (Amount JD)</label>
+                        <input type="number" step="0.01" name="Amount" placeholder="0.00" class="input-style" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-400 text-sm mb-2">طريقة الدفع (Method)</label>
+                        <select name="Method" class="input-style" required>
+                            <option value="Cash">Cash</option>
+                            <option value="Cliq">Cliq</option>
+                            <option value="Transfer">Transfer</option>
+                            <option value="Bank">Bank</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-400 text-sm mb-2">المحصل (Collector)</label>
+                        <input type="text" name="Collector" id="collector-field" value="Admin" class="input-style opacity-50 cursor-not-allowed" readonly>
+                    </div>
+
+                    <div class="md:col-span-2 lg:col-span-2">
+                        <label class="block text-slate-400 text-sm mb-2">ملاحظات عامة (Notes)</label>
+                        <input type="text" name="Notes" placeholder="اكتب أي ملاحظات إضافية هنا..." class="input-style">
+                    </div>
+                </div>
+
+                <button type="submit" id="submit-btn" class="gold-gradient w-full mt-10 py-4 rounded-xl text-black font-black text-lg shadow-2xl hover:scale-[1.01] active:scale-95 transition-all">
+                    تأكيد وحفظ البيانات
+                </button>
+            </form>
+        </div>
+
+        <div id="section-list" class="hidden card overflow-x-auto">
+            <table class="w-full text-right border-collapse">
+                <thead>
+                    <tr class="text-yellow-500 border-b border-slate-700">
+                        <th class="p-4">ID</th>
+                        <th class="p-4">التاريخ</th>
+                        <th class="p-4">السيارة</th>
+                        <th class="p-4">المبلغ</th>
+                        <th class="p-4">الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body" class="text-slate-300">
+                    </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzGws59pJuzpWsakRMrGLLLYeezIn8tpFIaafaFszkm_sN2g7x46MpjE1wwd9OrZh8M0Q/exec";
+        // ضع الرابط الخاص بك هنا
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxcUfu7zv8vBL7PguLnQZ8z0qyj8v0ehtAbkCDexHPY31XeGJ5nwY4vsRLfrDf5ZPIxJQ/exec";
 
-        // وظيفة JSONP لجلب البيانات بدون CORS
-        function requestData(action) {
+        // وظيفة JSONP لجلب البيانات بدون مشاكل CORS
+        function fetchData(action) {
             return new Promise((resolve) => {
-                const cb = 'jsonp_' + Math.round(Math.random() * 1000000);
+                const cb = 'callback_' + Math.round(Math.random() * 1000000);
                 const script = document.createElement('script');
                 window[cb] = (data) => {
                     delete window[cb];
                     document.body.removeChild(script);
                     resolve(data);
                 };
-                script.src = `${SCRIPT_URL}?action=${action}&callback=${cb}`;
+                script.src = `${WEB_APP_URL}?action=${action}&callback=${cb}`;
                 document.body.appendChild(script);
             });
         }
 
-        // التبديل بين الأقسام
-        function showModule(m) {
-            document.getElementById('m-rev').classList.toggle('hidden', m !== 'rev');
-            document.getElementById('m-car').classList.toggle('hidden', m !== 'car');
-            document.getElementById('n-rev').className = m === 'rev' ? 'nav-active' : '';
-            document.getElementById('n-car').className = m === 'car' ? 'nav-active' : '';
-        }
-
-        // التبديل بين الفورم والجدول
-        async function switchTab(view) {
-            const isForm = view === 'form';
-            document.getElementById('view-form').classList.toggle('hidden', !isForm);
-            document.getElementById('view-table').classList.toggle('hidden', isForm);
-            document.getElementById('b-form').className = isForm ? 'taxi-gold px-4 py-1 rounded shadow' : 'px-4 py-1 rounded';
-            document.getElementById('b-table').className = !isForm ? 'taxi-gold px-4 py-1 rounded shadow' : 'px-4 py-1 rounded';
+        // التبديل بين العرض والإضافة
+        async function switchMode(mode) {
+            const isAdd = mode === 'add';
+            document.getElementById('section-add').classList.toggle('hidden', !isAdd);
+            document.getElementById('section-list').classList.toggle('hidden', isAdd);
             
-            if(!isForm) {
-                const body = document.getElementById('table-content');
-                body.innerHTML = '<tr><td colspan="3" class="p-10 text-center">جاري التحميل...</td></tr>';
-                const data = await requestData('getRevenues');
-                body.innerHTML = data.map(r => `
-                    <tr class="border-b border-slate-700 hover:bg-slate-700/50">
-                        <td class="p-4 text-sm">${r.date || '-'}</td>
-                        <td class="p-4 text-sm">${r.carNo || '-'}</td>
-                        <td class="p-4 text-sm font-bold text-yellow-500">${r.amount || '-'}</td>
-                    </tr>
-                `).join('');
-            }
+            document.getElementById('btn-add').className = isAdd ? 'gold-gradient text-black px-6 py-2 rounded-lg font-bold shadow-lg' : 'text-slate-400 px-6 py-2 rounded-lg font-bold hover:bg-slate-800';
+            document.getElementById('btn-list').className = !isAdd ? 'gold-gradient text-black px-6 py-2 rounded-lg font-bold shadow-lg' : 'text-slate-400 px-6 py-2 rounded-lg font-bold hover:bg-slate-800';
+
+            if(!isAdd) loadTable();
         }
 
-        // إرسال البيانات
-        function handleForm(e) {
-            e.preventDefault();
-            const btn = document.getElementById('submit-btn');
-            btn.disabled = true; btn.innerHTML = "جاري الحفظ...";
+        // تحميل الجدول
+        async function loadTable() {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center">جاري تحميل السجلات...</td></tr>';
+            
+            const data = await fetchData('getRevenues');
+            tbody.innerHTML = data.map(row => `
+                <tr class="border-b border-slate-800 hover:bg-slate-800/50 transition">
+                    <td class="p-4 text-xs font-mono text-slate-500">${row.ID}</td>
+                    <td class="p-4">${row.Date}</td>
+                    <td class="p-4 font-bold text-white">${row.Car_No}</td>
+                    <td class="p-4 text-yellow-500 font-bold">${row.Amount} JD</td>
+                    <td class="p-4"><button class="text-slate-500 hover:text-white"><i class="fas fa-edit"></i></button></td>
+                </tr>
+            `).join('');
+        }
 
-            const params = new URLSearchParams(new FormData(e.target));
-            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: params })
+        // إرسال النموذج
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.innerHTML = "جاري الحفظ في السحابة...";
+
+            const formData = new FormData(event.target);
+            const params = new URLSearchParams(formData);
+
+            fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: params })
                 .then(() => {
-                    alert("تم حفظ البيانات بنجاح!");
-                    e.target.reset();
-                    btn.disabled = false; btn.innerHTML = "حفظ البيانات";
-                    switchTab('table');
-                });
+                    alert("تم حفظ الإيراد بنجاح!");
+                    event.target.reset();
+                    document.getElementById('date-field').value = new Date().toISOString().split('T')[0];
+                    btn.disabled = false;
+                    btn.innerHTML = "تأكيد وحفظ البيانات";
+                })
+                .catch(() => alert("خطأ في الاتصال"));
         }
 
         // التحميل الأولي
         window.onload = async () => {
-            document.getElementById('today').value = new Date().toISOString().split('T')[0];
+            // تاريخ اليوم تلقائياً
+            document.getElementById('date-field').value = new Date().toISOString().split('T')[0];
             
-            // تحميل القوائم
-            const drivers = await requestData('getDrivers');
-            document.getElementById('drivers-list').innerHTML = drivers.map(d => `<option value="${d}">${d}</option>`).join('');
-            
-            const cars = await requestData('getCars');
-            document.getElementById('cars-list').innerHTML = cars.map(c => `<option value="${c}">${c}</option>`).join('');
+            // تحميل القوائم من الشيت
+            const drivers = await fetchData('getDrivers');
+            const cars = await fetchData('getCars');
+
+            document.getElementById('driver-select').innerHTML += drivers.map(d => `<option value="${d}">${d}</option>`).join('');
+            document.getElementById('car-select').innerHTML += cars.map(c => `<option value="${c}">${c}</option>`).join('');
         };
     </script>
 </body>
