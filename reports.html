@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>تقرير التحصيل الفعلي - Fleet Master</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Tajawal', sans-serif; background: #020617; color: white; padding: 20px; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; }
+        th { color: #fbbf24; background: #000; padding: 12px; border: 1px solid #334155; font-size: 13px; text-align: center; }
+        td { padding: 10px; border: 1px solid #334155; text-align: center; font-size: 14px; }
+        .target-met { color: #10b981; font-weight: bold; }
+        .target-missed { color: #f43f5e; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="max-w-7xl mx-auto">
+        <div class="flex justify-between items-center mb-8 border-b border-slate-700 pb-6">
+            <div>
+                <h1 class="text-3xl font-black text-yellow-500">تقرير الأداء (لغاية اليوم)</h1>
+                <p id="calc-info" class="text-slate-400 mt-1 italic text-sm"></p>
+            </div>
+            <button onclick="generateLiveReport()" class="bg-yellow-600 text-black px-10 py-4 rounded-xl font-bold hover:bg-yellow-500 shadow-xl transition-all">
+                تحديث التقرير اللحظي 🔄
+            </button>
+        </div>
+
+        <div id="status" class="text-center mb-4 text-blue-400 font-bold"></div>
+
+        <div class="card overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr>
+                        <th>رقم السيارة</th>
+                        <th>السائق الحالي</th>
+                        <th>الضمان اليومي</th>
+                        <th>أيام العمل (المنقضية)</th>
+                        <th>المستهدف (لغاية اليوم)</th>
+                        <th>المحصل (فعلي)</th>
+                        <th>الفارق</th>
+                        <th>النسبة</th>
+                    </tr>
+                </thead>
+                <tbody id="live-report-body">
+                    <tr><td colspan="8" class="p-20 text-slate-500 italic font-bold">اضغط تحديث لحساب الأداء بناءً على تاريخ اليوم...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbwYQywgvfpI5XLIjfHkl6XashRy9W7SUK8NKVuUpRUy0-ZDnfYE2_cmnHJOmctkbQGv/exec";
+
+        // دالة حساب أيام العمل المنقضية من بداية الشهر لغاية اليوم (بدون الجمعة)
+        function getElapsedWorkingDays() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const today = now.getDate(); // رقم اليوم الحالي في الشهر
+            
+            let elapsedCount = 0;
+            for (let i = 1; i <= today; i++) {
+                const dayDate = new Date(year, month, i);
+                if (dayDate.getDay() !== 5) { // استثناء الجمعة
+                    elapsedCount++;
+                }
+            }
+            return { 
+                elapsedCount, 
+                monthName: now.toLocaleString('ar-EG', { month: 'long' }),
+                todayStr: now.toLocaleDateString('ar-EG')
+            };
+        }
+
+        async function generateLiveReport() {
+            const status = document.getElementById('status');
+            const tbody = document.getElementById('live-report-body');
+            const timing = getElapsedWorkingDays();
+            
+            status.innerText = "⏳ جاري حساب الأرباح بناءً على أيام العمل المنقضية...";
+            document.getElementById('calc-info').innerText = `تقرير شهر ${timing.monthName} لغاية تاريخ ${timing.todayStr} (${timing.elapsedCount} يوم عمل منقضي)`;
+
+            try {
+                const [cars, revs, logs] = await Promise.all([
+                    fetchData('Cars'),
+                    fetchData('Revenues'),
+                    fetchData('Drivers_Log')
+                ]);
+
+                let html = "";
+                
+                cars.forEach(car => {
+                    const plate = String(car["رقم السيارة"] || "").trim();
+                    const dailyTarget = parseFloat(car["الضمان اليومي"] || 0);
+                    
+                    // المستهدف لغاية اللحظة = الضمان اليومي * أيام العمل اللي مرت فعلاً
+                    const liveTarget = dailyTarget * timing.elapsedCount;
+
+                    // تحديد السائق الحالي من اللوج
+                    const carLogs = logs
+                        .filter(l => String(l["Car_No"] || l["رقم السيارة"]).trim() === plate)
+                        .sort((a, b) => new Date(b["Date"]) - new Date(a["Date"]));
+                    const lastLog = carLogs.find(l => l["Movement_Type"] === "استلام");
+                    const currentDriver = lastLog ? lastLog["Driver_name"] || lastLog["اسم السائق"] : "غير محدد";
+
+                    // حساب المحصل (مجموع الإيرادات لهذا الشهر)
+                    // ملاحظة: يفضل التأكد برمجياً أن الإيراد يتبع للشهر الحالي فقط
+                    const currentMonth = new Date().getMonth();
+                    const currentYear = new Date().getFullYear();
+                    
+                    const actualRevenue = revs
+                        .filter(r => {
+                            const revDate = new Date(r["Date"]);
+                            return String(r["Car_No"]).trim() === plate && 
+                                   revDate.getMonth() === currentMonth && 
+                                   revDate.getFullYear() === currentYear;
+                        })
+                        .reduce((sum, r) => sum + parseFloat(r["Amount"] || 0), 0);
+
+                    const diff = actualRevenue - liveTarget;
+                    const percent = liveTarget > 0 ? (actualRevenue / liveTarget * 100).toFixed(1) : 0;
+
+                    html += `
+                        <tr class="hover:bg-slate-800 transition-colors border-b border-slate-700/50">
+                            <td class="font-bold text-yellow-500 p-4">${plate}</td>
+                            <td class="text-blue-300 font-bold">${currentDriver}</td>
+                            <td class="font-bold">${dailyTarget}</td>
+                            <td class="text-slate-400">${timing.elapsedCount} أيام</td>
+                            <td class="text-blue-200">${liveTarget.toLocaleString()}</td>
+                            <td class="text-emerald-400 font-black">${actualRevenue.toLocaleString()}</td>
+                            <td class="${diff >= 0 ? 'text-green-400' : 'text-red-500'} font-black">
+                                ${diff > 0 ? '+' : ''}${diff.toLocaleString()}
+                            </td>
+                            <td>
+                                <span class="px-3 py-1 rounded-full text-xs font-bold ${percent >= 100 ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}">
+                                    ${percent}%
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                tbody.innerHTML = html || "<tr><td colspan='8'>لا توجد بيانات كافية للحساب</td></tr>";
+                status.innerText = "✅ تم احتساب الأداء لغاية اليوم بنجاح";
+
+            } catch (err) {
+                status.innerText = "❌ فشل الاحتساب: " + err;
+            }
+        }
+
+        function fetchData(sheet) {
+            return new Promise((res) => {
+                const cb = 'cb' + Math.floor(Math.random()*1000000);
+                const s = document.createElement('script');
+                window[cb] = (d) => { res(d); document.body.removeChild(s); delete window[cb]; };
+                s.src = `${API_URL}?action=getRows&sheetName=${sheet}&callback=${cb}`;
+                document.body.appendChild(s);
+            });
+        }
+    </script>
+</body>
+</html>
