@@ -3,88 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة الأسطول - الإيرادات</title>
+    <title>إدارة الإيرادات | Fleet System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; }
-        .tab-active { border-bottom: 4px solid #2563eb; color: #2563eb; }
-        tr:nth-child(even) { background-color: #f1f5f9; }
-        .hidden-section { display: none; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #f0f2f5; }
+        .tab-active { border-bottom: 4px solid #1d4ed8; color: #1d4ed8; }
+        tr:nth-child(even) { background-color: #fafafa; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="min-h-screen">
 
-    <nav class="bg-white shadow-md mb-8">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex justify-between h-16 items-center">
-                <div class="text-2xl font-bold text-blue-600">نظام الإدارة</div>
-                <div class="flex space-x-4 space-x-reverse">
-                    <button onclick="showMainSection('revenues')" class="bg-blue-100 text-blue-700 px-4 py-2 rounded-lg font-bold">
-                        <i class="fas fa-money-bill-wave ml-2"></i> الإيرادات
-                    </button>
-                    </div>
+    <nav class="bg-white shadow-sm border-b mb-6">
+        <div class="max-w-6xl mx-auto px-4 flex justify-between h-16 items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-blue-600 p-2 rounded-lg text-white">
+                    <i class="fas fa-car-side fa-lg"></i>
+                </div>
+                <span class="text-xl font-bold text-gray-800">نظام الأسطول</span>
             </div>
+            <button class="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-bold shadow-md">
+                <i class="fas fa-money-bill-wave ml-2"></i> الإيرادات
+            </button>
         </div>
     </nav>
 
-    <div class="max-w-6xl mx-auto px-4">
+    <div class="max-w-5xl mx-auto px-4">
         
-        <div id="revenueSection">
-            <div class="flex justify-center mb-8 bg-white p-2 rounded-xl shadow-sm max-w-md mx-auto">
-                <button onclick="switchTab('add')" id="tabAdd" class="flex-1 py-3 text-center font-bold tab-active transition-all">
-                    <i class="fas fa-plus-circle ml-2"></i> إضافة إيراد
-                </button>
-                <button onclick="switchTab('edit')" id="tabEdit" class="flex-1 py-3 text-center font-bold text-gray-500 transition-all">
-                    <i class="fas fa-table ml-2"></i> عرض وتعديل
-                </button>
-            </div>
+        <div class="flex justify-center mb-6 bg-white rounded-2xl shadow-sm p-1 max-w-xs mx-auto border">
+            <button onclick="switchTab('add')" id="tabAdd" class="flex-1 py-3 text-center font-bold tab-active transition-all rounded-xl">
+                إضافة
+            </button>
+            <button onclick="switchTab('edit')" id="tabEdit" class="flex-1 py-3 text-center font-bold text-gray-400 transition-all rounded-xl">
+                السجلات
+            </button>
+        </div>
 
-            <div id="addContainer" class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden max-w-4xl mx-auto">
-                <div class="bg-blue-600 p-4 text-white font-bold text-center">نموذج إدخال إيراد جديد</div>
-                <form id="revenueForm" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="hidden" id="recordId" name="id">
+        <div id="addContainer" class="block animate-fadeIn">
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border">
+                <div class="bg-gray-50 border-b p-5">
+                    <h2 class="text-lg font-bold text-gray-700">إدخال إيراد جديد</h2>
+                </div>
+                <form id="revenueForm" class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <input type="hidden" name="id" id="recordId">
                     
-                    <div>
-                        <label class="block text-sm font-bold mb-1 text-gray-700">التاريخ</label>
-                        <input type="date" name="date" id="inputDate" required class="w-full border p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
+                    <div class="space-y-1">
+                        <label class="text-sm font-bold text-gray-600">التاريخ</label>
+                        <input type="date" name="date" id="inputDate" required class="w-full border-2 border-gray-50 p-3 rounded-xl focus:border-blue-500 outline-none bg-gray-50">
                     </div>
-                    <div>
-                        <label class="block text-sm font-bold mb-1 text-gray-700">رقم السيارة</label>
-                        <input type="text" name="carNo" required class="w-full border p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
+
+                    <div class="space-y-1">
+                        <label class="text-sm font-bold text-gray-600">رقم السيارة</label>
+                        <select id="carList" name="carNo" required class="w-full border-2 border-gray-50 p-3 rounded-xl focus:border-blue-500 outline-none bg-gray-50 shadow-sm"></select>
                     </div>
-                    <div>
-                        <label class="block text-sm font-bold mb-1 text-gray-700">اسم السائق</label>
-                        <select id="driverList" name="driverName" required class="w-full border p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-400"></select>
+
+                    <div class="space-y-1">
+                        <label class="text-sm font-bold text-gray-600">اسم السائق</label>
+                        <select id="driverList" name="driverName" required class="w-full border-2 border-gray-50 p-3 rounded-xl focus:border-blue-500 outline-none bg-gray-50 shadow-sm"></select>
                     </div>
-                    <div>
-                        <label class="block text-sm font-bold mb-1 text-gray-700">الفئة</label>
-                        <select name="category" class="w-full border p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
+
+                    <div class="space-y-1">
+                        <label class="text-sm font-bold text-gray-600">الفئة</label>
+                        <select name="category" required class="w-full border-2 border-gray-50 p-3 rounded-xl focus:border-blue-500 outline-none bg-gray-50 shadow-sm">
                             <option value="ضمان">ضمان</option>
                             <option value="مخالفات">مخالفات</option>
                             <option value="أخرى">أخرى</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="block text-sm font-bold mb-1 text-gray-700">المبلغ (JD)</label>
-                        <input type="number" step="0.01" name="amount" required class="w-full border p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
+
+                    <div class="space-y-1">
+                        <label class="text-sm font-bold text-gray-600">المبلغ (JD)</label>
+                        <input type="number" step="0.01" name="amount" required placeholder="0.00" class="w-full border-2 border-gray-50 p-3 rounded-xl focus:border-blue-500 outline-none bg-gray-50">
                     </div>
-                    <div>
-                        <label class="block text-sm font-bold mb-1 text-gray-700">طريقة الدفع</label>
-                        <select name="method" class="w-full border p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
+
+                    <div class="space-y-1">
+                        <label class="text-sm font-bold text-gray-600">طريقة الدفع</label>
+                        <select name="method" required class="w-full border-2 border-gray-50 p-3 rounded-xl focus:border-blue-500 outline-none bg-gray-50 shadow-sm">
                             <option value="Cash">Cash</option>
                             <option value="Cliq">Cliq</option>
                             <option value="Transfer">Transfer</option>
+                            <option value="Bank">Bank</option>
                         </select>
                     </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-bold mb-1 text-gray-700">ملاحظات</label>
-                        <textarea name="notes" rows="2" class="w-full border p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+
+                    <div class="md:col-span-2 space-y-1">
+                        <label class="text-sm font-bold text-gray-600">ملاحظات إضافية</label>
+                        <textarea name="notes" rows="2" class="w-full border-2 border-gray-50 p-3 rounded-xl focus:border-blue-500 outline-none bg-gray-50"></textarea>
                     </div>
-                    <button type="submit" id="submitBtn" class="md:col-span-2 bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition">حفظ البيانات</button>
+
+                    <button type="submit" id="submitBtn" class="md:col-span-2 bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition-all shadow-lg text-lg">
+                        حفظ السجل
+                    </button>
                 </form>
             </div>
+        </div>
 
-            <div id="editContainer" class="hidden-section bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                <div class="p-4 bg-gray-50
+        <div id="editContainer" class="hidden animate-fadeIn">
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border">
+                <div class="p-6 bg-gray-50 border-b flex justify-between items-center">
+                    <h3 class="font-bold text-gray-700">السجلات السابقة</h3>
+                    <button onclick="loadTableData()" class="text-blue-600 hover:rotate-180 transition-all duration-500">
+                        <i class="fas fa-sync-alt fa-lg"></i>
+                    </button>
+                </div>
+                <div class="overflow-x-auto p-2">
+                    <table class="w-full text-right border-separate border-spacing-y-2">
+                        <thead>
+                            <tr class="text-gray-400 text-xs">
+                                <th class="p-4">التاريخ</th>
+                                <th class="p-4">السيارة</th>
+                                <th class="p-4">السائق</th>
+                                <th class="p-4 text-center">المبلغ</th>
+                                <th class="p-4 text-center">إجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="revenueTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ضع الرابط الخاص بك هنا
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWcW9uabODjpEqAjIuc4A8nOn0kLNInvaSukiyW20S-nBwZDtX1YI42wjJZEpNFzT7/exec";
+
+        window.onload = function() {
+            document.getElementById('inputDate').value = new Date().toISOString().split('T')[0];
+            loadDriversAndCars();
+        };
+
+        // تبديل الشاشات
+        function switchTab(tab) {
+            const add = document.getElementById('addContainer');
+            const edit = document.getElementById('editContainer');
+            const btnAdd = document.getElementById('tabAdd');
+            const btnEdit = document.getElementById('tabEdit');
+
+            if(tab === 'add') {
+                add.classList.remove('hidden');
+                edit.classList.add('hidden');
+                btnAdd.className = "flex-1 py-3 text-center font-bold tab-active transition-all rounded-xl";
+                btnEdit.className = "flex-1 py-3 text-center font-bold text-gray-400 transition-all rounded-xl";
+            } else {
+                add.classList.add('hidden');
+                edit.classList.remove('hidden');
+                btnEdit.className = "flex-1 py-3 text-center font-bold tab-active transition-all rounded-xl";
+                btnAdd.className = "flex-1 py-3 text-center font-bold text-gray-400 transition-all rounded-xl";
+                loadTableData();
+            }
+        }
+
+        // جلب القوائم المنسدلة
+        async function loadDriversAndCars() {
+            try {
+                const [dRes, cRes] = await Promise.all([
+                    fetch(SCRIPT_URL + "?action=getDrivers"),
+                    fetch(SCRIPT_URL + "?action=getCars")
+                ]);
+                const drivers = await dRes.json();
+                const cars = await cRes.json();
+
+                document.getElementById('driverList').innerHTML = '<option value="">اختر السائق...</option>' + 
+                    drivers.map(d => `<option value="${d}">${d}</option>`).join('');
+                
+                document.getElementById('carList').innerHTML = '<option value="">اختر السيارة...</option>' + 
+                    cars.map(c => `<option value="${c}">${c}</option>`).join('');
+            } catch (e) { alert("خطأ في جلب بيانات السائقين أو السيارات"); }
+        }
+
+        // جلب بيانات الجدول
+        async function loadTableData() {
+            const tbody = document.getElementById('revenueTableBody');
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center p-10 text-gray-400 italic">جاري تحميل البيانات...</td></tr>';
+            
+            try {
+                const res = await fetch(SCRIPT_URL + "?action=getRevenues");
+                const data = await res.json();
+                
+                tbody.innerHTML = data.map(row => `
+                    <tr class="bg-white border-y border-gray-50 shadow-sm rounded-xl overflow-hidden">
+                        <td class="p-4 text-sm font-medium text-gray-600">${row.date}</td>
+                        <td class="p-4 font-bold text-gray-800">${row.carNo}</td>
+                        <td class="p-4 text-sm text-gray-500">${row.driverName}</td>
+                        <td class="p-4 text-center font-bold text-green-600">${row.amount} JD</td>
+                        <td class="p-4 text-center">
+                            <button onclick='editRecord(${JSON.stringify(row)})' class="bg-blue-50 text-blue-600 p-2 rounded-lg hover:bg-blue-600 hover:text-white transition-all">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) { tbody.innerHTML = '<tr><td colspan="5" class="text-center p-10 text-red-500">لا توجد سجلات حالياً</td></tr>'; }
+        }
+
+        // وضع السجل في الفورم للتعديل
+        function editRecord(data) {
+            switchTab('add');
+            const form = document.getElementById('revenueForm');
+            form.recordId.value = data.id;
+            form.date.value = data.date;
+            form.carNo.value = data.carNo;
+            form.driverName.value = data.driverName;
+            form.category.value = data.category;
+            form.amount.value = data.amount;
+            form.method.value = data.method;
+            form.notes.value = data.notes;
+            
+            document.getElementById('submitBtn').innerText = "تحديث السجل الحالي";
+            document.getElementById('submitBtn').classList.replace('bg-blue-600', 'bg-orange-500');
+        }
+
+        // حفظ البيانات
+        document.getElementById('revenueForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "جاري الحفظ...";
+
+            const params = new URLSearchParams(new FormData(this));
+            params.append('action', 'saveRevenue');
+            params.append('collector', 'Admin_User');
+
+            try {
+                await fetch(SCRIPT_URL + "?" + params.toString(), { method: 'POST' });
+                alert("تمت العملية بنجاح!");
+                this.reset();
+                document.getElementById('inputDate').value = new Date().toISOString().split('T')[0];
+                btn.innerText = "حفظ السجل";
+                btn.classList.replace('bg-orange-500', 'bg-blue-600');
+            } catch (e) { alert("حدث خطأ في الاتصال"); }
+            btn.disabled = false;
+        };
+    </script>
+</body>
+</html>
