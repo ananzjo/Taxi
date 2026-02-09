@@ -3,183 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TAXI PRO - PRO SYSTEM</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <title>نظام إدارة الأسطول - الإيرادات</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --taxi: #fbc531; --dark: #1e272e; --light: #f5f6fa; }
-        body { background: var(--dark); font-family: 'Segoe UI', sans-serif; }
-        #mainApp { background: var(--light); min-height: 100vh; padding: 15px; border-radius: 0; }
-        
-        /* الهيدر */
-        .header-nav { background: var(--taxi); border-bottom: 5px solid #000; padding: 15px; margin: -15px -15px 20px -15px; display: flex; justify-content: space-between; align-items: center; }
-        
-        /* الأزرار الرئيسية */
-        .btn-card { background: white; border: none; padding: 20px; border-radius: 15px; width: 100%; height: 100px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .btn-card:hover { transform: translateY(-3px); background: var(--taxi); }
-        .btn-card i { font-size: 1.8rem; margin-bottom: 8px; }
-
-        /* الجداول والفلاتر */
-        .table-container { background: white; border-radius: 15px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .search-bar { background: white; border: 2px solid var(--taxi); border-radius: 25px; padding: 10px 20px; margin-bottom: 15px; width: 100%; }
-        
-        /* لودر التحميل */
-        .loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 9999; justify-content: center; align-items: center; color: white; flex-direction: column; }
-        
-        /* المودال */
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        @media (max-width: 576px) { .form-grid { grid-template-columns: 1fr; } }
+        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; }
+        .tab-active { border-bottom: 4px solid #2563eb; color: #2563eb; }
+        tr:nth-child(even) { background-color: #f1f5f9; }
+        .hidden-section { display: none; }
     </style>
 </head>
-<body>
+<body class="bg-gray-50 min-h-screen">
 
-<div id="loading" class="loader"><i class="fas fa-circle-notch fa-spin fa-3x mb-3 text-warning"></i><h5>جاري معالجة البيانات...</h5></div>
-
-<div id="mainApp">
-    <div class="header-nav shadow">
-        <h4 class="m-0 fw-bold"><i class="fas fa-taxi"></i> TAXI PRO</h4>
-        <span class="badge bg-dark px-3 py-2">الإدارة العامة</span>
-    </div>
-
-    <div id="mainMenu" class="row g-3">
-        <div class="col-6 col-md-4"><button onclick="loadTable('Transactions')" class="btn-card text-primary"><i class="fas fa-plus-circle"></i>الإيرادات</button></div>
-        <div class="col-6 col-md-4"><button onclick="loadTable('Expenses')" class="btn-card text-danger"><i class="fas fa-minus-circle"></i>المصاريف</button></div>
-        <div class="col-6 col-md-4"><button onclick="loadTable('Cars')" class="btn-card text-dark"><i class="fas fa-car"></i>السيارات</button></div>
-        <div class="col-6 col-md-4"><button onclick="loadTable('Drivers')" class="btn-card text-success"><i class="fas fa-user-tie"></i>السائقين</button></div>
-        <div class="col-6 col-md-4"><button onclick="loadTable('Users')" class="btn-card text-secondary"><i class="fas fa-users-cog"></i>المستخدمين</button></div>
-        <div class="col-6 col-md-4"><button onclick="showReports()" class="btn-card bg-success text-white"><i class="fas fa-chart-pie"></i>التقارير</button></div>
-    </div>
-
-    <div id="viewArea" style="display:none;">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 id="viewTitle" class="fw-bold m-0 border-start border-4 border-warning ps-2"></h5>
-            <button onclick="backToMenu()" class="btn btn-dark btn-sm">رجوع</button>
-        </div>
-        
-        <input type="text" id="searchInput" class="search-bar shadow-sm" placeholder="ابحث عن أي معلومة في الجدول..." onkeyup="filterTable()">
-        
-        <div class="table-container shadow-sm border">
-            <div class="mb-3 d-flex justify-content-between">
-                <button class="btn btn-success btn-sm px-4 fw-bold" onclick="openModal('add')"><i class="fas fa-plus me-1"></i> إضافة سجل جديد</button>
-            </div>
-            <div class="table-responsive">
-                <table id="mainTable" class="table table-hover table-striped text-center align-middle m-0"></table>
+    <nav class="bg-white shadow-md mb-8">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between h-16 items-center">
+                <div class="text-2xl font-bold text-blue-600">نظام الإدارة</div>
+                <div class="flex space-x-4 space-x-reverse">
+                    <button onclick="showMainSection('revenues')" class="bg-blue-100 text-blue-700 px-4 py-2 rounded-lg font-bold">
+                        <i class="fas fa-money-bill-wave ml-2"></i> الإيرادات
+                    </button>
+                    </div>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <div id="reportArea" style="display:none;">
-        <div class="row g-3">
-            <div class="col-md-4"><div class="card border-0 shadow-sm p-3 text-center bg-white"><h6 class="text-muted">إجمالي الإيرادات</h6><h2 id="totalIn" class="text-primary fw-bold">0</h2></div></div>
-            <div class="col-md-4"><div class="card border-0 shadow-sm p-3 text-center bg-white"><h6 class="text-muted">إجمالي المصاريف</h6><h2 id="totalOut" class="text-danger fw-bold">0</h2></div></div>
-            <div class="col-md-4"><div class="card border-0 shadow-sm p-3 text-center bg-warning"><h6 class="text-dark">صافي الربح</h6><h2 id="totalNet" class="fw-bold">0</h2></div></div>
-        </div>
-        <button onclick="backToMenu()" class="btn btn-dark w-100 mt-4 py-3 fw-bold">العودة للقائمة الرئيسية</button>
-    </div>
-</div>
-
-<div class="modal fade" id="dataModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content border-0 shadow">
-    <div class="modal-header bg-warning py-2"><h6 id="modalTitle" class="m-0 fw-bold">نموذج البيانات</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-    <div class="modal-body bg-light"><form id="dataForm" class="form-grid"></form></div>
-    <div class="modal-footer border-0"><button type="button" class="btn btn-dark w-100 py-2 fw-bold" onclick="saveData()">حفظ البيانات الآن</button></div>
-</div></div></div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    const API = "https://script.google.com/macros/s/AKfycbwclPi1RuB7X8Ku-fggw4W3d0BMK9CKLY5LVSwuEtjL5p0IyG2gWSIz52J2YQXwO2lXbQ/exec";
-    let lists = { drivers: [], cars: [] }, currentSheet = "", fullData = [], editIdx = null;
-
-    function toggleLoader(s) { document.getElementById('loading').style.display = s ? 'flex' : 'none'; }
-
-    function fetchJS(p, cb) {
-        const n = 'cb' + Date.now();
-        window[n] = (d) => { cb(d); delete window[n]; document.getElementById(n).remove(); };
-        const s = document.createElement('script'); s.id = n; s.src = API + "?" + p + "&callback=" + n;
-        document.body.appendChild(s);
-    }
-
-    // تجهيز القوائم المنسدلة فور التشغيل
-    window.onload = () => {
-        fetchJS(`action=read&sheetName=Drivers`, d => lists.drivers = d.slice(1).map(r => r[1]));
-        fetchJS(`action=read&sheetName=Cars`, d => lists.cars = d.slice(1).map(r => r[1]));
-    };
-
-    function loadTable(sheet) {
-        currentSheet = sheet; toggleLoader(true);
-        fetchJS(`action=read&sheetName=${sheet}`, (data) => {
-            toggleLoader(false); fullData = data;
-            document.getElementById('mainMenu').style.display = 'none';
-            document.getElementById('viewArea').style.display = 'block';
-            document.getElementById('viewTitle').innerText = "سجل " + sheet;
-            renderTable(data);
-        });
-    }
-
-    function renderTable(data) {
-        let html = "<thead class='table-dark'><tr>" + data[0].map(h => `<th>${h}</th>`).join('') + "<th>تعديل</th></tr></thead><tbody>";
-        for(let i=1; i<data.length; i++) {
-            html += `<tr>${data[i].map(c => `<td>${c}</td>`).join('')}<td><button class="btn btn-sm btn-outline-primary" onclick="openModal('edit', ${i})"><i class="fas fa-edit"></i></button></td></tr>`;
-        }
-        document.getElementById('mainTable').innerHTML = html + "</tbody>";
-    }
-
-    function filterTable() {
-        let val = document.getElementById('searchInput').value.toLowerCase();
-        let rows = document.querySelectorAll("#mainTable tbody tr");
-        rows.forEach(r => r.style.display = r.innerText.toLowerCase().includes(val) ? "" : "none");
-    }
-
-    function showReports() {
-        toggleLoader(true);
-        fetchJS(`action=read&sheetName=Transactions`, (ti) => {
-            let idxIn = ti[0].findIndex(h => h.includes("مبلغ"));
-            let totalIn = ti.slice(1).reduce((s, r) => s + (Number(r[idxIn]) || 0), 0);
-            fetchJS(`action=read&sheetName=Expenses`, (te) => {
-                let idxOut = te[0].findIndex(h => h.includes("مبلغ"));
-                let totalOut = te.slice(1).reduce((s, r) => s + (Number(r[idxOut]) || 0), 0);
-                document.getElementById('totalIn').innerText = totalIn.toLocaleString();
-                document.getElementById('totalOut').innerText = totalOut.toLocaleString();
-                document.getElementById('totalNet').innerText = (totalIn - totalOut).toLocaleString();
-                toggleLoader(false);
-                document.getElementById('mainMenu').style.display = 'none';
-                document.getElementById('reportArea').style.display = 'block';
-            });
-        });
-    }
-
-    function openModal(mode, idx = null) {
-        editIdx = idx; const form = document.getElementById('dataForm'); form.innerHTML = "";
-        document.getElementById('modalTitle').innerText = mode === 'add' ? "إضافة سجل جديد" : "تعديل السجل الحالي";
+    <div class="max-w-6xl mx-auto px-4">
         
-        fullData[0].forEach((h, i) => {
-            if(i === 0) { form.innerHTML += `<input type="hidden" name="col0" value="${mode==='edit'?fullData[idx][0]:''}">`; return; }
-            let val = mode === 'edit' ? fullData[idx][i] : '';
-            let input = "";
-            const isEntry = (currentSheet == 'Transactions' || currentSheet == 'Expenses');
-            
-            if(isEntry && h.includes("سائق")) input = `<select class="form-select" name="col${i}">${lists.drivers.map(d=>`<option ${d==val?'selected':''}>${d}</option>`).join('')}</select>`;
-            else if(isEntry && (h.includes("سيارة") || h.includes("رقم"))) input = `<select class="form-select" name="col${i}">${lists.cars.map(c=>`<option ${c==val?'selected':''}>${c}</option>`).join('')}</select>`;
-            else input = `<input type="${h.includes('تاريخ')?'date':(h.includes('مبلغ')?'number':'text')}" class="form-control" name="col${i}" value="${val}">`;
-            
-            form.innerHTML += `<div><label class="small fw-bold mb-1">${h}</label>${input}</div>`;
-        });
-        new bootstrap.Modal(document.getElementById('dataModal')).show();
-    }
+        <div id="revenueSection">
+            <div class="flex justify-center mb-8 bg-white p-2 rounded-xl shadow-sm max-w-md mx-auto">
+                <button onclick="switchTab('add')" id="tabAdd" class="flex-1 py-3 text-center font-bold tab-active transition-all">
+                    <i class="fas fa-plus-circle ml-2"></i> إضافة إيراد
+                </button>
+                <button onclick="switchTab('edit')" id="tabEdit" class="flex-1 py-3 text-center font-bold text-gray-500 transition-all">
+                    <i class="fas fa-table ml-2"></i> عرض وتعديل
+                </button>
+            </div>
 
-    function saveData() {
-        const fd = new FormData(document.getElementById('dataForm'));
-        let obj = {}; fd.forEach((v, k) => obj[k] = v);
-        toggleLoader(true);
-        fetchJS(`action=${editIdx===null?'add':'update'}&sheetName=${currentSheet}&data=${encodeURIComponent(JSON.stringify(obj))}`, () => {
-            toggleLoader(false); bootstrap.Modal.getInstance(document.getElementById('dataModal')).hide(); loadTable(currentSheet);
-        });
-    }
+            <div id="addContainer" class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden max-w-4xl mx-auto">
+                <div class="bg-blue-600 p-4 text-white font-bold text-center">نموذج إدخال إيراد جديد</div>
+                <form id="revenueForm" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="hidden" id="recordId" name="id">
+                    
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-gray-700">التاريخ</label>
+                        <input type="date" name="date" id="inputDate" required class="w-full border p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-gray-700">رقم السيارة</label>
+                        <input type="text" name="carNo" required class="w-full border p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-gray-700">اسم السائق</label>
+                        <select id="driverList" name="driverName" required class="w-full border p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-400"></select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-gray-700">الفئة</label>
+                        <select name="category" class="w-full border p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
+                            <option value="ضمان">ضمان</option>
+                            <option value="مخالفات">مخالفات</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-gray-700">المبلغ (JD)</label>
+                        <input type="number" step="0.01" name="amount" required class="w-full border p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-gray-700">طريقة الدفع</label>
+                        <select name="method" class="w-full border p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
+                            <option value="Cash">Cash</option>
+                            <option value="Cliq">Cliq</option>
+                            <option value="Transfer">Transfer</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold mb-1 text-gray-700">ملاحظات</label>
+                        <textarea name="notes" rows="2" class="w-full border p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+                    </div>
+                    <button type="submit" id="submitBtn" class="md:col-span-2 bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition">حفظ البيانات</button>
+                </form>
+            </div>
 
-    function backToMenu() {
-        document.getElementById('viewArea').style.display='none';
-        document.getElementById('reportArea').style.display='none';
-        document.getElementById('mainMenu').style.display='flex';
-    }
-</script>
-</body>
-</html>
+            <div id="editContainer" class="hidden-section bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <div class="p-4 bg-gray-50
