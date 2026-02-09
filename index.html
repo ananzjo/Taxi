@@ -3,252 +3,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fleet Master | نظام إدارة الأسطول</title>
+    <title>Fleet Master Premium | نظام إدارة الأسطول</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #f4f4f5; margin: 0; }
-        .taxi-yellow { background-color: #FACC15; }
-        .taxi-dark { background-color: #1A1A1A; }
-        .card-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
-        .nav-active { border-bottom: 4px solid #1A1A1A; color: #1A1A1A; font-weight: bold; }
-        .btn-taxi { background-color: #FACC15; color: #1A1A1A; transition: all 0.3s; font-weight: bold; }
-        .btn-taxi:hover { background-color: #EAB308; transform: translateY(-2px); }
-        input, select, textarea { border: 1px solid #e2e8f0 !important; width: 100%; padding: 0.75rem; border-radius: 0.75rem; background-color: #fff; }
-        input:focus { border-color: #FACC15 !important; outline: none; box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.2); }
-        label { display: block; font-size: 0.875rem; font-weight: 700; color: #374151; margin-bottom: 0.5rem; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #0f172a; color: #f1f5f9; margin: 0; }
+        .taxi-gold { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #000; }
+        .card-premium { background: #1e293b; border: 1px solid #334155; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4); }
+        .nav-tab { cursor: pointer; padding: 1.2rem 0.7rem; color: #94a3b8; border-bottom: 3px solid transparent; transition: 0.3s; }
+        .nav-active { color: #fbbf24; border-bottom-color: #fbbf24; font-weight: bold; background: rgba(251, 191, 36, 0.05); }
+        input, select { background: #0f172a !important; color: #fff !important; border: 1px solid #334155 !important; padding: 0.75rem; border-radius: 0.6rem; width: 100%; }
+        input:focus { border-color: #fbbf24 !important; outline: none; box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1); }
+        label { color: #94a3b8; font-size: 0.85rem; margin-bottom: 0.4rem; display: block; font-weight: bold; }
         .hidden { display: none; }
-        .animate-fadeIn { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        th { background: #334155; color: #fbbf24; padding: 1rem; text-align: right; }
+        td { padding: 1rem; border-bottom: 1px solid #334155; }
+        .loader { border-top-color: #fbbf24; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="pb-20 text-right">
+<body class="pb-10">
 
-    <nav class="taxi-yellow shadow-md sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 flex justify-between h-16 items-center">
+    <nav class="bg-black border-b border-yellow-500/20 sticky top-0 z-50 shadow-2xl">
+        <div class="max-w-6xl mx-auto px-4 flex justify-between items-center h-16">
             <div class="flex items-center gap-2">
-                <div class="bg-black text-yellow-400 p-2 rounded-lg"><i class="fas fa-taxi"></i></div>
-                <span class="text-xl font-bold text-black uppercase">Fleet Master</span>
+                <div class="taxi-gold p-1.5 rounded font-black text-xl">FM</div>
+                <span class="font-bold tracking-widest text-yellow-500 hidden sm:inline">FLEET MASTER</span>
             </div>
-            <div class="hidden md:flex gap-6 h-full items-center">
-                <button onclick="switchModule('rev')" id="n-rev" class="nav-active h-full px-2">الإيرادات</button>
-                <button onclick="switchModule('exp')" id="n-exp" class="h-full px-2">المصاريف</button>
-                <button onclick="switchModule('drv')" id="n-drv" class="h-full px-2">السائقين</button>
-                <button onclick="switchModule('car')" id="n-car" class="h-full px-2">السيارات</button>
+            <div class="flex gap-2 sm:gap-6 h-full">
+                <div onclick="showModule('rev')" id="n-rev" class="nav-tab nav-active">الإيرادات</div>
+                <div onclick="showModule('exp')" id="n-exp" class="nav-tab">المصاريف</div>
+                <div onclick="showModule('car')" id="n-car" class="nav-tab">السيارات</div>
+                <div onclick="showModule('drv')" id="n-drv" class="nav-tab">السائقين</div>
             </div>
         </div>
     </nav>
 
     <div class="max-w-6xl mx-auto px-4 mt-8">
         
-        <div id="m-rev" class="animate-fadeIn">
-            <header class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">سجل الإيرادات اليومي</h1>
-                <div class="flex bg-white rounded-lg shadow p-1">
-                    <button onclick="switchTab('add', 'Rev')" id="tA-Rev" class="px-6 py-2 rounded-md taxi-yellow font-bold text-sm">إضافة</button>
-                    <button onclick="switchTab('list', 'Rev')" id="tL-Rev" class="px-6 py-2 rounded-md font-bold text-sm text-gray-400">السجلات</button>
+        <section id="m-rev" class="module">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold border-r-4 border-yellow-500 pr-3">سجل الإيرادات</h2>
+                <div class="bg-slate-800 p-1 rounded-lg flex gap-1">
+                    <button onclick="tab('add','Rev')" id="tA-Rev" class="px-4 py-1.5 rounded-md taxi-gold text-sm font-bold">إضافة</button>
+                    <button onclick="tab('list','Rev')" id="tL-Rev" class="px-4 py-1.5 rounded-md text-slate-400 text-sm">السجلات</button>
                 </div>
-            </header>
-            <div id="cA-Rev" class="bg-white rounded-2xl p-6 card-shadow border">
-                <form id="f-Rev" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            </div>
+            <div id="cA-Rev" class="card-premium p-6 rounded-2xl">
+                <form id="f-Rev" onsubmit="submitForm(event, 'saveRevenue', 'Rev')">
                     <input type="hidden" name="id">
-                    <div><label>التاريخ</label><input type="date" name="date" required></div>
-                    <div><label>رقم السيارة</label><select name="carNo" class="c-list" required></select></div>
-                    <div><label>السائق</label><select name="driverName" class="d-list" required></select></div>
-                    <div><label>المبلغ (JD)</label><input type="number" step="0.01" name="amount" required></div>
-                    <div class="md:col-span-2"><label>ملاحظات</label><input type="text" name="notes"></div>
-                    <button type="submit" class="md:col-span-3 btn-taxi py-4 rounded-xl text-lg shadow-lg">حفظ البيانات</button>
-                </form>
-            </div>
-            <div id="cL-Rev" class="hidden bg-white rounded-2xl card-shadow border overflow-hidden">
-                <table class="w-full text-right"><thead class="bg-gray-50"><tr><th class="p-4">التاريخ</th><th class="p-4">السيارة</th><th class="p-4">المبلغ</th><th class="p-4 text-center">إجراء</th></tr></thead><tbody id="tbl-Rev"></tbody></table>
-            </div>
-        </div>
-
-        <div id="m-exp" class="hidden animate-fadeIn">
-            <header class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">إدارة المصاريف</h1>
-                <div class="flex bg-white rounded-lg shadow p-1">
-                    <button onclick="switchTab('add', 'Exp')" id="tA-Exp" class="px-6 py-2 rounded-md taxi-yellow font-bold text-sm">إضافة</button>
-                    <button onclick="switchTab('list', 'Exp')" id="tL-Exp" class="px-6 py-2 rounded-md font-bold text-sm text-gray-400">السجلات</button>
-                </div>
-            </header>
-            <div id="cA-Exp" class="bg-white rounded-2xl p-6 card-shadow border">
-                <form id="f-Exp" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <input type="hidden" name="id">
-                    <div><label>التاريخ</label><input type="date" name="date" required></div>
-                    <div><label>المبلغ (JD)</label><input type="number" step="0.01" name="amount" required></div>
-                    <div><label>السيارة</label><select name="car" class="c-list" required></select></div>
-                    <div><label>السائق المسؤول</label><select name="driver" class="d-list" required></select></div>
-                    <div><label>البائع / الجهة</label><input type="text" name="vendor" required></div>
-                    <div><label>ملاحظات</label><input type="text" name="notes"></div>
-                    <button type="submit" class="md:col-span-2 taxi-dark text-white font-bold py-4 rounded-xl shadow-lg">حفظ المصروف</button>
-                </form>
-            </div>
-            <div id="cL-Exp" class="hidden bg-white rounded-2xl card-shadow border overflow-hidden">
-                <table class="w-full text-right"><thead class="bg-gray-50"><tr><th class="p-4">التاريخ</th><th class="p-4">السيارة</th><th class="p-4">المبلغ</th><th class="p-4 text-center">إجراء</th></tr></thead><tbody id="tbl-Exp"></tbody></table>
-            </div>
-        </div>
-
-        <div id="m-car" class="hidden animate-fadeIn">
-            <header class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">بيانات السيارات</h1>
-                <div class="flex bg-white rounded-lg shadow p-1">
-                    <button onclick="switchTab('add', 'Car')" id="tA-Car" class="px-6 py-2 rounded-md taxi-yellow font-bold text-sm">إضافة</button>
-                    <button onclick="switchTab('list', 'Car')" id="tL-Car" class="px-6 py-2 rounded-md font-bold text-sm text-gray-400">القائمة</button>
-                </div>
-            </header>
-            <div id="cA-Car" class="bg-white rounded-2xl p-6 card-shadow border">
-                <form id="f-Car" class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                    <input type="hidden" name="id">
-                    <div><label>رقم السيارة (Plate No)</label><input type="text" name="plateNo" required></div>
-                    <div><label>المالك (Owner)</label><input type="text" name="owner" required></div>
-                    <div><label>المسؤول (Admin)</label><input type="text" name="admin" value="مدير النظام" readonly class="bg-gray-100"></div>
-                    <div><label>النوع (Brand)</label><input type="text" name="brand" required></div>
-                    <div><label>الموديل (Make Year)</label><input type="number" name="modelYear" required></div>
-                    <div><label>انتهاء الترخيص</label><input type="date" name="expiry" required></div>
-                    <div><label>الضمان اليومي (JD)</label><input type="number" step="0.1" name="dailyRent" required></div>
-                    <div><label>نوع الوقود</label>
-                        <select name="fuelType" required>
-                            <option value="Hybrid (HEV)">Hybrid (HEV)</option>
-                            <option value="Gasoline">Gasoline</option>
-                        </select>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div><label>التاريخ</label><input type="date" name="date" required></div>
+                        <div><label>رقم السيارة</label><select name="carNo" class="c-list" required></select></div>
+                        <div><label>السائق</label><select name="driverName" class="d-list" required></select></div>
+                        <div><label>الفئة</label><select name="category"><option>ضمان</option><option>مخالفات</option><option>أخرى</option></select></div>
+                        <div><label>المبلغ (JD)</label><input type="number" step="0.01" name="amount" required></div>
+                        <div><label>الطريقة</label><select name="method"><option>Cash</option><option>Cliq</option><option>Transfer</option><option>Bank</option></select></div>
+                        <div><label>المحصل</label><input type="text" name="collector" value="Admin" readonly class="opacity-50"></div>
+                        <div class="md:col-span-2"><label>ملاحظات</label><input type="text" name="notes"></div>
                     </div>
-                    <div><label>المكتب المسجل</label><input type="text" name="office" required></div>
-                    <button type="submit" class="md:col-span-3 taxi-dark text-white font-bold py-4 rounded-xl shadow-lg">حفظ بيانات السيارة</button>
+                    <button type="submit" class="w-full taxi-gold mt-6 py-4 rounded-xl font-bold shadow-lg">حفظ البيانات</button>
                 </form>
             </div>
-            <div id="cL-Car" class="hidden bg-white rounded-2xl card-shadow border overflow-hidden">
-                <table class="w-full text-right"><thead class="bg-gray-50"><tr><th class="p-4">اللوحة</th><th class="p-4">المالك</th><th class="p-4">الضمان</th><th class="p-4 text-center">إجراء</th></tr></thead><tbody id="tbl-Car"></tbody></table>
+            <div id="cL-Rev" class="hidden card-premium rounded-2xl overflow-hidden overflow-x-auto">
+                <table class="w-full"><thead><tr><th>التاريخ</th><th>السيارة</th><th>المبلغ</th><th>إجراء</th></tr></thead><tbody id="tbl-Rev"></tbody></table>
             </div>
-        </div>
+        </section>
 
-        <div id="m-drv" class="hidden animate-fadeIn">
-            <header class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">سجل السائقين</h1>
-                <div class="flex bg-white rounded-lg shadow p-1">
-                    <button onclick="switchTab('add', 'Drv')" id="tA-Drv" class="px-6 py-2 rounded-md taxi-yellow font-bold text-sm">إضافة</button>
-                    <button onclick="switchTab('list', 'Drv')" id="tL-Drv" class="px-6 py-2 rounded-md font-bold text-sm text-gray-400">القائمة</button>
+        <section id="m-exp" class="module hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold border-r-4 border-yellow-500 pr-3">سجل المصاريف</h2>
+                <div class="bg-slate-800 p-1 rounded-lg flex gap-1">
+                    <button onclick="tab('add','Exp')" id="tA-Exp" class="px-4 py-1.5 rounded-md taxi-gold text-sm font-bold">إضافة</button>
+                    <button onclick="tab('list','Exp')" id="tL-Exp" class="px-4 py-1.5 rounded-md text-slate-400 text-sm">السجلات</button>
                 </div>
-            </header>
-            <div id="cA-Drv" class="bg-white rounded-2xl p-6 card-shadow border">
-                <form id="f-Drv" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            </div>
+            <div id="cA-Exp" class="card-premium p-6 rounded-2xl">
+                <form id="f-Exp" onsubmit="submitForm(event, 'saveExpense', 'Exp')">
                     <input type="hidden" name="id">
-                    <div class="md:col-span-2"><label>الاسم الرباعي</label><input type="text" name="name" required></div>
-                    <div><label>الرقم الوطني</label><input type="number" name="nationalId" required></div>
-                    <div><label>رقم الهاتف</label><input type="number" name="phone" required></div>
-                    <div class="md:col-span-2"><label>العنوان</label><input type="text" name="address"></div>
-                    <button type="submit" class="md:col-span-2 btn-taxi py-4 rounded-xl shadow-lg">حفظ السائق</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div><label>التاريخ</label><input type="date" name="date" required></div>
+                        <div><label>المبلغ (JD)</label><input type="number" step="0.01" name="amount" required></div>
+                        <div><label>السيارة</label><select name="car" class="c-list" required></select></div>
+                        <div><label>السائق</label><select name="driver" class="d-list" required></select></div>
+                        <div><label>البائع</label><input type="text" name="vendor" required></div>
+                        <div><label>المسؤول</label><input type="text" name="admin" value="Admin" readonly class="opacity-50"></div>
+                        <div class="md:col-span-2"><label>ملاحظات</label><input type="text" name="notes"></div>
+                    </div>
+                    <button type="submit" class="w-full taxi-gold mt-6 py-4 rounded-xl font-bold shadow-lg">حفظ المصروف</button>
                 </form>
             </div>
-            <div id="cL-Drv" class="hidden bg-white rounded-2xl card-shadow border overflow-hidden">
-                <table class="w-full text-right"><thead class="bg-gray-50"><tr><th class="p-4">الاسم</th><th class="p-4">الهاتف</th><th class="p-4 text-center">إجراء</th></tr></thead><tbody id="tbl-Drv"></tbody></table>
+            <div id="cL-Exp" class="hidden card-premium rounded-2xl overflow-hidden overflow-x-auto">
+                <table class="w-full"><thead><tr><th>التاريخ</th><th>السيارة</th><th>المبلغ</th><th>إجراء</th></tr></thead><tbody id="tbl-Exp"></tbody></table>
             </div>
-        </div>
+        </section>
+
+        <section id="m-car" class="module hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold border-r-4 border-yellow-500 pr-3">بيانات السيارات</h2>
+                <div class="bg-slate-800 p-1 rounded-lg flex gap-1">
+                    <button onclick="tab('add','Car')" id="tA-Car" class="px-4 py-1.5 rounded-md taxi-gold text-sm font-bold">إضافة</button>
+                    <button onclick="tab('list','Car')" id="tL-Car" class="px-4 py-1.5 rounded-md text-slate-400 text-sm">القائمة</button>
+                </div>
+            </div>
+            <div id="cA-Car" class="card-premium p-6 rounded-2xl">
+                <form id="f-Car" onsubmit="submitForm(event, 'saveCar', 'Car')">
+                    <input type="hidden" name="id">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div><label>رقم السيارة</label><input type="text" name="plateNo" required></div>
+                        <div><label>المالك</label><input type="text" name="owner" required></div>
+                        <div><label>المسؤول</label><input type="text" name="admin" value="Admin" readonly class="opacity-50"></div>
+                        <div><label>النوع</label><input type="text" name="brand" required></div>
+                        <div><label>الموديل</label><input type="number" name="modelYear" required></div>
+                        <div><label>تاريخ الترخيص</label><input type="date" name="expiry" required></div>
+                        <div><label>الضمان اليومي</label><input type="number" step="0.1" name="dailyRent" required></div>
+                        <div><label>نوع الوقود</label><select name="fuelType"><option>Hybrid (HEV)</option><option>Gasoline</option></select></div>
+                        <div class="md:col-span-2"><label>المكتب</label><input type="text" name="office" required></div>
+                    </div>
+                    <button type="submit" class="w-full taxi-gold mt-6 py-4 rounded-xl font-bold shadow-lg">حفظ السيارة</button>
+                </form>
+            </div>
+            <div id="cL-Car" class="hidden card-premium rounded-2xl overflow-hidden overflow-x-auto">
+                <table class="w-full"><thead><tr><th>اللوحة</th><th>المالك</th><th>الضمان</th><th>إجراء</th></tr></thead><tbody id="tbl-Car"></tbody></table>
+            </div>
+        </section>
+
+        <section id="m-drv" class="module hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold border-r-4 border-yellow-500 pr-3">بيانات السائقين</h2>
+                <div class="bg-slate-800 p-1 rounded-lg flex gap-1">
+                    <button onclick="tab('add','Drv')" id="tA-Drv" class="px-4 py-1.5 rounded-md taxi-gold text-sm font-bold">إضافة</button>
+                    <button onclick="tab('list','Drv')" id="tL-Drv" class="px-4 py-1.5 rounded-md text-slate-400 text-sm">القائمة</button>
+                </div>
+            </div>
+            <div id="cA-Drv" class="card-premium p-6 rounded-2xl">
+                <form id="f-Drv" onsubmit="submitForm(event, 'saveDriver', 'Drv')">
+                    <input type="hidden" name="id">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="md:col-span-2"><label>الاسم الرباعي</label><input type="text" name="name" required></div>
+                        <div><label>الرقم الوطني</label><input type="number" name="nationalId" required></div>
+                        <div><label>رقم الهاتف</label><input type="number" name="phone" required></div>
+                        <div><label>عنوان السكن</label><input type="text" name="address"></div>
+                        <div><label>رابط الخريطة</label><input type="url" name="mapUrl" placeholder="https://maps.google.com/..."></div>
+                    </div>
+                    <button type="submit" class="w-full taxi-gold mt-6 py-4 rounded-xl font-bold shadow-lg">حفظ بيانات السائق</button>
+                </form>
+            </div>
+            <div id="cL-Drv" class="hidden card-premium rounded-2xl overflow-hidden overflow-x-auto">
+                <table class="w-full"><thead><tr><th>الاسم</th><th>الهاتف</th><th>إجراء</th></tr></thead><tbody id="tbl-Drv"></tbody></table>
+            </div>
+        </section>
 
     </div>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYUjsLu5Ir-eWP-YPhaklP_0A7IVBw1szcoNIGCTqTIK9PA6-QJ5CiOwCUKM2jwmIQYQ/exec";
 
-        window.onload = async () => {
-            document.querySelectorAll('input[type="date"]').forEach(i => i.value = new Date().toISOString().split('T')[0]);
-            await loadOptions();
-            await fetchTable('Rev');
-        };
+        // التبديل بين الأقسام
+        function showModule(m) {
+            document.querySelectorAll('.module').forEach(el => el.classList.add('hidden'));
+            document.getElementById('m-'+m).classList.remove('hidden');
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('nav-active'));
+            document.getElementById('n-'+m).classList.add('nav-active');
+        }
 
-        async function loadOptions() {
+        // التبديل بين الفورم والجدول داخل القسم
+        function tab(type, mod) {
+            const isA = type === 'add';
+            document.getElementById(`cA-${mod}`).classList.toggle('hidden', !isA);
+            document.getElementById(`cL-${mod}`).classList.toggle('hidden', isA);
+            document.getElementById(`tA-${mod}`).className = isA ? "px-4 py-1.5 rounded-md taxi-gold text-sm font-bold" : "px-4 py-1.5 rounded-md text-slate-400 text-sm";
+            document.getElementById(`tL-${mod}`).className = !isA ? "px-4 py-1.5 rounded-md taxi-gold text-sm font-bold" : "px-4 py-1.5 rounded-md text-slate-400 text-sm";
+            if(!isA) fetchTable(mod);
+        }
+
+        // إرسال البيانات (إضافة/تعديل)
+        async function submitForm(e, action, mod) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.disabled = true; btn.innerHTML = "جاري الحفظ...";
+
+            const params = new URLSearchParams(new FormData(e.target));
+            params.append('action', action);
+
             try {
-                const [dRes, cRes] = await Promise.all([
-                    fetch(SCRIPT_URL + "?action=getDrivers"),
-                    fetch(SCRIPT_URL + "?action=getCars")
-                ]);
-                const drivers = await dRes.json();
-                const cars = await cRes.json();
-                const dHtml = '<option value="">-- اختر السائق --</option>' + drivers.map(d => `<option value="${d}">${d}</option>`).join('');
-                const cHtml = '<option value="">-- اختر السيارة --</option>' + cars.map(c => `<option value="${c}">${c}</option>`).join('');
-                document.querySelectorAll('.d-list').forEach(s => s.innerHTML = dHtml);
-                document.querySelectorAll('.c-list').forEach(s => s.innerHTML = cHtml);
-            } catch (e) { console.error("Error loading dropdowns"); }
+                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: params });
+                alert("تمت العملية بنجاح!");
+                e.target.reset();
+                tab('list', mod);
+            } catch (err) {
+                alert("حدث خطأ في الاتصال بالسيرفر");
+            } finally {
+                btn.disabled = false; btn.innerHTML = originalText;
+            }
         }
 
-        function switchModule(m) {
-            ['rev', 'exp', 'drv', 'car'].forEach(i => {
-                const mod = document.getElementById('m-'+i);
-                if(mod) mod.classList.toggle('hidden', i !== m);
-                const btn = document.getElementById('n-'+i);
-                if(btn) btn.className = i === m ? "nav-active h-full px-2 transition" : "h-full px-2 hover:text-gray-700 transition";
-            });
-            const modMap = {rev:'Rev', exp:'Exp', drv:'Drv', car:'Car'};
-            switchTab('list', modMap[m]);
-        }
-
-        function switchTab(type, mod) {
-            const isAdd = type === 'add';
-            document.getElementById(`cA-${mod}`).classList.toggle('hidden', !isAdd);
-            document.getElementById(`cL-${mod}`).classList.toggle('hidden', isAdd);
-            document.getElementById(`tA-${mod}`).className = isAdd ? "px-6 py-2 rounded-md taxi-yellow font-bold text-sm" : "px-6 py-2 rounded-md font-bold text-sm text-gray-400";
-            document.getElementById(`tL-${mod}`).className = !isAdd ? "px-6 py-2 rounded-md taxi-yellow font-bold text-sm" : "px-6 py-2 rounded-md font-bold text-sm text-gray-400";
-            if(!isAdd) fetchTable(mod);
-        }
-
+        // جلب بيانات الجداول للعرض
         async function fetchTable(mod) {
+            const actions = {Rev:'getRevenues', Exp:'getExpenses', Car:'getCarsList', Drv:'getDriversList'};
             const tbody = document.getElementById(`tbl-${mod}`);
-            tbody.innerHTML = '<tr><td colspan="4" class="p-10 text-center text-gray-400 italic">جاري تحميل البيانات...</td></tr>';
-            const actions = {Rev: 'getRevenues', Exp: 'getExpenses', Drv: 'getDriversList', Car: 'getCarsList'};
+            tbody.innerHTML = '<tr><td colspan="4" class="p-10 text-center">جاري جلب البيانات...</td></tr>';
+            
             try {
-                const res = await fetch(SCRIPT_URL + "?action=" + actions[mod]);
+                const res = await fetch(`${SCRIPT_URL}?action=${actions[mod]}`);
                 const data = await res.json();
                 window[`data_${mod}`] = data;
                 tbody.innerHTML = data.map((r, i) => `
-                    <tr class="border-b hover:bg-yellow-50 transition">
-                        <td class="p-4 text-sm font-bold text-gray-700">${r.date || r.plateNo || r.name}</td>
-                        <td class="p-4 text-sm text-gray-600">${r.carNo || r.owner || r.phone || '-'}</td>
-                        <td class="p-4 text-sm font-bold">${r.amount || r.dailyRent || '-'} JD</td>
-                        <td class="p-4 text-center">
-                            <button onclick="editRow(${i}, '${mod}')" class="bg-gray-100 p-2 rounded hover:bg-black hover:text-white transition"><i class="fas fa-edit"></i></button>
+                    <tr class="hover:bg-slate-800 transition">
+                        <td>${r.date || r.plateNo || r.name}</td>
+                        <td>${r.carNo || r.owner || r.phone || '-'}</td>
+                        <td>${r.amount || r.dailyRent || '-'}</td>
+                        <td class="text-center">
+                            <button onclick="editByIndex(${i}, '${mod}')" class="text-yellow-500 hover:text-white p-2">
+                                <i class="fas fa-edit"></i>
+                            </button>
                         </td>
                     </tr>
                 `).join('');
-            } catch (e) { tbody.innerHTML = '<tr><td colspan="4" class="p-10 text-center text-red-400">فشل تحديث البيانات</td></tr>'; }
-        }
-
-        function editRow(index, mod) {
-            const rowData = window[`data_${mod}`][index];
-            switchTab('add', mod);
-            const form = document.getElementById(`f-${mod}`);
-            Object.keys(rowData).forEach(key => { if(form[key]) form[key].value = rowData[key]; });
-            const btn = form.querySelector('button[type="submit"]');
-            btn.innerHTML = "تحديث البيانات";
-            btn.classList.add('bg-blue-600', 'text-white');
-        }
-
-        document.querySelectorAll('form').forEach(form => {
-            form.onsubmit = async function(e) {
-                e.preventDefault();
-                const btn = this.querySelector('button[type="submit"]');
-                const originalText = btn.innerHTML;
-                btn.disabled = true; btn.innerHTML = "جاري الحفظ...";
-
-                const actMap = { 'f-Rev': 'saveRevenue', 'f-Exp': 'saveExpense', 'f-Drv': 'saveDriver', 'f-Car': 'saveCar' };
-                const params = new URLSearchParams(new FormData(this));
-                params.append('action', actMap[this.id]);
-
-                try {
-                    const response = await fetch(SCRIPT_URL + "?" + params.toString(), { method: 'POST' });
-                    const result = await response.text();
-                    if(result === "Success") {
-                        alert("تمت العملية بنجاح!");
-                        this.reset();
-                        btn.classList.remove('bg-blue-600', 'text-white');
-                        switchTab('list', this.id.split('-')[1]);
-                    } else { alert("خطأ في الخادم: " + result); }
-                } catch (err) { alert("خطأ في الاتصال"); }
-                btn.disabled = false; btn.innerHTML = originalText;
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="4" class="p-10 text-center text-red-400">فشل تحميل البيانات</td></tr>';
             }
-        });
+        }
+
+        // وظيفة التعديل
+        function editByIndex(idx, mod) {
+            const row = window[`data_${mod}`][idx];
+            tab('add', mod);
+            const form = document.getElementById(`f-${mod}`);
+            const fields = form.querySelectorAll('input, select');
+            
+            fields.forEach(input => {
+                // مطابقة مفتاح البيانات مع اسم الحقل في الفورم
+                const value = row[input.name] || row[Object.keys(row).find(k => k.toLowerCase() === input.name.toLowerCase())];
+                if (value !== undefined) input.value = value;
+            });
+            form.querySelector('button[type="submit"]').innerHTML = "تحديث البيانات الآن";
+        }
+
+        // تحميل القوائم عند البدء
+        window.onload = async () => {
+            document.querySelectorAll('input[type="date"]').forEach(i => i.value = new Date().toISOString().split('T')[0]);
+            try {
+                const [dr, cr] = await Promise.all([
+                    fetch(`${SCRIPT_URL}?action=getDrivers`),
+                    fetch(`${SCRIPT_URL}?action=getCars`)
+                ]);
+                const drivers = await dr.json();
+                const cars = await cr.json();
+                const dH = '<option value="">-- اختر السائق --</option>' + drivers.map(d => `<option value="${d}">${d}</option>`).join('');
+                const cH = '<option value="">-- اختر السيارة --</option>' + cars.map(c => `<option value="${c}">${c}</option>`).join('');
+                document.querySelectorAll('.d-list').forEach(s => s.innerHTML = dH);
+                document.querySelectorAll('.c-list').forEach(s => s.innerHTML = cH);
+            } catch (e) { console.error("Dropdown load error"); }
+        };
     </script>
 </body>
 </html>
