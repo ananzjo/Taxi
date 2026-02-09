@@ -2,163 +2,141 @@
 <html dir="rtl" lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fleet Master Premium</title>
+    <title>نظام Fleet Master | النسخة المستقرة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #0f172a; color: #f1f5f9; }
-        .taxi-gold { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #000; }
-        .card-premium { background: #1e293b; border: 1px solid #334155; }
-        .nav-tab { cursor: pointer; padding: 1.2rem 0.8rem; color: #94a3b8; border-bottom: 3px solid transparent; transition: 0.3s; }
-        .nav-active { color: #fbbf24; border-bottom-color: #fbbf24; font-weight: bold; }
-        input, select { background: #0f172a !important; color: #fff !important; border: 1px solid #334155 !important; padding: 0.75rem; border-radius: 0.6rem; width: 100%; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #0f172a; color: white; }
+        .taxi-gold { background: #fbbf24; color: black; font-weight: bold; }
+        input, select { background: #1e293b; color: white; border: 1px solid #334155; padding: 10px; border-radius: 8px; width: 100%; }
         .hidden { display: none; }
-        th { background: #1f2937; color: #fbbf24; padding: 1rem; text-align: right; }
-        td { padding: 1rem; border-bottom: 1px solid #334155; }
+        .nav-active { color: #fbbf24; border-bottom: 2px solid #fbbf24; }
     </style>
 </head>
-<body class="pb-10">
+<body class="p-4 md:p-8">
 
-    <nav class="bg-black border-b border-yellow-500/20 sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 flex justify-between items-center h-16">
-            <div class="flex items-center gap-2">
-                <div class="taxi-gold px-2 py-1 rounded font-black text-xl">FM</div>
-                <span class="font-bold text-yellow-500">FLEET MASTER</span>
-            </div>
-            <div class="flex gap-4">
-                <div onclick="showModule('rev')" id="n-rev" class="nav-tab nav-active text-sm">الإيرادات</div>
-                <div onclick="showModule('car')" id="n-car" class="nav-tab text-sm">السيارات</div>
-            </div>
+    <nav class="flex justify-between items-center bg-black p-4 rounded-xl border border-yellow-500/20 mb-8">
+        <div class="text-yellow-500 font-bold text-xl">FLEET MASTER</div>
+        <div class="flex gap-6">
+            <button onclick="showModule('rev')" id="n-rev" class="nav-active">الإيرادات</button>
+            <button onclick="showModule('car')" id="n-car">السيارات</button>
         </div>
     </nav>
 
-    <div class="max-w-6xl mx-auto px-4 mt-8">
-        <section id="m-rev" class="module">
+    <div class="max-w-4xl mx-auto">
+        
+        <section id="m-rev">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold border-r-4 border-yellow-500 pr-3">الإيرادات</h2>
-                <div class="bg-slate-800 p-1 rounded-lg flex gap-1">
-                    <button onclick="tab('add','Rev')" id="tA-Rev" class="px-4 py-1 rounded-md taxi-gold text-xs">إضافة</button>
-                    <button onclick="tab('list','Rev')" id="tL-Rev" class="px-4 py-1 rounded-md text-slate-400 text-xs">عرض السجلات</button>
+                <h2 class="text-2xl font-bold">إدارة الإيرادات</h2>
+                <div class="bg-slate-800 p-1 rounded-lg">
+                    <button onclick="switchTab('form')" id="b-form" class="taxi-gold px-4 py-1 rounded shadow">إضافة</button>
+                    <button onclick="switchTab('table')" id="b-table" class="px-4 py-1 rounded">عرض</button>
                 </div>
             </div>
 
-            <div id="cA-Rev" class="card-premium p-6 rounded-2xl">
-                <form id="f-Rev" onsubmit="submitForm(event, 'saveRevenue', 'Rev')">
-                    <input type="hidden" name="id">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div><label>التاريخ</label><input type="date" name="date" required id="default-date"></div>
-                        <div><label>رقم السيارة</label><select name="carNo" class="c-list" required><option>جاري تحميل السيارات...</option></select></div>
-                        <div><label>اسم السائق</label><select name="driverName" class="d-list" required><option>جاري تحميل السائقين...</option></select></div>
-                        <div><label>المبلغ (JD)</label><input type="number" step="0.01" name="amount" required></div>
-                        <div class="md:col-span-2"><label>ملاحظات</label><input type="text" name="notes"></div>
+            <div id="view-form" class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
+                <form id="revForm" onsubmit="handleForm(event)">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div><label class="block mb-2 text-slate-400">التاريخ</label><input type="date" name="date" id="today" required></div>
+                        <div><label class="block mb-2 text-slate-400">السيارة</label><select name="carNo" id="cars-list"><option>تحميل...</option></select></div>
+                        <div><label class="block mb-2 text-slate-400">السائق</label><select name="driverName" id="drivers-list"><option>تحميل...</option></select></div>
+                        <div><label class="block mb-2 text-slate-400">المبلغ</label><input type="number" step="0.01" name="amount" required></div>
                     </div>
-                    <button type="submit" class="w-full taxi-gold mt-6 py-4 rounded-xl font-bold">حفظ البيانات</button>
+                    <button type="submit" id="submit-btn" class="w-full taxi-gold mt-8 py-4 rounded-xl hover:opacity-90 transition font-bold text-lg">حفظ البيانات</button>
                 </form>
             </div>
 
-            <div id="cL-Rev" class="hidden card-premium rounded-2xl overflow-hidden">
+            <div id="view-table" class="hidden bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
                 <table class="w-full text-right">
-                    <thead><tr><th>التاريخ</th><th>السيارة</th><th>المبلغ</th><th>إجراء</th></tr></thead>
-                    <tbody id="tbl-Rev"></tbody>
+                    <thead class="bg-slate-900 text-yellow-500">
+                        <tr><th class="p-4">التاريخ</th><th class="p-4">السيارة</th><th class="p-4">المبلغ</th></tr>
+                    </thead>
+                    <tbody id="table-content"></tbody>
                 </table>
             </div>
         </section>
 
-        <section id="m-car" class="module hidden text-center p-20">
-            <h2 class="text-xl">شاشة السيارات قيد التفعيل</h2>
-            <p class="text-slate-400">سيتم تفعيلها فور التأكد من ربط الإيرادات بنجاح</p>
+        <section id="m-car" class="hidden text-center p-20 bg-slate-800 rounded-2xl">
+            <p class="text-slate-400 text-lg">قائمة السيارات قيد التحديث...</p>
         </section>
+
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyhIaqSiYcH0BN5CjEpHo8Prf09aN0STh6YEBSd_rADvFHs4eauaSX5jkWqUHAWE5-Mjw/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzGws59pJuzpWsakRMrGLLLYeezIn8tpFIaafaFszkm_sN2g7x46MpjE1wwd9OrZh8M0Q/exec";
 
-        // وظيفة JSONP المركزية لجلب البيانات
-        function callAPI(action) {
-            return new Promise((resolve, reject) => {
-                const callbackName = 'jsonp_' + Math.round(100000 * Math.random());
+        // وظيفة JSONP لجلب البيانات بدون CORS
+        function requestData(action) {
+            return new Promise((resolve) => {
+                const cb = 'jsonp_' + Math.round(Math.random() * 1000000);
                 const script = document.createElement('script');
-                
-                const timeout = setTimeout(() => {
-                    reject(new Error("Request Timeout"));
-                }, 10000);
-
-                window[callbackName] = (data) => {
-                    clearTimeout(timeout);
-                    delete window[callbackName];
+                window[cb] = (data) => {
+                    delete window[cb];
                     document.body.removeChild(script);
                     resolve(data);
                 };
-                
-                script.src = `${API_URL}?action=${action}&callback=${callbackName}`;
-                script.onerror = () => reject(new Error("Script Load Error"));
+                script.src = `${SCRIPT_URL}?action=${action}&callback=${cb}`;
                 document.body.appendChild(script);
             });
         }
 
-        // وظائف التنقل (التي سببت أخطاء سابقاً)
+        // التبديل بين الأقسام
         function showModule(m) {
-            document.querySelectorAll('.module').forEach(s => s.classList.add('hidden'));
-            document.getElementById('m-'+m).classList.remove('hidden');
-            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('nav-active'));
-            document.getElementById('n-'+m).classList.add('nav-active');
+            document.getElementById('m-rev').classList.toggle('hidden', m !== 'rev');
+            document.getElementById('m-car').classList.toggle('hidden', m !== 'car');
+            document.getElementById('n-rev').className = m === 'rev' ? 'nav-active' : '';
+            document.getElementById('n-car').className = m === 'car' ? 'nav-active' : '';
         }
 
-        function tab(type, mod) {
-            const isAdd = type === 'add';
-            document.getElementById(`cA-${mod}`).classList.toggle('hidden', !isAdd);
-            document.getElementById(`cL-${mod}`).classList.toggle('hidden', isAdd);
+        // التبديل بين الفورم والجدول
+        async function switchTab(view) {
+            const isForm = view === 'form';
+            document.getElementById('view-form').classList.toggle('hidden', !isForm);
+            document.getElementById('view-table').classList.toggle('hidden', isForm);
+            document.getElementById('b-form').className = isForm ? 'taxi-gold px-4 py-1 rounded shadow' : 'px-4 py-1 rounded';
+            document.getElementById('b-table').className = !isForm ? 'taxi-gold px-4 py-1 rounded shadow' : 'px-4 py-1 rounded';
             
-            document.getElementById(`tA-${mod}`).className = isAdd ? "px-4 py-1 rounded-md taxi-gold text-xs" : "px-4 py-1 rounded-md text-slate-400 text-xs";
-            document.getElementById(`tL-${mod}`).className = !isAdd ? "px-4 py-1 rounded-md taxi-gold text-xs" : "px-4 py-1 rounded-md text-slate-400 text-xs";
-            
-            if(!isAdd) fetchTable(mod);
+            if(!isForm) {
+                const body = document.getElementById('table-content');
+                body.innerHTML = '<tr><td colspan="3" class="p-10 text-center">جاري التحميل...</td></tr>';
+                const data = await requestData('getRevenues');
+                body.innerHTML = data.map(r => `
+                    <tr class="border-b border-slate-700 hover:bg-slate-700/50">
+                        <td class="p-4 text-sm">${r.date || '-'}</td>
+                        <td class="p-4 text-sm">${r.carNo || '-'}</td>
+                        <td class="p-4 text-sm font-bold text-yellow-500">${r.amount || '-'}</td>
+                    </tr>
+                `).join('');
+            }
         }
 
-        // جلب قوائم السائقين والسيارات
-        async function loadDropdowns() {
-            try {
-                const drivers = await callAPI('getDrivers');
-                if(drivers) {
-                    const html = drivers.map(d => `<option value="${d}">${d}</option>`).join('');
-                    document.querySelectorAll('.d-list').forEach(s => s.innerHTML = html);
-                }
-                const cars = await callAPI('getCars');
-                if(cars) {
-                    const html = cars.map(c => `<option value="${c}">${c}</option>`).join('');
-                    document.querySelectorAll('.c-list').forEach(s => s.innerHTML = html);
-                }
-            } catch(e) { console.error("Dropdown Error:", e); }
-        }
-
-        // جلب الجدول
-        async function fetchTable(mod) {
-            const tbody = document.getElementById(`tbl-${mod}`);
-            tbody.innerHTML = '<tr><td colspan="4" class="p-5 text-center">جاري التحميل...</td></tr>';
-            try {
-                const data = await callAPI('getRevenues');
-                if(data && data.length > 0) {
-                    window[`db_${mod}`] = data;
-                    tbody.innerHTML = data.map((r, i) => `
-                        <tr>
-                            <td>${r.date || r.Date || '-'}</td>
-                            <td>${r.carNo || r.Car_No || '-'}</td>
-                            <td class="text-yellow-500 font-bold">${r.amount || r.Amount || '-'}</td>
-                            <td><button onclick="editRow(${i},'${mod}')" class="text-yellow-500 hover:scale-125 transition"><i class="fas fa-edit"></i></button></td>
-                        </tr>
-                    `).join('');
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="4" class="p-5 text-center text-slate-500">لا توجد بيانات سجلات</td></tr>';
-                }
-            } catch(e) { tbody.innerHTML = '<tr><td colspan="4" class="p-5 text-center text-red-400">فشل في جلب البيانات من السيرفر</td></tr>'; }
-        }
-
-        // حفظ البيانات (POST)
-        function submitForm(e, action, mod) {
+        // إرسال البيانات
+        function handleForm(e) {
             e.preventDefault();
-            const btn = e.target.querySelector('button[type="submit"]');
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
-            
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true; btn.innerHTML = "جاري الحفظ...";
+
             const params = new URLSearchParams(new FormData(e.target));
+            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: params })
+                .then(() => {
+                    alert("تم حفظ البيانات بنجاح!");
+                    e.target.reset();
+                    btn.disabled = false; btn.innerHTML = "حفظ البيانات";
+                    switchTab('table');
+                });
+        }
+
+        // التحميل الأولي
+        window.onload = async () => {
+            document.getElementById('today').value = new Date().toISOString().split('T')[0];
+            
+            // تحميل القوائم
+            const drivers = await requestData('getDrivers');
+            document.getElementById('drivers-list').innerHTML = drivers.map(d => `<option value="${d}">${d}</option>`).join('');
+            
+            const cars = await requestData('getCars');
+            document.getElementById('cars-list').innerHTML = cars.map(c => `<option value="${c}">${c}</option>`).join('');
+        };
+    </script>
+</body>
+</html>
