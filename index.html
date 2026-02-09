@@ -157,107 +157,127 @@
 
     </div>
 
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYUjsLu5Ir-eWP-YPhaklP_0A7IVBw1szcoNIGCTqTIK9PA6-QJ5CiOwCUKM2jwmIQYQ/exec";
+        <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYUjsLu5Ir-eWP-YPhaklP_0A7IVBw1szcoNIGCTqTIK9PA6-QJ5CiOwCUKM2jwmIQYQ/exec";
 
-        // التبديل بين الأقسام
-        function showModule(m) {
-            document.querySelectorAll('.module').forEach(el => el.classList.add('hidden'));
-            document.getElementById('m-'+m).classList.remove('hidden');
-            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('nav-active'));
-            document.getElementById('n-'+m).classList.add('nav-active');
+    // دالة جلب البيانات العامة (معدلة لتجنب مشاكل الحظر)
+    async function getData(action) {
+        try {
+            const response = await fetch(`${SCRIPT_URL}?action=${action}`);
+            if (!response.ok) throw new Error('Network response was not ok');
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return null;
+        }
+    }
+
+    // تحميل الجداول
+    async function fetchTable(mod) {
+        const actions = {Rev:'getRevenues', Exp:'getExpenses', Car:'getCarsList', Drv:'getDriversList'};
+        const tbody = document.getElementById(`tbl-${mod}`);
+        tbody.innerHTML = '<tr><td colspan="4" class="p-10 text-center text-yellow-500"><i class="fas fa-circle-notch fa-spin"></i> جاري جلب البيانات من السحابة...</td></tr>';
+        
+        const data = await getData(actions[mod]);
+        
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="p-10 text-center text-gray-500">لا توجد بيانات متاحة حالياً أو الرابط غير مستجيب</td></tr>';
+            return;
         }
 
-        // التبديل بين الفورم والجدول داخل القسم
-        function tab(type, mod) {
-            const isA = type === 'add';
-            document.getElementById(`cA-${mod}`).classList.toggle('hidden', !isA);
-            document.getElementById(`cL-${mod}`).classList.toggle('hidden', isA);
-            document.getElementById(`tA-${mod}`).className = isA ? "px-4 py-1.5 rounded-md taxi-gold text-sm font-bold" : "px-4 py-1.5 rounded-md text-slate-400 text-sm";
-            document.getElementById(`tL-${mod}`).className = !isA ? "px-4 py-1.5 rounded-md taxi-gold text-sm font-bold" : "px-4 py-1.5 rounded-md text-slate-400 text-sm";
-            if(!isA) fetchTable(mod);
+        window[`data_${mod}`] = data;
+        tbody.innerHTML = data.map((r, i) => `
+            <tr class="hover:bg-slate-800/50 transition border-b border-slate-700">
+                <td class="p-4">${r.date || r.Date || r.plateNo || r['رقم السيارة'] || r.name || '-'}</td>
+                <td class="p-4">${r.carNo || r.Car_No || r.owner || r['المالك'] || r.phone || '-'}</td>
+                <td class="p-4 font-bold text-yellow-500">${r.amount || r.Amount || r.dailyRent || r['الضمان اليومي'] || '-'}</td>
+                <td class="p-4 text-center">
+                    <button onclick="editByIndex(${i}, '${mod}')" class="bg-slate-700 p-2 rounded hover:taxi-gold transition">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // تحميل القوائم المنسدلة (السائقين والسيارات)
+    async function loadDropdowns() {
+        const drivers = await getData('getDrivers');
+        const cars = await getData('getCars');
+
+        if (drivers) {
+            const dHtml = '<option value="">-- اختر السائق --</option>' + drivers.map(d => `<option value="${d}">${d}</option>`).join('');
+            document.querySelectorAll('.d-list').forEach(s => s.innerHTML = dHtml);
         }
-
-        // إرسال البيانات (إضافة/تعديل)
-        async function submitForm(e, action, mod) {
-            e.preventDefault();
-            const btn = e.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerHTML;
-            btn.disabled = true; btn.innerHTML = "جاري الحفظ...";
-
-            const params = new URLSearchParams(new FormData(e.target));
-            params.append('action', action);
-
-            try {
-                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: params });
-                alert("تمت العملية بنجاح!");
-                e.target.reset();
-                tab('list', mod);
-            } catch (err) {
-                alert("حدث خطأ في الاتصال بالسيرفر");
-            } finally {
-                btn.disabled = false; btn.innerHTML = originalText;
-            }
+        if (cars) {
+            const cHtml = '<option value="">-- اختر السيارة --</option>' + cars.map(c => `<option value="${c}">${c}</option>`).join('');
+            document.querySelectorAll('.c-list').forEach(s => s.innerHTML = cHtml);
         }
+    }
 
-        // جلب بيانات الجداول للعرض
-        async function fetchTable(mod) {
-            const actions = {Rev:'getRevenues', Exp:'getExpenses', Car:'getCarsList', Drv:'getDriversList'};
-            const tbody = document.getElementById(`tbl-${mod}`);
-            tbody.innerHTML = '<tr><td colspan="4" class="p-10 text-center">جاري جلب البيانات...</td></tr>';
-            
-            try {
-                const res = await fetch(`${SCRIPT_URL}?action=${actions[mod]}`);
-                const data = await res.json();
-                window[`data_${mod}`] = data;
-                tbody.innerHTML = data.map((r, i) => `
-                    <tr class="hover:bg-slate-800 transition">
-                        <td>${r.date || r.plateNo || r.name}</td>
-                        <td>${r.carNo || r.owner || r.phone || '-'}</td>
-                        <td>${r.amount || r.dailyRent || '-'}</td>
-                        <td class="text-center">
-                            <button onclick="editByIndex(${i}, '${mod}')" class="text-yellow-500 hover:text-white p-2">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
-            } catch (e) {
-                tbody.innerHTML = '<tr><td colspan="4" class="p-10 text-center text-red-400">فشل تحميل البيانات</td></tr>';
-            }
-        }
+    // تشغيل عند التحميل
+    window.onload = () => {
+        document.querySelectorAll('input[type="date"]').forEach(i => i.value = new Date().toISOString().split('T')[0]);
+        loadDropdowns();
+        fetchTable('Rev'); // تحميل جدول الإيرادات افتراضياً
+    };
 
-        // وظيفة التعديل
-        function editByIndex(idx, mod) {
-            const row = window[`data_${mod}`][idx];
-            tab('add', mod);
-            const form = document.getElementById(`f-${mod}`);
-            const fields = form.querySelectorAll('input, select');
-            
-            fields.forEach(input => {
-                // مطابقة مفتاح البيانات مع اسم الحقل في الفورم
-                const value = row[input.name] || row[Object.keys(row).find(k => k.toLowerCase() === input.name.toLowerCase())];
-                if (value !== undefined) input.value = value;
+    // دالة الحفظ (POST)
+    async function submitForm(e, action, mod) {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        const originalText = btn.innerHTML;
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+
+        const params = new URLSearchParams(new FormData(e.target));
+        params.append('action', action);
+
+        try {
+            // إرسال البيانات باستخدام mode: 'no-cors' لحل مشاكل المتصفح
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: params
             });
-            form.querySelector('button[type="submit"]').innerHTML = "تحديث البيانات الآن";
+            alert("تم إرسال الطلب بنجاح!");
+            e.target.reset();
+            tab('list', mod);
+        } catch (err) {
+            alert("خطأ في الاتصال");
+        } finally {
+            btn.disabled = false; btn.innerHTML = originalText;
         }
+    }
 
-        // تحميل القوائم عند البدء
-        window.onload = async () => {
-            document.querySelectorAll('input[type="date"]').forEach(i => i.value = new Date().toISOString().split('T')[0]);
-            try {
-                const [dr, cr] = await Promise.all([
-                    fetch(`${SCRIPT_URL}?action=getDrivers`),
-                    fetch(`${SCRIPT_URL}?action=getCars`)
-                ]);
-                const drivers = await dr.json();
-                const cars = await cr.json();
-                const dH = '<option value="">-- اختر السائق --</option>' + drivers.map(d => `<option value="${d}">${d}</option>`).join('');
-                const cH = '<option value="">-- اختر السيارة --</option>' + cars.map(c => `<option value="${c}">${c}</option>`).join('');
-                document.querySelectorAll('.d-list').forEach(s => s.innerHTML = dH);
-                document.querySelectorAll('.c-list').forEach(s => s.innerHTML = cH);
-            } catch (e) { console.error("Dropdown load error"); }
-        };
+    // وظائف التنقل (ShowModule & Tab) تبقى كما هي في الكود السابق
+    function showModule(m) {
+        document.querySelectorAll('.module').forEach(el => el.classList.add('hidden'));
+        document.getElementById('m-'+m).classList.remove('hidden');
+        document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('nav-active'));
+        document.getElementById('n-'+m).classList.add('nav-active');
+    }
+
+    function tab(type, mod) {
+        const isA = type === 'add';
+        document.getElementById(`cA-${mod}`).classList.toggle('hidden', !isA);
+        document.getElementById(`cL-${mod}`).classList.toggle('hidden', isA);
+        document.getElementById(`tA-${mod}`).className = isA ? "px-4 py-1.5 rounded-md taxi-gold text-sm font-bold" : "px-4 py-1.5 rounded-md text-slate-400 text-sm";
+        document.getElementById(`tL-${mod}`).className = !isA ? "px-4 py-1.5 rounded-md taxi-gold text-sm font-bold" : "px-4 py-1.5 rounded-md text-slate-400 text-sm";
+        if(!isA) fetchTable(mod);
+    }
+
+    function editByIndex(idx, mod) {
+        const row = window[`data_${mod}`][idx];
+        tab('add', mod);
+        const form = document.getElementById(`f-${mod}`);
+        const inputs = form.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            // البحث عن القيمة بغض النظر عن حالة الأحرف (Case Insensitive)
+            const key = Object.keys(row).find(k => k.toLowerCase() === input.name.toLowerCase());
+            if (key) input.value = row[key];
+        });
+        form.querySelector('button[type="submit"]').innerHTML = "تحديث البيانات الآن";
+    }
     </script>
 </body>
 </html>
