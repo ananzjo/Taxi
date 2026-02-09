@@ -40,7 +40,7 @@
                 <h2 class="text-xl font-bold border-r-4 border-yellow-500 pr-3">الإيرادات</h2>
                 <div class="bg-slate-800 p-1 rounded-lg flex gap-1">
                     <button onclick="tab('add','Rev')" id="tA-Rev" class="px-4 py-1 rounded-md taxi-gold text-xs">إضافة</button>
-                    <button onclick="tab('list','Rev')" id="tL-Rev" class="px-4 py-1 rounded-md text-slate-400 text-xs">عرض</button>
+                    <button onclick="tab('list','Rev')" id="tL-Rev" class="px-4 py-1 rounded-md text-slate-400 text-xs">عرض السجلات</button>
                 </div>
             </div>
 
@@ -49,8 +49,8 @@
                     <input type="hidden" name="id">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div><label>التاريخ</label><input type="date" name="date" required id="default-date"></div>
-                        <div><label>رقم السيارة</label><select name="carNo" class="c-list" required><option>جاري التحميل...</option></select></div>
-                        <div><label>اسم السائق</label><select name="driverName" class="d-list" required><option>جاري التحميل...</option></select></div>
+                        <div><label>رقم السيارة</label><select name="carNo" class="c-list" required><option>جاري تحميل السيارات...</option></select></div>
+                        <div><label>اسم السائق</label><select name="driverName" class="d-list" required><option>جاري تحميل السائقين...</option></select></div>
                         <div><label>المبلغ (JD)</label><input type="number" step="0.01" name="amount" required></div>
                         <div class="md:col-span-2"><label>ملاحظات</label><input type="text" name="notes"></div>
                     </div>
@@ -65,7 +65,100 @@
                 </table>
             </div>
         </section>
+
+        <section id="m-car" class="module hidden text-center p-20">
+            <h2 class="text-xl">شاشة السيارات قيد التفعيل</h2>
+            <p class="text-slate-400">سيتم تفعيلها فور التأكد من ربط الإيرادات بنجاح</p>
+        </section>
     </div>
 
     <script>
-        const API_URL = "
+        const API_URL = "https://script.google.com/macros/s/AKfycbyhIaqSiYcH0BN5CjEpHo8Prf09aN0STh6YEBSd_rADvFHs4eauaSX5jkWqUHAWE5-Mjw/exec";
+
+        // وظيفة JSONP المركزية لجلب البيانات
+        function callAPI(action) {
+            return new Promise((resolve, reject) => {
+                const callbackName = 'jsonp_' + Math.round(100000 * Math.random());
+                const script = document.createElement('script');
+                
+                const timeout = setTimeout(() => {
+                    reject(new Error("Request Timeout"));
+                }, 10000);
+
+                window[callbackName] = (data) => {
+                    clearTimeout(timeout);
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    resolve(data);
+                };
+                
+                script.src = `${API_URL}?action=${action}&callback=${callbackName}`;
+                script.onerror = () => reject(new Error("Script Load Error"));
+                document.body.appendChild(script);
+            });
+        }
+
+        // وظائف التنقل (التي سببت أخطاء سابقاً)
+        function showModule(m) {
+            document.querySelectorAll('.module').forEach(s => s.classList.add('hidden'));
+            document.getElementById('m-'+m).classList.remove('hidden');
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('nav-active'));
+            document.getElementById('n-'+m).classList.add('nav-active');
+        }
+
+        function tab(type, mod) {
+            const isAdd = type === 'add';
+            document.getElementById(`cA-${mod}`).classList.toggle('hidden', !isAdd);
+            document.getElementById(`cL-${mod}`).classList.toggle('hidden', isAdd);
+            
+            document.getElementById(`tA-${mod}`).className = isAdd ? "px-4 py-1 rounded-md taxi-gold text-xs" : "px-4 py-1 rounded-md text-slate-400 text-xs";
+            document.getElementById(`tL-${mod}`).className = !isAdd ? "px-4 py-1 rounded-md taxi-gold text-xs" : "px-4 py-1 rounded-md text-slate-400 text-xs";
+            
+            if(!isAdd) fetchTable(mod);
+        }
+
+        // جلب قوائم السائقين والسيارات
+        async function loadDropdowns() {
+            try {
+                const drivers = await callAPI('getDrivers');
+                if(drivers) {
+                    const html = drivers.map(d => `<option value="${d}">${d}</option>`).join('');
+                    document.querySelectorAll('.d-list').forEach(s => s.innerHTML = html);
+                }
+                const cars = await callAPI('getCars');
+                if(cars) {
+                    const html = cars.map(c => `<option value="${c}">${c}</option>`).join('');
+                    document.querySelectorAll('.c-list').forEach(s => s.innerHTML = html);
+                }
+            } catch(e) { console.error("Dropdown Error:", e); }
+        }
+
+        // جلب الجدول
+        async function fetchTable(mod) {
+            const tbody = document.getElementById(`tbl-${mod}`);
+            tbody.innerHTML = '<tr><td colspan="4" class="p-5 text-center">جاري التحميل...</td></tr>';
+            try {
+                const data = await callAPI('getRevenues');
+                if(data && data.length > 0) {
+                    window[`db_${mod}`] = data;
+                    tbody.innerHTML = data.map((r, i) => `
+                        <tr>
+                            <td>${r.date || r.Date || '-'}</td>
+                            <td>${r.carNo || r.Car_No || '-'}</td>
+                            <td class="text-yellow-500 font-bold">${r.amount || r.Amount || '-'}</td>
+                            <td><button onclick="editRow(${i},'${mod}')" class="text-yellow-500 hover:scale-125 transition"><i class="fas fa-edit"></i></button></td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" class="p-5 text-center text-slate-500">لا توجد بيانات سجلات</td></tr>';
+                }
+            } catch(e) { tbody.innerHTML = '<tr><td colspan="4" class="p-5 text-center text-red-400">فشل في جلب البيانات من السيرفر</td></tr>'; }
+        }
+
+        // حفظ البيانات (POST)
+        function submitForm(e, action, mod) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+            
+            const params = new URLSearchParams(new FormData(e.target));
