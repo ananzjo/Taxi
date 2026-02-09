@@ -3,114 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fleet Master</title>
+    <title>Fleet Master Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #0f172a; color: white; }
-        .taxi-gold { background: #fbbf24; color: black; font-weight: bold; }
-        .nav-active { border-bottom: 3px solid #fbbf24; color: #fbbf24; }
-        input, select { background: #1e293b; color: white; border: 1px solid #334155; padding: 10px; border-radius: 8px; width: 100%; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #0f172a; color: #f1f5f9; }
+        .taxi-gold { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #000; }
+        .card-premium { background: #1e293b; border: 1px solid #334155; }
+        .nav-tab { cursor: pointer; padding: 1.2rem 0.8rem; color: #94a3b8; border-bottom: 3px solid transparent; transition: 0.3s; }
+        .nav-active { color: #fbbf24; border-bottom-color: #fbbf24; font-weight: bold; }
+        input, select { background: #0f172a !important; color: #fff !important; border: 1px solid #334155 !important; padding: 0.75rem; border-radius: 0.6rem; width: 100%; }
         .hidden { display: none; }
+        th { background: #1f2937; color: #fbbf24; padding: 1rem; text-align: right; }
+        td { padding: 1rem; border-bottom: 1px solid #334155; }
     </style>
 </head>
-<body class="p-4">
+<body class="pb-10">
 
-    <nav class="flex justify-between items-center bg-black p-4 rounded-xl mb-6 border border-yellow-500/30">
-        <span class="text-yellow-500 font-bold">FLEET MASTER</span>
-        <div class="flex gap-4">
-            <button onclick="showModule('rev')" id="n-rev" class="nav-active">الإيرادات</button>
-            <button onclick="showModule('car')" id="n-car">السيارات</button>
+    <nav class="bg-black border-b border-yellow-500/20 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 flex justify-between items-center h-16">
+            <div class="flex items-center gap-2">
+                <div class="taxi-gold px-2 py-1 rounded font-black text-xl">FM</div>
+                <span class="font-bold text-yellow-500">FLEET MASTER</span>
+            </div>
+            <div class="flex gap-4">
+                <div onclick="showModule('rev')" id="n-rev" class="nav-tab nav-active text-sm">الإيرادات</div>
+                <div onclick="showModule('car')" id="n-car" class="nav-tab text-sm">السيارات</div>
+            </div>
         </div>
     </nav>
 
-    <div id="m-rev">
-        <div class="flex justify-between mb-4">
-            <h2 class="text-xl">سجل الإيرادات</h2>
-            <button onclick="loadTable()" class="taxi-gold px-4 py-1 rounded">تحديث البيانات ↻</button>
-        </div>
-
-        <div class="bg-slate-800 p-6 rounded-2xl mb-6">
-            <form id="f-Rev">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label>التاريخ</label><input type="date" name="date" id="d-date"></div>
-                    <div><label>رقم السيارة</label><select name="carNo" id="car-select"><option>جاري التحميل...</option></select></div>
-                    <div><label>السائق</label><select name="driverName" id="driver-select"><option>جاري التحميل...</option></select></div>
-                    <div><label>المبلغ</label><input type="number" name="amount"></div>
+    <div class="max-w-6xl mx-auto px-4 mt-8">
+        <section id="m-rev" class="module">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold border-r-4 border-yellow-500 pr-3">الإيرادات</h2>
+                <div class="bg-slate-800 p-1 rounded-lg flex gap-1">
+                    <button onclick="tab('add','Rev')" id="tA-Rev" class="px-4 py-1 rounded-md taxi-gold text-xs">إضافة</button>
+                    <button onclick="tab('list','Rev')" id="tL-Rev" class="px-4 py-1 rounded-md text-slate-400 text-xs">عرض</button>
                 </div>
-                <button type="button" onclick="saveData()" class="w-full taxi-gold mt-4 py-3 rounded-lg">حفظ الآن</button>
-            </form>
-        </div>
+            </div>
 
-        <div class="bg-slate-800 rounded-2xl overflow-hidden">
-            <table class="w-full text-right">
-                <thead class="bg-slate-700">
-                    <tr><th class="p-3">التاريخ</th><th class="p-3">السيارة</th><th class="p-3">المبلغ</th></tr>
-                </thead>
-                <tbody id="res-table">
-                    <tr><td colspan="3" class="p-10 text-center">اضغط تحديث لإظهار البيانات</td></tr>
-                </tbody>
-            </table>
-        </div>
+            <div id="cA-Rev" class="card-premium p-6 rounded-2xl">
+                <form id="f-Rev" onsubmit="submitForm(event, 'saveRevenue', 'Rev')">
+                    <input type="hidden" name="id">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div><label>التاريخ</label><input type="date" name="date" required id="default-date"></div>
+                        <div><label>رقم السيارة</label><select name="carNo" class="c-list" required><option>جاري التحميل...</option></select></div>
+                        <div><label>اسم السائق</label><select name="driverName" class="d-list" required><option>جاري التحميل...</option></select></div>
+                        <div><label>المبلغ (JD)</label><input type="number" step="0.01" name="amount" required></div>
+                        <div class="md:col-span-2"><label>ملاحظات</label><input type="text" name="notes"></div>
+                    </div>
+                    <button type="submit" class="w-full taxi-gold mt-6 py-4 rounded-xl font-bold">حفظ البيانات</button>
+                </form>
+            </div>
+
+            <div id="cL-Rev" class="hidden card-premium rounded-2xl overflow-hidden">
+                <table class="w-full text-right">
+                    <thead><tr><th>التاريخ</th><th>السيارة</th><th>المبلغ</th><th>إجراء</th></tr></thead>
+                    <tbody id="tbl-Rev"></tbody>
+                </table>
+            </div>
+        </section>
     </div>
 
     <script>
-        const API = "https://script.google.com/macros/s/AKfycby71CCOLpaw-Ng2m4olE9YwtfMZHAMS4ooaw3MJm5vsUbWFysoFf2bbMLS7oZFRXndcpA/exec";
-
-        // 1. جلب السائقين والسيارات للقوائم
-        async function loadLists() {
-            try {
-                const resDrivers = await fetch(`${API}?action=getDrivers`);
-                const drivers = await resDrivers.json();
-                document.getElementById('driver-select').innerHTML = drivers.map(d => `<option value="${d}">${d}</option>`).join('');
-
-                const resCars = await fetch(`${API}?action=getCars`);
-                const cars = await resCars.json();
-                document.getElementById('car-select').innerHTML = cars.map(c => `<option value="${c}">${c}</option>`).join('');
-            } catch (e) {
-                console.error("خطأ في القوائم:", e);
-            }
-        }
-
-        // 2. جلب جدول البيانات
-        async function loadTable() {
-            const table = document.getElementById('res-table');
-            table.innerHTML = '<tr><td colspan="3" class="p-5 text-center">جاري التحميل...</td></tr>';
-            try {
-                const res = await fetch(`${API}?action=getRevenues`);
-                const data = await res.json();
-                table.innerHTML = data.map(r => `
-                    <tr class="border-b border-slate-700">
-                        <td class="p-3">${r.date || r.Date || '-'}</td>
-                        <td class="p-3">${r.carNo || r.Car_No || '-'}</td>
-                        <td class="p-3 text-yellow-500">${r.amount || r.Amount || '-'}</td>
-                    </tr>
-                `).join('');
-            } catch (e) {
-                table.innerHTML = '<tr><td colspan="3" class="p-5 text-center text-red-400">فشل في جلب البيانات. تأكد من إعدادات السكريبت.</td></tr>';
-            }
-        }
-
-        // 3. حفظ البيانات
-        function saveData() {
-            const form = document.getElementById('f-Rev');
-            const formData = new FormData(form);
-            const params = new URLSearchParams(formData);
-            params.append('action', 'saveRevenue');
-
-            fetch(API, { method: 'POST', mode: 'no-cors', body: params })
-                .then(() => {
-                    alert("تم الإرسال بنجاح!");
-                    form.reset();
-                    loadTable();
-                });
-        }
-
-        window.onload = () => {
-            document.getElementById('d-date').value = new Date().toISOString().split('T')[0];
-            loadLists();
-            loadTable();
-        };
-    </script>
-</body>
-</html>
+        const API_URL = "
