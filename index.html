@@ -3,219 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>نظام إدارة الأسطول | Fleet Master</title>
+    <title>Fleet Master v4.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Tajawal', sans-serif; background: #0f172a; color: white; }
+        body { font-family: 'Tajawal', sans-serif; background: #0f172a; color: white; margin: 0; overflow-x: hidden; }
         .taxi-gold { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #000; }
-        .card { background: #1e293b; border: 1px solid #334155; border-radius: 15px; padding: 20px; }
-        input, select { background: #0f172a !important; color: white !important; border: 1px solid #334155 !important; padding: 12px; border-radius: 8px; width: 100%; outline: none; }
-        .nav-tab { cursor: pointer; padding: 1rem; color: #94a3b8; border-bottom: 3px solid transparent; }
-        .nav-active { color: #fbbf24; border-bottom-color: #fbbf24; background: rgba(251, 191, 36, 0.05); }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; }
+        input { background: #0f172a !important; color: white !important; border: 1px solid #334155 !important; padding: 12px; border-radius: 8px; width: 100%; outline: none; }
+        input:focus { border-color: #fbbf24 !important; }
         #login-screen { position: fixed; inset: 0; z-index: 9999; background: #0f172a; display: flex; align-items: center; justify-content: center; }
-        .eye-btn { position: absolute; left: 10px; top: 40px; color: #64748b; cursor: pointer; }
+        .hidden { display: none !important; }
+        .eye-btn { position: absolute; left: 12px; top: 38px; color: #64748b; cursor: pointer; z-index: 10; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <div class="card w-full max-w-md mx-4">
+        <div class="card w-full max-w-md mx-4 shadow-2xl border-yellow-500/20">
             <div class="taxi-gold w-16 h-16 rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-lg">
-                <i class="fas fa-lock text-3xl"></i>
+                <i class="fas fa-taxi text-3xl"></i>
             </div>
-            <h2 class="text-2xl font-black text-center mb-8 text-yellow-500">تسجيل الدخول</h2>
+            <h2 class="text-2xl font-bold text-center mb-8 text-yellow-500">دخول النظام</h2>
             
-            <div class="space-y-4">
+            <div class="space-y-5">
                 <div class="relative">
-                    <label class="block text-sm mb-1 mr-2">اسم المستخدم</label>
-                    <input type="text" id="user" placeholder="أدخل اسم المستخدم">
+                    <label class="block text-xs text-slate-400 mb-1 mr-2">اسم المستخدم</label>
+                    <input type="text" id="user" placeholder="User Name">
                 </div>
+                
                 <div class="relative">
-                    <label class="block text-sm mb-1 mr-2">كلمة المرور</label>
+                    <label class="block text-xs text-slate-400 mb-1 mr-2">كلمة المرور</label>
                     <input type="password" id="pass" placeholder="••••••••">
                     <i class="fas fa-eye eye-btn" id="togglePass" onclick="togglePassword()"></i>
                 </div>
+
                 <label class="flex items-center gap-2 text-sm text-slate-400 cursor-pointer pt-2">
                     <input type="checkbox" id="remember" class="w-4 h-4 accent-yellow-500"> تذكرني على هذا الجهاز
                 </label>
-                <button onclick="handleLogin()" id="login-btn" class="taxi-gold w-full py-3 rounded-xl font-bold text-lg mt-4 active:scale-95 transition-all">دخول</button>
+                
+                <button onclick="handleLogin()" id="login-btn" class="taxi-gold w-full py-4 rounded-xl font-bold text-lg active:scale-95 transition-all">
+                    دخول النظام
+                </button>
             </div>
-            <p id="login-error" class="text-red-500 text-center mt-4 hidden"></p>
+            <p id="login-msg" class="text-red-500 text-center mt-4 text-sm hidden"></p>
         </div>
     </div>
 
     <div id="main-content" class="hidden">
-        <header class="bg-black p-4 border-b border-yellow-500/30 flex justify-between items-center">
-            <h1 class="text-yellow-500 font-bold text-xl tracking-tighter">FLEET MASTER</h1>
-            <button onclick="logout()" class="text-red-400 text-sm">خروج <i class="fas fa-sign-out-alt"></i></button>
+        <header class="bg-black p-4 border-b border-yellow-500/30 flex justify-between items-center sticky top-0 z-[60]">
+            <span class="text-yellow-500 font-bold">FLEET MASTER</span>
+            <button onclick="logout()" class="bg-red-500/10 text-red-500 px-3 py-1 rounded text-xs border border-red-500/20">خروج</button>
         </header>
 
-        <nav class="bg-slate-900 flex overflow-x-auto border-b border-white/5">
-            <div onclick="showModule('Revenues')" id="n-Revenues" class="nav-tab nav-active flex-1 text-center">الإيرادات</div>
-            <div onclick="showModule('Expenses')" id="n-Expenses" class="nav-tab flex-1 text-center">المصاريف</div>
-            <div onclick="showModule('Reports')" id="n-Reports" class="nav-tab flex-1 text-center font-bold text-yellow-500">التقارير</div>
-        </nav>
-
-        <div class="p-4 max-w-7xl mx-auto">
-            <div id="view-Reports" class="hidden space-y-4">
-                <div class="card grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <input type="text" id="f-search" oninput="applyFilters()" placeholder="بحث (سائق، سيارة، مالك)...">
-                    <input type="date" id="f-start" onchange="applyFilters()" placeholder="من تاريخ">
-                    <input type="date" id="f-end" onchange="applyFilters()" placeholder="إلى تاريخ">
-                </div>
-                <div class="overflow-x-auto card p-0">
-                    <table class="w-full text-right text-sm">
-                        <thead class="bg-black text-yellow-500">
-                            <tr><th class="p-3">التاريخ</th><th class="p-3">السيارة</th><th class="p-3">السائق</th><th class="p-3">المبلغ</th></tr>
-                        </thead>
-                        <tbody id="rep-body"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="view-main" class="card">
-                <h3 id="module-title" class="text-lg font-bold mb-4 text-yellow-500"></h3>
-                <form id="mainForm" onsubmit="saveData(event)" class="space-y-4">
-                    <div id="form-fields" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                    <button type="submit" class="taxi-gold w-full py-3 rounded-xl font-bold">حفظ</button>
-                </form>
+        <div class="p-4">
+            <div id="module-content" class="card">
+                <h3 class="text-yellow-500 font-bold mb-4">تم تسجيل الدخول بنجاح!</h3>
+                <p class="text-slate-400">أهلاً بك في لوحة التحكم.</p>
             </div>
         </div>
     </div>
 
     <script>
-        const API_URL = "رابط_الـ_APPS_SCRIPT_الخاص_بك";
-        let allData = [];
+        // ضع رابط الـ Script الخاص بك هنا
+        const API_URL = "https://script.google.com/macros/s/AKfycbwYQywgvfpI5XLIjfHkl6XashRy9W7SUK8NKVuUpRUy0-ZDnfYE2_cmnHJOmctkbQGv/exec";
 
-        // التحقق من الجلسة المحفوظة
         window.onload = () => {
-            const user = localStorage.getItem('fm_user');
-            if(user) loginSuccess(user);
+            const savedUser = localStorage.getItem('fm_user');
+            if(savedUser) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('main-content').classList.remove('hidden');
+            }
         };
 
         function togglePassword() {
             const p = document.getElementById('pass');
             const icon = document.getElementById('togglePass');
-            p.type = p.type === "password" ? "text" : "password";
-            icon.classList.toggle('fa-eye-slash');
-        }
-
-        async function handleLogin() {
-            const u = document.getElementById('user').value.trim();
-            const p = document.getElementById('pass').value.trim();
-            const btn = document.getElementById('login-btn');
-            const err = document.getElementById('login-error');
-
-            if(!u || !p) return;
-            btn.innerText = "جاري التحقق..."; btn.disabled = true;
-
-            try {
-                const users = await callAPI('getRows', 'Users');
-                // البحث في الشيت (العمود B هو username والعمود C هو password)
-                const valid = users.find(row => {
-                    const sheetUser = Object.values(row)[1]; // العمود B
-                    const sheetPass = Object.values(row)[2]; // العمود C
-                    return String(sheetUser).trim() === u && String(sheetPass).trim() === p;
-                });
-
-                if(valid) {
-                    if(document.getElementById('remember').checked) localStorage.setItem('fm_user', u);
-                    loginSuccess(u);
-                } else {
-                    err.innerText = "بيانات الدخول غير صحيحة";
-                    err.classList.remove('hidden');
-                    btn.innerText = "دخول"; btn.disabled = false;
-                }
-            } catch(e) { alert("خطأ في الاتصال"); btn.disabled = false; }
-        }
-
-        function loginSuccess(u) {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('main-content').classList.remove('hidden');
-            showModule('Revenues');
-        }
-
-        function logout() { localStorage.removeItem('fm_user'); location.reload(); }
-
-        // نظام الفلترة
-        async function loadReports() {
-            const body = document.getElementById('rep-body');
-            body.innerHTML = '<tr><td colspan="4" class="p-4 text-center">جاري التحميل...</td></tr>';
-            allData = await callAPI('getRows', 'Revenues');
-            applyFilters();
-        }
-
-        function applyFilters() {
-            const q = document.getElementById('f-search').value.toLowerCase();
-            const s = document.getElementById('f-start').value;
-            const e = document.getElementById('f-end').value;
-
-            const filtered = allData.filter(r => {
-                const text = (r.Car_No + r.Driver_name).toLowerCase();
-                const d = new Date(r.Date).toISOString().split('T')[0];
-                return text.includes(q) && (!s || d >= s) && (!e || d <= e);
-            });
-
-            document.getElementById('rep-body').innerHTML = filtered.map(r => `
-                <tr class="border-b border-white/5">
-                    <td class="p-3">${new Date(r.Date).toLocaleDateString('ar-JO')}</td>
-                    <td class="p-3 font-bold text-yellow-500">${r.Car_No}</td>
-                    <td class="p-3">${r.Driver_name}</td>
-                    <td class="p-3 text-emerald-400 font-bold">${r.Amount}</td>
-                </tr>
-            `).join('');
-        }
-
-        // دوال مساعدة
-        async function showModule(m) {
-            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('nav-active'));
-            document.getElementById('n-' + m).classList.add('nav-active');
-            
-            if(m === 'Reports') {
-                document.getElementById('view-main').classList.add('hidden');
-                document.getElementById('view-Reports').classList.remove('hidden');
-                loadReports();
+            if (p.type === "password") {
+                p.type = "text";
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
             } else {
-                document.getElementById('view-main').classList.remove('hidden');
-                document.getElementById('view-Reports').classList.add('hidden');
-                document.getElementById('module-title').innerText = m === 'Revenues' ? 'إضافة إيراد جديد' : 'إضافة مصروف جديد';
-                renderFields(m);
+                p.type = "password";
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
             }
         }
 
-        function renderFields(m) {
-            const container = document.getElementById('form-fields');
-            const today = new Date().toISOString().split('T')[0];
-            if(m === 'Revenues') {
-                container.innerHTML = `
-                    <input type="hidden" name="sheetName" value="Revenues">
-                    <div><label>التاريخ</label><input type="date" name="Date" value="${today}"></div>
-                    <div><label>رقم السيارة</label><input type="text" name="Car_No"></div>
-                    <div><label>السائق</label><input type="text" name="Driver_name"></div>
-                    <div><label>المبلغ</label><input type="number" name="Amount"></div>
-                `;
-            } else {
-                container.innerHTML = `<input type="hidden" name="sheetName" value="Expenses">...`; // أكمل الحقول حسب حاجتك
+        async function handleLogin() {
+            const uInput = document.getElementById('user').value.trim();
+            const pInput = document.getElementById('pass').value.trim();
+            const btn = document.getElementById('login-btn');
+            const msg = document.getElementById('login-msg');
+
+            if(!uInput || !pInput) { alert("أدخل البيانات كاملة"); return; }
+
+            btn.innerText = "جاري التحقق من السيرفر...";
+            btn.disabled = true;
+            msg.classList.add('hidden');
+
+            // إضافة Timeout (إلغاء العملية إذا تأخرت أكثر من 12 ثانية)
+            const timeout = setTimeout(() => {
+                btn.disabled = false;
+                btn.innerText = "دخول النظام";
+                msg.innerText = "السيرفر لا يستجيب، تأكد من اتصالك بالإنترنت";
+                msg.classList.remove('hidden');
+            }, 12000);
+
+            try {
+                const users = await callAPI('getRows', 'Users');
+                clearTimeout(timeout); // إلغاء المؤقت لأن السيرفر استجاب
+
+                // البحث الذكي في الأعمدة B و C
+                const valid = users.find(row => {
+                    const keys = Object.keys(row);
+                    const valB = String(row[keys[1]] || "").trim(); // العمود B (اليوزر)
+                    const valC = String(row[keys[2]] || "").trim(); // العمود C (الباسورد)
+                    
+                    return valB === uInput && valC === pInput;
+                });
+
+                if(valid) {
+                    if(document.getElementById('remember').checked) localStorage.setItem('fm_user', uInput);
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('main-content').classList.remove('hidden');
+                } else {
+                    msg.innerText = "اسم المستخدم أو كلمة المرور غير صحيحة";
+                    msg.classList.remove('hidden');
+                    btn.innerText = "دخول النظام";
+                    btn.disabled = false;
+                }
+            } catch(e) { 
+                clearTimeout(timeout);
+                msg.innerText = "خطأ في الاتصال: تأكد من نشر الـ Script كـ Anyone";
+                msg.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerText = "دخول النظام";
             }
         }
 
         function callAPI(action, sheet) {
-            return new Promise(res => {
-                const cb = 'cb' + Date.now();
-                window[cb] = (d) => { res(d); delete window[cb]; };
-                const s = document.createElement('script');
-                s.src = `${API_URL}?action=${action}&sheetName=${sheet}&callback=${cb}`;
-                document.body.appendChild(s);
+            return new Promise((resolve, reject) => {
+                const cb = 'callback_' + Math.round(Math.random() * 1000000);
+                window[cb] = (data) => {
+                    delete window[cb];
+                    document.body.removeChild(script);
+                    resolve(data);
+                };
+                const script = document.createElement('script');
+                script.src = `${API_URL}?action=${action}&sheetName=${sheet}&callback=${cb}`;
+                script.onerror = () => reject();
+                document.body.appendChild(script);
             });
         }
 
-        function saveData(e) {
-            e.preventDefault();
-            const fd = new FormData(e.target);
-            fetch(API_URL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(fd) })
-            .then(() => { alert("تم الحفظ"); e.target.reset(); });
+        function logout() {
+            localStorage.removeItem('fm_user');
+            location.reload();
         }
     </script>
 </body>
