@@ -3,34 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fleet Master v4.0 | الاحترافي</title>
+    <title>Fleet Master v4.2 | Professional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Tajawal', sans-serif; background: #0f172a; color: white; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+        body { font-family: 'Tajawal', sans-serif; background: #0f172a; color: white; -webkit-tap-highlight-color: transparent; }
         .taxi-gold { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #000; }
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 15px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         input, select { background: #0f172a !important; color: white !important; border: 1px solid #334155 !important; padding: 12px; border-radius: 8px; width: 100%; outline: none; transition: 0.3s; }
         input:focus { border-color: #fbbf24 !important; box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2); }
-        .nav-tab { cursor: pointer; padding: 1.2rem 1.5rem; color: #94a3b8; border-bottom: 4px solid transparent; white-space: nowrap; transition: 0.3s; }
+        .nav-tab { cursor: pointer; padding: 1.2rem 1.5rem; color: #94a3b8; border-bottom: 4px solid transparent; white-space: nowrap; }
         .nav-active { color: #fbbf24; border-bottom-color: #fbbf24; font-weight: bold; background: rgba(251, 191, 36, 0.05); }
-        th { color: #fbbf24; padding: 15px; text-align: right; border-bottom: 2px solid #334155; background: #000; font-size: 14px; }
-        td { padding: 12px; border-bottom: 1px solid #334155; font-size: 13px; }
-        #login-screen { position: fixed; inset: 0; z-index: 9999; background: #0f172a; display: flex; align-items: center; justify-content: center; transition: 0.5s; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        
-        /* ستايل أيقونة العين */
+        th { color: #fbbf24; padding: 15px; text-align: right; border-bottom: 2px solid #334155; background: #000; }
+        #login-screen { position: fixed; inset: 0; z-index: 9999; background: #0f172a; display: flex; align-items: center; justify-content: center; }
         .password-container { position: relative; }
-        .eye-icon { position: absolute; left: 12px; top: 38px; color: #64748b; cursor: pointer; font-size: 18px; transition: 0.2s; }
-        .eye-icon:hover { color: #fbbf24; }
+        .eye-icon { position: absolute; left: 12px; top: 38px; color: #64748b; cursor: pointer; font-size: 18px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="pb-10">
 
     <div id="login-screen">
-        <div class="card w-full max-w-md mx-4 text-center border-yellow-500/20 shadow-yellow-500/5">
-            <div class="taxi-gold w-20 h-20 rounded-3xl mx-auto flex items-center justify-center mb-6 shadow-2xl rotate-3">
+        <div class="card w-full max-w-md mx-4 text-center border-yellow-500/20">
+            <div class="taxi-gold w-20 h-20 rounded-3xl mx-auto flex items-center justify-center mb-6 shadow-2xl">
                 <i class="fas fa-taxi text-4xl"></i>
             </div>
             <h2 class="text-3xl font-black mb-2 text-yellow-500 tracking-tighter">FLEET MASTER</h2>
@@ -39,7 +35,7 @@
             <div class="space-y-4">
                 <div class="text-right">
                     <label class="text-xs text-slate-500 mr-2 mb-1 block">اسم المستخدم</label>
-                    <input type="text" id="user" placeholder="مثلاً: admin">
+                    <input type="text" id="user" placeholder="ادخل اليوزر">
                 </div>
                 
                 <div class="text-right password-container">
@@ -49,10 +45,10 @@
                 </div>
 
                 <label class="flex items-center gap-2 text-sm text-slate-400 cursor-pointer pt-2">
-                    <input type="checkbox" id="remember" class="w-4 h-4 rounded border-slate-700 bg-slate-800 accent-yellow-500"> تذكر معلوماتي على هذا الجهاز
+                    <input type="checkbox" id="remember" class="w-4 h-4 rounded accent-yellow-500"> تذكرني على هذا الجهاز
                 </label>
                 
-                <button onclick="handleLogin()" id="login-btn" class="taxi-gold w-full py-4 rounded-xl font-bold text-xl mt-4 active:scale-95 transition-all shadow-lg shadow-yellow-500/20">
+                <button onclick="handleLogin()" id="login-btn" class="taxi-gold w-full py-4 rounded-xl font-bold text-xl mt-4 active:scale-95 transition-all">
                     دخول النظام
                 </button>
             </div>
@@ -64,13 +60,11 @@
         <header class="bg-black py-4 px-6 border-b border-yellow-500/30 flex justify-between items-center sticky top-0 z-[60]">
             <div class="flex items-center gap-3">
                 <div class="taxi-gold px-3 py-1 rounded-lg font-black text-xl">FM</div>
-                <h1 class="text-yellow-500 font-bold text-xl uppercase tracking-widest hidden md:block">Fleet Master</h1>
+                <h1 class="text-yellow-500 font-bold text-xl uppercase tracking-widest">Fleet Master</h1>
             </div>
             <div class="flex items-center gap-4">
                 <span id="user-display" class="text-slate-400 text-sm italic"></span>
-                <button onclick="logout()" class="bg-red-500/10 text-red-500 px-3 py-1 rounded-lg text-xs font-bold border border-red-500/20 hover:bg-red-500 hover:text-white transition-all">
-                    خروج <i class="fas fa-sign-out-alt mr-1"></i>
-                </button>
+                <button onclick="logout()" class="text-red-500 text-xs font-bold px-3 py-1 border border-red-500/20 rounded-lg">خروج</button>
             </div>
         </header>
 
@@ -78,25 +72,24 @@
             <div class="max-w-7xl mx-auto flex">
                 <div onclick="showModule('Revenues')" id="n-Revenues" class="nav-tab nav-active">الإيرادات</div>
                 <div onclick="showModule('Expenses')" id="n-Expenses" class="nav-tab">المصاريف</div>
-                <div onclick="showModule('Drivers_Log')" id="n-Drivers_Log" class="nav-tab">استلام/تسليم</div>
-                <div onclick="showModule('Reports')" id="n-Reports" class="nav-tab text-yellow-500 font-bold"><i class="fas fa-chart-line ml-1"></i> التقارير الذكية</div>
+                <div onclick="showModule('Reports')" id="n-Reports" class="nav-tab text-yellow-500 font-bold"><i class="fas fa-chart-line ml-1"></i> التقارير</div>
             </div>
         </nav>
 
         <div class="max-w-7xl mx-auto px-4 mt-8">
-            <h2 id="module-title" class="text-2xl font-bold border-r-4 border-yellow-500 pr-3 text-yellow-500 mb-8">إدارة الإيرادات</h2>
+            <h2 id="module-title" class="text-2xl font-bold border-r-4 border-yellow-500 pr-3 text-yellow-500 mb-8">إدارة العمليات</h2>
             
             <div id="view-main">
                 <div id="tab-controls" class="flex gap-2 mb-6">
                     <button onclick="switchTab('add')" id="btn-add" class="taxi-gold px-8 py-2 rounded-lg font-bold">إضافة</button>
-                    <button onclick="switchTab('list')" id="btn-list" class="bg-slate-800 text-slate-400 px-8 py-2 rounded-lg font-bold">عرض الكل</button>
+                    <button onclick="switchTab('list')" id="btn-list" class="bg-slate-800 text-slate-400 px-8 py-2 rounded-lg font-bold">عرض السجلات</button>
                 </div>
                 
                 <div id="view-add" class="card">
                     <form id="mainForm" onsubmit="handleFormSubmit(event)">
                         <input type="hidden" name="sheetName" id="current-sheet" value="Revenues">
                         <div id="form-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm"></div>
-                        <button type="submit" id="submit-btn" class="taxi-gold w-full mt-8 py-4 rounded-xl font-black text-xl shadow-2xl">حفظ في السجلات</button>
+                        <button type="submit" id="submit-btn" class="taxi-gold w-full mt-8 py-4 rounded-xl font-black text-xl shadow-2xl">حفظ البيانات</button>
                     </form>
                 </div>
 
@@ -108,24 +101,12 @@
             <div id="view-Reports" class="hidden space-y-6">
                 <div class="card grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-800/40 border-yellow-500/10">
                     <div class="md:col-span-2">
-                        <label class="text-xs text-slate-400 mb-1 block mr-1">البحث (سائق، سيارة، مالك، فئة)</label>
-                        <input type="text" id="filter-general" oninput="applyFilters()" placeholder="ابحث عن أي شيء...">
+                        <label class="text-xs text-slate-400 mb-1 block">البحث (سائق، سيارة، مالك)</label>
+                        <input type="text" id="filter-general" oninput="applyFilters()" placeholder="بحث سريع...">
                     </div>
-                    <div>
-                        <label class="text-xs text-slate-400 mb-1 block mr-1">من تاريخ</label>
-                        <input type="date" id="filter-start" onchange="applyFilters()">
-                    </div>
-                    <div>
-                        <label class="text-xs text-slate-400 mb-1 block mr-1">إلى تاريخ</label>
-                        <input type="date" id="filter-end" onchange="applyFilters()">
-                    </div>
+                    <div><label class="text-xs text-slate-400 mb-1 block">من</label><input type="date" id="filter-start" onchange="applyFilters()"></div>
+                    <div><label class="text-xs text-slate-400 mb-1 block">إلى</label><input type="date" id="filter-end" onchange="applyFilters()"></div>
                 </div>
-
-                <div class="flex justify-between items-center text-sm font-bold px-2">
-                    <div class="text-slate-400">النتائج: <span id="res-count" class="text-yellow-500">0</span></div>
-                    <button onclick="loadReportData()" class="text-blue-400 hover:rotate-180 transition-all duration-500"><i class="fas fa-sync-alt ml-1"></i> تحديث</button>
-                </div>
-
                 <div class="overflow-x-auto card p-0 border-none shadow-2xl">
                     <table class="w-full text-right">
                         <thead id="rep-head" class="bg-black text-yellow-500"></thead>
@@ -142,84 +123,76 @@
         let allReportData = [];
         let currentModule = "Revenues";
 
-        // وظيفة إظهار/إخفاء كلمة المرور
         function togglePass() {
             const passField = document.getElementById('pass');
             const eyeIcon = document.getElementById('togglePassword');
-            
             if (passField.type === "password") {
                 passField.type = "text";
-                eyeIcon.classList.remove('fa-eye');
-                eyeIcon.classList.add('fa-eye-slash');
+                eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
             } else {
                 passField.type = "password";
-                eyeIcon.classList.remove('fa-eye-slash');
-                eyeIcon.classList.add('fa-eye');
+                eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
             }
         }
 
-        // --- نظام الدخول ---
+        // --- نظام الدخول المطور للأعمدة B و C ---
         window.onload = () => {
             const savedUser = localStorage.getItem('fm_user');
-            if(savedUser) {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('main-content').classList.remove('hidden');
-                document.getElementById('user-display').innerText = `مرحباً، ${savedUser}`;
-                showModule('Revenues');
-            }
+            if(savedUser) loginSuccess(savedUser);
         };
 
         async function handleLogin() {
-            const u = document.getElementById('user').value;
-            const p = document.getElementById('pass').value;
+            const uInput = document.getElementById('user').value.trim();
+            const pInput = document.getElementById('pass').value.trim();
             const btn = document.getElementById('login-btn');
             const msg = document.getElementById('login-msg');
 
-            if(!u || !p) { alert("أدخل البيانات!"); return; }
-
-            btn.innerText = "جاري التحقق...";
-            btn.disabled = true;
+            if(!uInput || !pInput) return alert("يرجى ملء البيانات");
+            btn.innerText = "جاري التحقق..."; btn.disabled = true;
 
             try {
                 const users = await callAPI('getRows', 'Users');
-                const valid = users.find(user => String(user.Username).trim() === u && String(user.Password).trim() === p);
+                
+                const valid = users.find(row => {
+                    // البحث الذكي عن الأعمدة بغض النظر عن ترتيبها أو حالة الأحرف
+                    const keyUser = Object.keys(row).find(k => k.toLowerCase().includes('username'));
+                    const keyPass = Object.keys(row).find(k => k.toLowerCase().includes('password'));
+                    
+                    return String(row[keyUser]).trim() === uInput && String(row[keyPass]).trim() === pInput;
+                });
 
                 if(valid) {
-                    if(document.getElementById('remember').checked) localStorage.setItem('fm_user', u);
-                    document.getElementById('login-screen').style.opacity = '0';
-                    setTimeout(() => {
-                        document.getElementById('login-screen').classList.add('hidden');
-                        document.getElementById('main-content').classList.remove('hidden');
-                        document.getElementById('user-display').innerText = `مرحباً، ${u}`;
-                        showModule('Revenues');
-                    }, 500);
+                    if(document.getElementById('remember').checked) localStorage.setItem('fm_user', uInput);
+                    loginSuccess(uInput);
                 } else {
-                    msg.innerText = "بيانات الدخول غير صحيحة";
+                    msg.innerText = "اسم المستخدم أو كلمة المرور غير صحيحة";
                     msg.classList.remove('hidden');
-                    btn.innerText = "دخول النظام";
-                    btn.disabled = false;
+                    btn.innerText = "دخول النظام"; btn.disabled = false;
                 }
             } catch(e) { 
-                alert("خطأ في الاتصال بالخادم"); 
-                btn.disabled = false; 
-                btn.innerText = "دخول النظام";
+                alert("خطأ في الاتصال بشيت Users");
+                btn.disabled = false; btn.innerText = "دخول النظام";
             }
         }
 
-        function logout() {
-            localStorage.removeItem('fm_user');
-            location.reload();
+        function loginSuccess(u) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            document.getElementById('user-display').innerText = `مرحباً، ${u}`;
+            showModule('Revenues');
         }
 
-        // --- باقي وظائف النظام (نفس النسخة السابقة) ---
+        function logout() { localStorage.removeItem('fm_user'); location.reload(); }
+
+        // --- نظام التقارير والفلترة ---
         async function loadReportData() {
             const body = document.getElementById('rep-body');
-            body.innerHTML = '<tr><td colspan="10" class="p-20 text-center italic text-slate-500"><i class="fas fa-spinner fa-spin ml-2"></i> جاري جلب البيانات...</td></tr>';
+            body.innerHTML = '<tr><td colspan="6" class="p-10 text-center italic">جاري جلب البيانات...</td></tr>';
             try {
                 const [revs, cars] = await Promise.all([callAPI('getRows','Revenues'), callAPI('getRows','Cars')]);
                 allReportData = revs.map(r => {
-                    const carInfo = cars.find(c => String(c["رقم السيارة"] || c.Plate_No).trim() === String(r.Car_No).trim());
-                    return { ...r, Owner: carInfo ? (carInfo.Owner || "غير محدد") : "غير معروف" };
+                    const car = cars.find(c => String(c["رقم السيارة"] || c.Plate_No).trim() === String(r.Car_No).trim());
+                    return { ...r, Owner: car ? (car.Owner || "غير محدد") : "غير معروف" };
                 });
                 applyFilters();
             } catch(e) { console.error(e); }
@@ -229,38 +202,29 @@
             const query = document.getElementById('filter-general').value.toLowerCase();
             const start = document.getElementById('filter-start').value;
             const end = document.getElementById('filter-end').value;
+
             const filtered = allReportData.filter(r => {
-                const searchTxt = (r.Car_No + r.Driver_name + r.Owner + r.Category).toLowerCase();
-                const matchSearch = searchTxt.includes(query);
+                const txt = (r.Car_No + r.Driver_name + r.Owner).toLowerCase();
                 const rDate = new Date(r.Date).toISOString().split('T')[0];
-                const matchStart = start ? rDate >= start : true;
-                const matchEnd = end ? rDate <= end : true;
-                return matchSearch && matchStart && matchEnd;
+                return txt.includes(query) && (!start || rDate >= start) && (!end || rDate <= end);
             });
-            document.getElementById('res-count').innerText = filtered.length;
             renderReportTable(filtered);
         }
 
         function renderReportTable(data) {
-            const head = document.getElementById('rep-head');
             const body = document.getElementById('rep-body');
             const foot = document.getElementById('rep-foot');
-            head.innerHTML = `<tr><th>التاريخ</th><th>السيارة</th><th>السائق</th><th>المالك</th><th>الفئة</th><th>المبلغ</th></tr>`;
+            document.getElementById('rep-head').innerHTML = `<tr><th>التاريخ</th><th>السيارة</th><th>السائق</th><th>المالك</th><th>الفئة</th><th>المبلغ</th></tr>`;
+            
             let total = 0;
             body.innerHTML = data.map(r => {
                 total += parseFloat(r.Amount || 0);
-                return `<tr class="hover:bg-slate-800/50 transition-colors">
-                    <td class="text-xs">${new Date(r.Date).toLocaleDateString('ar-JO')}</td>
-                    <td class="font-bold text-yellow-500">${r.Car_No}</td>
-                    <td>${r.Driver_name}</td>
-                    <td class="text-blue-300 text-[11px]">${r.Owner}</td>
-                    <td><span class="bg-slate-700/50 px-2 py-0.5 rounded text-[11px]">${r.Category}</span></td>
-                    <td class="text-emerald-400 font-bold">${parseFloat(r.Amount).toFixed(2)}</td>
-                </tr>`;
+                return `<tr><td>${new Date(r.Date).toLocaleDateString('ar-JO')}</td><td class="text-yellow-500 font-bold">${r.Car_No}</td><td>${r.Driver_name}</td><td>${r.Owner}</td><td>${r.Category}</td><td class="text-emerald-400 font-bold">${parseFloat(r.Amount).toFixed(2)}</td></tr>`;
             }).join('');
-            foot.innerHTML = `<tr><td colspan="5" class="p-4 text-left">إجمالي:</td><td class="p-4 text-xl">${total.toLocaleString()} د.أ</td></tr>`;
+            foot.innerHTML = `<tr><td colspan="5" class="p-4">الإجمالي:</td><td class="p-4 text-xl">${total.toLocaleString()} د.أ</td></tr>`;
         }
 
+        // --- وظائف عامة ---
         async function showModule(m) {
             currentModule = m;
             document.getElementById('current-sheet').value = m;
@@ -274,23 +238,21 @@
                 document.getElementById('view-main').classList.remove('hidden');
                 document.getElementById('view-Reports').classList.add('hidden');
                 await renderFields();
-                switchTab('add');
             }
         }
 
         async function renderFields() {
             const container = document.getElementById('form-container');
-            container.innerHTML = '<div class="col-span-full py-10 text-center">...</div>';
+            container.innerHTML = 'جاري التحميل...';
             const [drivers, cars] = await Promise.all([callAPI('getDrivers'), callAPI('getCars')]);
             const dOpts = drivers.map(d => `<option value="${d}">${d}</option>`).join('');
             const cOpts = cars.map(c => `<option value="${c}">${c}</option>`).join('');
             const today = new Date().toISOString().split('T')[0];
+            
             if (currentModule === 'Revenues') {
                 container.innerHTML = `<div><label>التاريخ</label><input type="date" name="Date" value="${today}"></div><div><label>السيارة</label><select name="Car_No">${cOpts}</select></div><div><label>السائق</label><select name="Driver_name">${dOpts}</select></div><div><label>المبلغ</label><input type="number" step="0.01" name="Amount"></div><div><label>الفئة</label><select name="Category"><option>ضمان</option><option>مخالفات</option></select></div>`;
-            } else if (currentModule === 'Expenses') {
-                container.innerHTML = `<div><label>التاريخ</label><input type="date" name="Date" value="${today}"></div><div><label>السيارة</label><select name="Car_No">${cOpts}</select></div><div><label>النوع</label><input type="text" name="Expense_Type"></div><div><label>المبلغ</label><input type="number" name="Amount"></div>`;
             } else {
-                container.innerHTML = `<div><label>التاريخ</label><input type="date" name="Date" value="${today}"></div><div><label>السيارة</label><select name="Car_No">${cOpts}</select></div><div><label>السائق</label><select name="Driver_name">${dOpts}</select></div><div><label>الحركة</label><select name="Movement_Type"><option>استلام</option><option>تسليم</option></select></div><div><label>العداد</label><input type="number" name="Odometer"></div>`;
+                container.innerHTML = `<div><label>التاريخ</label><input type="date" name="Date" value="${today}"></div><div><label>السيارة</label><select name="Car_No">${cOpts}</select></div><div><label>البيان</label><input type="text" name="Expense_Type"></div><div><label>المبلغ</label><input type="number" name="Amount"></div>`;
             }
         }
 
@@ -311,13 +273,12 @@
         }
 
         async function loadListData() {
-            const head = document.getElementById('table-head');
             const body = document.getElementById('table-body');
-            body.innerHTML = '<tr><td colspan="10" class="p-10 text-center">جاري التحميل...</td></tr>';
+            body.innerHTML = '<tr><td colspan="6" class="p-10 text-center">...</td></tr>';
             const rows = await callAPI('getRows', currentModule);
             if(rows.length > 0) {
                 const keys = Object.keys(rows[0]);
-                head.innerHTML = keys.map(k => `<th>${k}</th>`).join('');
+                document.getElementById('table-head').innerHTML = keys.map(k => `<th>${k}</th>`).join('');
                 body.innerHTML = rows.map(r => `<tr>${keys.map(k => `<td>${r[k] || '-'}</td>`).join('')}</tr>`).join('');
             }
         }
@@ -325,7 +286,7 @@
         function handleFormSubmit(event) {
             event.preventDefault();
             const btn = document.getElementById('submit-btn');
-            btn.innerHTML = 'جاري الحفظ...'; btn.disabled = true;
+            btn.innerText = 'جاري الحفظ...'; btn.disabled = true;
             fetch(API_URL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(new FormData(event.target)) })
                 .then(() => { alert("تم الحفظ!"); location.reload(); });
         }
