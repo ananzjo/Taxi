@@ -236,7 +236,7 @@
             btn.disabled = true; btn.innerHTML = "جاري المعالجة...";
             fetch(API_URL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(new FormData(event.target)) })
                 .then(() => {
-                    alert("تم الحفظ بنجاح!");
+                    alert("تم الحفظ !");
                     event.target.reset();
                     document.getElementById('edit-id').value = "";
                     btn.disabled = false; btn.innerHTML = "حفظ البيانات";
