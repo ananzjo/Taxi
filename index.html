@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة التاكسي v1.4.2</title>
+    <title>نظام إدارة التاكسي v1.4.3</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -16,75 +16,94 @@
 
         body { font-family: 'Tajawal', sans-serif; background-color: var(--dark-bg); color: var(--text-main); margin: 0; padding: 0; }
 
-        /* شاشة تسجيل الدخول المحدثة */
+        /* شاشة تسجيل الدخول */
         #loginSection {
-            max-width: 380px; margin: 100px auto; padding: 30px;
+            max-width: 400px; margin: 100px auto; padding: 35px;
             background: var(--card-bg); border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-color); text-align: center;
         }
-        .login-header { text-align: center; margin-bottom: 25px; }
-        .login-header h2 { color: var(--taxi-yellow); margin: 10px 0; }
+        .login-field { 
+            width: 100%; padding: 14px; background: #252525; border: 1px solid var(--border-color); 
+            border-radius: 10px; color: #fff; margin-bottom: 15px; box-sizing: border-box; font-size: 1rem;
+        }
+        .pass-container { position: relative; width: 100%; }
+        .toggle-btn { position: absolute; left: 12px; top: 15px; cursor: pointer; color: var(--taxi-yellow); font-size: 0.85rem; }
 
-        .form-group { margin-bottom: 18px; position: relative; }
-        .form-group input { 
-            width: 100%; padding: 12px; background: #252525; border: 1px solid var(--border-color); 
-            border-radius: 8px; color: #fff; box-sizing: border-box; font-size: 1rem;
+        /* شريط العنوان العلوي */
+        .system-header { background: #000; padding: 20px 0; text-align: center; border-bottom: 3px solid var(--taxi-yellow); }
+        .system-header h1 { margin: 0; font-size: 2rem; color: var(--taxi-yellow); }
+
+        /* أزرار التنقل - حجم أكبر وتوسيط */
+        .nav-tabs { 
+            background: #1a1a1a; display: flex; justify-content: center; flex-wrap: wrap; 
+            padding: 20px; gap: 15px; border-bottom: 1px solid var(--border-color); 
+        }
+        .tab-btn { 
+            background: #2a2a2a; border: 1px solid var(--border-color); color: #b0b0b0; 
+            padding: 15px 30px; cursor: pointer; border-radius: 12px; font-weight: bold; 
+            font-size: 1.2rem; display: flex; align-items: center; gap: 10px; transition: 0.3s;
+        }
+        .tab-btn:hover { transform: translateY(-3px); border-color: var(--taxi-yellow); }
+        .tab-btn.active { background: var(--taxi-yellow); color: #000; border-color: var(--taxi-yellow); }
+
+        /* الكروت وتنسيق الحقول */
+        .container { padding: 30px; max-width: 1400px; margin: auto; }
+        .card { 
+            background: var(--card-bg); padding: 30px; border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-bottom: 35px; border: 1px solid var(--border-color); 
         }
         
-        /* خيار إظهار كلمة المرور */
-        .toggle-password {
-            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-            cursor: pointer; color: var(--taxi-yellow); font-size: 0.8rem; user-select: none;
+        /* شبكة الحقول - عرض مناسب ومسافات متساوية */
+        .form-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 25px; 
+        }
+        
+        .field-group label { display: block; margin-bottom: 10px; font-weight: bold; color: var(--taxi-yellow); font-size: 1rem; }
+        .field-group input, .field-group select, .field-group textarea { 
+            width: 100%; padding: 12px; background: #252525; border: 1px solid var(--border-color); 
+            border-radius: 8px; color: #fff; font-family: 'Tajawal'; font-size: 1.1rem; box-sizing: border-box;
         }
 
-        .login-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 0.85rem; }
-        .login-options label { color: var(--text-main); cursor: pointer; }
+        /* الجداول */
+        .table-container { overflow-x: auto; border-radius: 15px; margin-top: 20px; border: 1px solid var(--border-color); }
+        table { width: 100%; border-collapse: collapse; background: var(--card-bg); }
+        th { background: #2a2a2a; color: var(--taxi-yellow); padding: 18px; text-align: right; font-size: 1rem; }
+        td { padding: 15px; border-bottom: 1px solid var(--border-color); color: #ccc; }
+        tr:hover { background: #252525; }
 
-        .btn-login { 
-            width: 100%; padding: 12px; background: var(--taxi-yellow); color: #000; 
-            border: none; border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: 0.3s;
+        .btn-action { 
+            padding: 14px 40px; border: none; border-radius: 10px; cursor: pointer; 
+            font-weight: bold; font-size: 1.1rem; transition: 0.3s;
         }
-        .btn-login:hover { background: #d4ac0d; transform: translateY(-2px); }
-
-        /* باقي تنسيقات النظام */
-        .system-header { background: #000; padding: 15px 0; text-align: center; border-bottom: 2px solid var(--taxi-yellow); }
-        .nav-tabs { background: #1a1a1a; display: flex; justify-content: center; flex-wrap: wrap; padding: 15px; gap: 12px; border-bottom: 1px solid var(--border-color); }
-        .tab-btn { background: #2a2a2a; border: 1px solid var(--border-color); color: #b0b0b0; padding: 12px 20px; cursor: pointer; border-radius: 12px; font-weight: bold; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
-        .tab-btn.active { background: var(--taxi-yellow); color: #000; }
-        .container { padding: 25px; max-width: 1300px; margin: auto; }
-        .card { background: var(--card-bg); padding: 25px; border-radius: 18px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); margin-bottom: 30px; border: 1px solid var(--border-color); }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
-        .table-container { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #2a2a2a; color: var(--taxi-yellow); padding: 15px; text-align: right; }
-        td { padding: 14px; border-bottom: 1px solid var(--border-color); }
+        .btn-save { background: #27ae60; color: #fff; }
+        .btn-update { background: #e67e22; color: #fff; }
+        .btn-load { background: var(--taxi-yellow); color: #000; padding: 8px 20px; font-size: 0.9rem; }
+        
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div id="loginSection">
-    <div class="login-header">
-        <h1>🚖</h1>
-        <h2>دخول النظام</h2>
+    <h1 style="color:var(--taxi-yellow); margin-bottom:20px;">🚖</h1>
+    <h2 style="margin-bottom:30px;">نظام إدارة التاكسي الذكي</h2>
+    <input type="text" id="username" class="login-field" placeholder="اسم المستخدم">
+    <div class="pass-container">
+        <input type="password" id="password" class="login-field" placeholder="كلمة المرور">
+        <span class="toggle-btn" onclick="togglePass()">👁️ إظهار</span>
     </div>
-    <div class="form-group">
-        <input type="text" id="username" placeholder="اسم المستخدم">
+    <div style="text-align:right; margin-bottom:20px;">
+        <label style="cursor:pointer"><input type="checkbox" id="rememberMe"> تذكر بياناتي</label>
     </div>
-    <div class="form-group">
-        <input type="password" id="password" placeholder="كلمة المرور">
-        <span class="toggle-password" onclick="togglePassword()">👁️ إظهار</span>
-    </div>
-    <div class="login-options">
-        <label><input type="checkbox" id="rememberMe"> تذكرني</label>
-    </div>
-    <button class="btn-login" onclick="login()">دخول</button>
+    <button class="btn-action btn-save" style="width:100%; background:var(--taxi-yellow); color:#000" onclick="login()">دخول</button>
 </div>
 
 <div id="mainSection" class="hidden">
     <div class="system-header"><h1>نظام إدارة التاكسي الذكي</h1></div>
-    <div class="nav-tabs" id="navTabs">
+    <div class="nav-tabs">
         <button class="tab-btn active" onclick="showTab('Revenues', this)">💰 الإيرادات</button>
         <button class="tab-btn" onclick="showTab('Expenses', this)">💸 المصاريف</button>
         <button class="tab-btn" onclick="showTab('Drivers', this)">👨‍✈️ السائقين</button>
@@ -92,25 +111,32 @@
         <button class="tab-btn" onclick="showTab('Drivers_Log', this)">🔑 الاستلام والتسليم</button>
         <button class="tab-btn" onclick="showTab('Discounts', this)">📉 الخصومات</button>
     </div>
+
     <div class="container">
         <div class="card">
-            <h3 id="formTitle" style="color: var(--taxi-yellow); margin-top:0"></h3>
+            <h3 id="formTitle" style="color: var(--taxi-yellow); margin-top:0; font-size:1.5rem"></h3>
             <form id="dynamicForm">
                 <input type="hidden" id="ID">
                 <div id="fieldsArea" class="form-grid"></div>
-                <div style="margin-top: 25px; display: flex; gap: 12px;">
-                    <button type="button" id="submitBtn" class="btn-login" style="width:auto; padding: 10px 30px; background:#27ae60; color:#white" onclick="handleSubmit()">حفظ</button>
-                    <button type="button" id="updateBtn" class="btn-login hidden" style="width:auto; padding: 10px 30px; background:#e67e22" onclick="handleUpdate()">تحديث</button>
-                    <button type="button" class="btn-login" style="width:auto; padding: 10px 30px; background:#444; color:#fff" onclick="resetForm()">إلغاء</button>
+                <div style="margin-top: 30px; display: flex; gap: 15px;">
+                    <button type="button" id="submitBtn" class="btn-action btn-save" onclick="handleSubmit()">حفظ السجل</button>
+                    <button type="button" id="updateBtn" class="btn-action btn-update hidden" onclick="handleUpdate()">تحديث السجل</button>
+                    <button type="button" class="btn-action" style="background:#444; color:#fff" onclick="resetForm()">إلغاء</button>
                 </div>
             </form>
         </div>
+
         <div class="card">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px">
-                <h3>📊 السجلات</h3>
-                <button class="btn-login" style="width:auto; font-size:0.9rem; padding:5px 15px" onclick="loadTable()">🔄 تحديث</button>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3>📊 السجلات الحالية</h3>
+                <button class="btn-action btn-load" onclick="loadTable()">🔄 عرض/تحديث البيانات</button>
             </div>
-            <div class="table-container"><table id="mainTable"><thead><tr id="tableHeaders"></tr></thead><tbody id="tableBody"></tbody></table></div>
+            <div class="table-container">
+                <table>
+                    <thead><tr id="tableHeaders"></tr></thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -121,60 +147,44 @@
     let currentSheet = "Revenues";
     let dropdowns = { cars: [], drivers: [] };
 
-    // التحقق من وجود بيانات دخول محفوظة عند تحميل الصفحة
+    // تذكر الدخول
     window.onload = () => {
-        const savedUser = localStorage.getItem('taxi_user');
-        const savedPass = localStorage.getItem('taxi_pass');
-        if(savedUser && savedPass) {
-            document.getElementById('username').value = savedUser;
-            document.getElementById('password').value = savedPass;
+        const u = localStorage.getItem('taxi_u');
+        const p = localStorage.getItem('taxi_p');
+        if(u && p) {
+            document.getElementById('username').value = u;
+            document.getElementById('password').value = p;
             document.getElementById('rememberMe').checked = true;
         }
     };
 
-    function togglePassword() {
-        const passInput = document.getElementById('password');
-        const toggleBtn = document.querySelector('.toggle-password');
-        if (passInput.type === "password") {
-            passInput.type = "text";
-            toggleBtn.innerText = "🙈 إخفاء";
-        } else {
-            passInput.type = "password";
-            toggleBtn.innerText = "👁️ إظهار";
-        }
+    function togglePass() {
+        const p = document.getElementById('password');
+        p.type = p.type === "password" ? "text" : "password";
     }
 
     async function login() {
         const user = document.getElementById('username').value;
         const pass = document.getElementById('password').value;
-        const remember = document.getElementById('rememberMe').checked;
-
-        if(!user || !pass) return alert("يرجى إدخال البيانات");
+        const rem = document.getElementById('rememberMe').checked;
+        if(!user || !pass) return alert("أدخل البيانات");
 
         try {
             const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'login', username: user, password: pass }) });
             const result = await res.json();
-            if (result.success) {
-                if(remember) {
-                    localStorage.setItem('taxi_user', user);
-                    localStorage.setItem('taxi_pass', pass);
-                } else {
-                    localStorage.removeItem('taxi_user');
-                    localStorage.removeItem('taxi_pass');
-                }
+            if(result.success) {
+                if(rem) { localStorage.setItem('taxi_u', user); localStorage.setItem('taxi_p', pass); }
+                else { localStorage.clear(); }
                 loggedInUser = result.user;
                 document.getElementById('loginSection').classList.add('hidden');
                 document.getElementById('mainSection').classList.remove('hidden');
                 await loadDropdowns();
                 showTab('Revenues', document.querySelector('.tab-btn'));
-            } else { alert("فشل الدخول: بيانات خاطئة"); }
-        } catch(e) { alert("خطأ في الاتصال بالسيرفر"); }
+            } else alert("بيانات خاطئة");
+        } catch(e) { alert("فشل الاتصال"); }
     }
 
-    // (بقية الدوال البرمجية السابقة: loadDropdowns, showTab, renderForm, loadTable, handleSubmit, handleUpdate, editRow, resetForm)
-    // ملاحظة: تأكدت من أن الدوال مطابقة للكود الذي يعمل لديك مع إضافة الحقل "Office" للسيارات.
-    
-    const labelsMap = { 'Date': 'التاريخ', 'DATE': 'التاريخ', 'Car_No': 'السيارة', 'Driver_name': 'السائق', 'Category': 'الفئة', 'Amount': 'المبلغ', 'Method': 'الدفع', 'Collector': 'المحصل', 'Notes': 'ملاحظات', 'Seller': 'المورد', 'Expense_Type': 'النوع', 'Name': 'الاسم', 'National_No': 'الرقم الوطني', 'Mobile': 'الهاتف', 'Plate_No': 'اللوحة', 'Owner': 'المالك', 'Time': 'الوقت', 'Movement_Type': 'الحركة', 'Odometer': 'العداد', 'reason': 'السبب', 'Type': 'النوع', 'Brand': 'الماركة', 'Model': 'الموديل', 'Fuel_Type': 'الوقود', 'Office': 'المكتب' };
+    const labelsMap = { 'Date':'التاريخ','DATE':'التاريخ','Car_No':'السيارة','Driver_name':'السائق','Category':'الفئة','Amount':'المبلغ','Method':'الدفع','Collector':'المحصل','Notes':'ملاحظات','Seller':'المورد','Expense_Type':'النوع','Name':'الاسم','National_No':'الرقم الوطني','Mobile':'الهاتف','Plate_No':'اللوحة','Owner':'المالك','Time':'الوقت','Movement_Type':'الحركة','Odometer':'العداد','reason':'السبب','Type':'النوع','Brand':'الماركة','Model':'الموديل','Fuel_Type':'الوقود','Office':'المكتب' };
 
     const schema = {
         Revenues: [ { id: 'Date', label: 'التاريخ', type: 'date' }, { id: 'Car_No', label: 'السيارة', type: 'select', options: 'cars' }, { id: 'Driver_name', label: 'السائق', type: 'select', options: 'drivers' }, { id: 'Category', label: 'الفئة', type: 'select', values: ['ضمان', 'مخالفات', 'أخرى'] }, { id: 'Amount', label: 'المبلغ', type: 'number' }, { id: 'Method', label: 'الدفع', type: 'select', values: ['Cash', 'Cliq', 'Transfer', 'Bank'] }, { id: 'Notes', label: 'ملاحظات', type: 'textarea' } ],
@@ -187,11 +197,52 @@
 
     async function loadDropdowns() { const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'getDropdowns' }) }); dropdowns = await res.json(); }
     function showTab(sheetName, btn) { currentSheet = sheetName; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); document.getElementById('formTitle').innerText = btn.innerText; document.getElementById('tableBody').innerHTML = ""; renderForm(); }
-    function renderForm() { const area = document.getElementById('fieldsArea'); area.innerHTML = ''; schema[currentSheet].forEach(f => { let inputHtml = ''; if (f.type === 'select') { let opts = f.values ? f.values : dropdowns[f.options]; inputHtml = `<select id="${f.id}"><option value="">اختر...</option>${opts.map(o => `<option value="${o}">${o}</option>`).join('')}</select>`; } else if (f.type === 'textarea') { inputHtml = `<textarea id="${f.id}" rows="1"></textarea>`; } else { inputHtml = `<input type="${f.type}" id="${f.id}">`; } area.innerHTML += `<div><label style="color:var(--taxi-yellow); font-size:0.85rem">${f.label}</label>${inputHtml}</div>`; }); resetForm(); }
-    async function loadTable() { document.getElementById('tableBody').innerHTML = "<tr><td colspan='100%'>جاري التحميل...</td></tr>"; const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: currentSheet }) }); const data = await res.json(); const head = document.getElementById('tableHeaders'); const body = document.getElementById('tableBody'); const filteredHeaders = data.headers.filter(h => h !== 'ID'); head.innerHTML = filteredHeaders.map(h => `<th>${labelsMap[h] || h}</th>`).join('') + "<th>فعل</th>"; body.innerHTML = data.rows.map(row => { const displayRow = row.slice(1); return `<tr>${displayRow.map(c => `<td>${c}</td>`).join('')}<td><button class="btn-login" style="width:auto; padding:3px 10px; font-size:0.8rem; background:#e67e22" onclick='editRow(${JSON.stringify(row)}, ${JSON.stringify(data.headers)})'>تعديل</button></td></tr>`; }).reverse().join(''); }
-    async function handleSubmit() { const formData = { Collector: loggedInUser, User: loggedInUser }; schema[currentSheet].forEach(f => formData[f.id] = document.getElementById(f.id).value); try { const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'submitForm', sheetName: currentSheet, formData: formData }) }); const result = await res.json(); if (result.success) { alert("تم الحفظ"); resetForm(); } } catch(e) { alert("فشل الحفظ"); } }
-    async function handleUpdate() { const formData = { ID: document.getElementById('ID').value }; schema[currentSheet].forEach(f => formData[f.id] = document.getElementById(f.id).value); const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'updateData', sheetName: currentSheet, formData: formData }) }); const result = await res.json(); if (result.success) { alert("تم التحديث"); resetForm(); } }
-    function editRow(row, headers) { headers.forEach((h, i) => { if (h === 'ID') document.getElementById('ID').value = row[i]; else { const el = document.getElementById(h); if (el) el.value = row[i]; } }); document.getElementById('submitBtn').classList.add('hidden'); document.getElementById('updateBtn').classList.remove('hidden'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    function renderForm() { 
+        const area = document.getElementById('fieldsArea'); area.innerHTML = ''; 
+        schema[currentSheet].forEach(f => {
+            let html = '';
+            if(f.type === 'select') {
+                let opts = f.values ? f.values : dropdowns[f.options];
+                html = `<select id="${f.id}"><option value="">اختر...</option>${opts.map(o => `<option value="${o}">${o}</option>`).join('')}</select>`;
+            } else if(f.type === 'textarea') { html = `<textarea id="${f.id}" rows="2"></textarea>`; }
+            else { html = `<input type="${f.type}" id="${f.id}">`; }
+            area.innerHTML += `<div class="field-group"><label>${f.label}</label>${html}</div>`;
+        });
+        resetForm();
+    }
+    async function loadTable() {
+        document.getElementById('tableBody').innerHTML = "<tr><td colspan='100%'>جاري جلب السجلات...</td></tr>";
+        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: currentSheet }) });
+        const data = await res.json();
+        const head = document.getElementById('tableHeaders');
+        const body = document.getElementById('tableBody');
+        const filteredHeaders = data.headers.filter(h => h !== 'ID');
+        head.innerHTML = filteredHeaders.map(h => `<th>${labelsMap[h] || h}</th>`).join('') + "<th>فعل</th>";
+        body.innerHTML = data.rows.map(row => {
+            const displayRow = row.slice(1);
+            return `<tr>${displayRow.map(c => `<td>${c}</td>`).join('')}<td><button class="btn-load" style="background:#e67e22; color:#fff" onclick='editRow(${JSON.stringify(row)}, ${JSON.stringify(data.headers)})'>تعديل</button></td></tr>`;
+        }).reverse().join('');
+    }
+    async function handleSubmit() { 
+        const formData = { Collector: loggedInUser, User: loggedInUser };
+        schema[currentSheet].forEach(f => formData[f.id] = document.getElementById(f.id).value);
+        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'submitForm', sheetName: currentSheet, formData: formData }) });
+        const result = await res.json();
+        if(result.success) { alert("تم الحفظ"); resetForm(); }
+    }
+    async function handleUpdate() { 
+        const formData = { ID: document.getElementById('ID').value };
+        schema[currentSheet].forEach(f => formData[f.id] = document.getElementById(f.id).value);
+        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'updateData', sheetName: currentSheet, formData: formData }) });
+        const result = await res.json();
+        if(result.success) { alert("تم التحديث"); resetForm(); }
+    }
+    function editRow(row, headers) {
+        headers.forEach((h, i) => { if(h === 'ID') document.getElementById('ID').value = row[i]; else { const el = document.getElementById(h); if(el) el.value = row[i]; } });
+        document.getElementById('submitBtn').classList.add('hidden');
+        document.getElementById('updateBtn').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     function resetForm() { document.getElementById('dynamicForm').reset(); document.getElementById('ID').value = ""; document.getElementById('submitBtn').classList.remove('hidden'); document.getElementById('updateBtn').classList.add('hidden'); }
 </script>
 </body>
