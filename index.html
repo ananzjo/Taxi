@@ -3,111 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة التاكسي - الإيرادات</title>
+    <title>نظام إدارة التاكسي | الإيرادات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #2c3e50; --secondary: #34495e; --accent: #3498db; --zebra: #f2f2f2; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 20px; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h2 { color: var(--primary); text-align: center; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
-        
-        /* شاشة تسجيل الدخول */
-        #loginSection { max-width: 400px; margin: 100px auto; padding: 30px; border: 1px solid #ddd; border-radius: 10px; background: #fff; }
-        
-        /* النماذج */
+        :root {
+            --taxi-yellow: #f1c40f;
+            --taxi-black: #2c3e50;
+            --bg-light: #f8f9fa;
+            --white: #ffffff;
+            --accent: #e67e22;
+            --success: #27ae60;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-light);
+            margin: 0;
+            padding: 20px;
+            color: var(--taxi-black);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        /* شاشة تسجيل الدخول بتصميم عصري */
+        #loginSection {
+            max-width: 400px;
+            margin: 80px auto;
+            padding: 40px;
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-top: 8px solid var(--taxi-yellow);
+        }
+
+        #loginSection h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--taxi-black);
+        }
+
+        /* الهيدر العلوي */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--taxi-black);
+            color: var(--taxi-yellow);
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* تصميم الفورم */
+        .card {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: var(--accent); color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #2980b9; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 0.9rem; }
         
-        /* جدول زيبرا */
-        table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: right; }
-        th { background-color: var(--primary); color: white; }
-        tr:nth-child(even) { background-color: var(--zebra); }
-        tr:hover { background-color: #e9ecef; }
-        .edit-btn { background: #e67e22; padding: 5px 10px; font-size: 12px; }
-        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--taxi-yellow);
+            outline: none;
+            box-shadow: 0 0 8px rgba(241, 196, 15, 0.2);
+        }
+
+        /* الأزرار */
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, opacity 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--taxi-yellow); color: var(--taxi-black); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-edit { background: var(--accent); color: white; }
+        .btn-secondary { background: #95a5a6; color: white; }
+
+        /* جدول زيبرا المطور */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+        }
+
+        th {
+            background-color: var(--taxi-black);
+            color: var(--taxi-yellow);
+            padding: 15px;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:nth-child(even) { background-color: #fafafa; }
+        tr:hover { background-color: #fff9e6; }
+
         .hidden { display: none; }
+        .loader { color: var(--accent); font-size: 0.8rem; margin-right: 10px; }
+
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="loginSection">
-        <h2>تسجيل الدخول</h2>
+        <h2>🚖 تسجيل الدخول</h2>
         <div class="form-group">
             <label>اسم المستخدم</label>
-            <input type="text" id="username" placeholder="أدخل اسم المستخدم">
+            <input type="text" id="username" placeholder="اسم المستخدم">
         </div>
         <div class="form-group">
             <label>كلمة المرور</label>
-            <input type="password" id="password" placeholder="أدخل كلمة المرور">
+            <input type="password" id="password" placeholder="••••••••">
         </div>
-        <button onclick="login()">دخول</button>
+        <button class="btn btn-primary" style="width: 100%;" onclick="login()">دخول للنظام</button>
     </div>
 
     <div id="mainSection" class="hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2>نموذج الإيرادات (Revenues)</h2>
-            <p>المستخدم الحالي: <span id="currentUser" style="font-weight: bold; color: var(--accent);"></span></p>
+        <div class="header-bar">
+            <h2 style="margin:0;">🚖 إدارة الإيرادات</h2>
+            <div>
+                مرحباً: <span id="currentUser"></span>
+            </div>
         </div>
 
-        <form id="revenueForm">
-            <input type="hidden" id="ID"> <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="form-group">
-                    <label>التاريخ (dd mm yyyy)</label>
-                    <input type="text" id="Date" placeholder="01 01 2024">
+        <div class="card">
+            <form id="revenueForm">
+                <input type="hidden" id="ID">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>التاريخ (dd mm yyyy)</label>
+                        <input type="text" id="Date" placeholder="11 02 2026">
+                    </div>
+                    <div class="form-group">
+                        <label>رقم السيارة</label>
+                        <select id="Car_No"><option value="">جاري التحميل...</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>اسم السائق</label>
+                        <select id="Driver_name"><option value="">جاري التحميل...</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>الفئة</label>
+                        <select id="Category">
+                            <option value="ضمان">ضمان</option>
+                            <option value="مخالفات">مخالفات</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>المبلغ (JD)</label>
+                        <input type="number" id="Amount" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>طريقة الدفع</label>
+                        <select id="Method">
+                            <option value="Cash">Cash</option>
+                            <option value="Cliq">Cliq</option>
+                            <option value="Transfer">Transfer</option>
+                            <option value="Bank">Bank</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>رقم السيارة</label>
-                    <select id="Car_No"><option value="">جاري التحميل...</option></select>
+                    <label>ملاحظات عامة</label>
+                    <textarea id="Notes" rows="2" placeholder="أضف أي ملاحظات إضافية هنا..."></textarea>
                 </div>
-                <div class="form-group">
-                    <label>اسم السائق</label>
-                    <select id="Driver_name"><option value="">جاري التحميل...</option></select>
+                
+                <div style="margin-top: 10px;">
+                    <button type="button" id="submitBtn" class="btn btn-success" onclick="submitRevenue()">حفظ السجل</button>
+                    <button type="button" id="updateBtn" class="btn btn-edit hidden" onclick="updateRevenue()">تحديث البيانات</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">إلغاء</button>
                 </div>
-                <div class="form-group">
-                    <label>الفئة</label>
-                    <select id="Category">
-                        <option value="ضمان">ضمان</option>
-                        <option value="مخالفات">مخالفات</option>
-                        <option value="أخرى">أخرى</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>المبلغ (JD)</label>
-                    <input type="number" id="Amount" step="0.01">
-                </div>
-                <div class="form-group">
-                    <label>طريقة الدفع</label>
-                    <select id="Method">
-                        <option value="Cash">Cash</option>
-                        <option value="Cliq">Cliq</option>
-                        <option value="Transfer">Transfer</option>
-                        <option value="Bank">Bank</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>ملاحظات</label>
-                <textarea id="Notes" rows="2"></textarea>
-            </div>
-            <button type="button" id="submitBtn" onclick="submitRevenue()">حفظ البيانات</button>
-            <button type="button" id="updateBtn" class="hidden" onclick="updateRevenue()" style="background: #e67e22;">تحديث التعديلات</button>
-            <button type="button" onclick="resetForm()" style="background: #95a5a6;">إلغاء/جديد</button>
-        </form>
+            </form>
+        </div>
 
-        <hr>
-
-        <h3>سجل الإيرادات المسجلة</h3>
-        <div style="overflow-x:auto;">
-            <table id="revenueTable">
-                <thead>
-                    <tr id="tableHeaders"></tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
+        <div class="card">
+            <h3 style="margin-top:0;">📊 سجل البيانات المسجلة</h3>
+            <div class="table-container">
+                <table id="revenueTable">
+                    <thead>
+                        <tr id="tableHeaders"></tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -116,44 +237,40 @@
     const scriptUrl = "https://script.google.com/macros/s/AKfycbxXl_1lmAK1HRSemLmW1z9XDPcOPqu8hmKEtaPFRYG8qtmbgKraI-a9ADW0R_EObuel/exec";
     let loggedInUser = "";
 
-    // 1. وظيفة تسجيل الدخول
     async function login() {
         const user = document.getElementById('username').value;
         const pass = document.getElementById('password').value;
-        
-        const response = await fetch(scriptUrl, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'login', username: user, password: pass })
-        });
-        const result = await response.json();
-        
-        if (result.success) {
-            loggedInUser = result.user;
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('mainSection').classList.remove('hidden');
-            document.getElementById('currentUser').innerText = loggedInUser;
-            loadInitialData();
-        } else {
-            alert("خطأ في البيانات!");
-        }
+        if(!user || !pass) return alert("يرجى تعبئة الحقول");
+
+        try {
+            const response = await fetch(scriptUrl, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'login', username: user, password: pass })
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                loggedInUser = result.user;
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('mainSection').classList.remove('hidden');
+                document.getElementById('currentUser').innerText = loggedInUser;
+                loadInitialData();
+            } else {
+                alert("خطأ في بيانات الدخول!");
+            }
+        } catch(e) { alert("فشل الاتصال بالسيرفر"); }
     }
 
-    // 2. تحميل القوائم المنسدلة والجدول عند الدخول
     async function loadInitialData() {
-        // جلب القوائم
         const dropRes = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'getDropdowns' }) });
         const dropData = await dropRes.json();
         
-        const carSelect = document.getElementById('Car_No');
-        const driverSelect = document.getElementById('Driver_name');
-        
-        carSelect.innerHTML = dropData.cars.map(c => `<option value="${c}">${c}</option>`).join('');
-        driverSelect.innerHTML = dropData.drivers.map(d => `<option value="${d}">${d}</option>`).join('');
+        document.getElementById('Car_No').innerHTML = dropData.cars.map(c => `<option value="${c}">${c}</option>`).join('');
+        document.getElementById('Driver_name').innerHTML = dropData.drivers.map(d => `<option value="${d}">${d}</option>`).join('');
         
         loadTable();
     }
 
-    // 3. تحميل جدول الإيرادات (زيبرا)
     async function loadTable() {
         const response = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: 'Revenues' }) });
         const result = await response.json();
@@ -162,16 +279,15 @@
             const head = document.getElementById('tableHeaders');
             const body = document.getElementById('tableBody');
             
-            head.innerHTML = result.headers.map(h => `<th>${h}</th>`).join('') + "<th>إجراء</th>";
+            head.innerHTML = result.headers.map(h => `<th>${h}</th>`).join('') + "<th>الإجراء</th>";
             
-            body.innerHTML = result.rows.map((row, index) => {
+            body.innerHTML = result.rows.map((row) => {
                 let rowHtml = row.map(cell => `<td>${cell}</td>`).join('');
-                return `<tr>${rowHtml}<td><button class="edit-btn" onclick='editRow(${JSON.stringify(row)}, ${JSON.stringify(result.headers)})'>تعديل</button></td></tr>`;
-            }).join('');
+                return `<tr>${rowHtml}<td><button class="btn btn-edit" style="padding:4px 10px; font-size:12px;" onclick='editRow(${JSON.stringify(row)}, ${JSON.stringify(result.headers)})'>تعديل</button></td></tr>`;
+            }).reverse().join(''); // عرض الأحدث أولاً
         }
     }
 
-    // 4. إرسال بيانات جديدة
     async function submitRevenue() {
         const formData = {
             Date: document.getElementById('Date').value,
@@ -189,10 +305,9 @@
             body: JSON.stringify({ action: 'submitForm', sheetName: 'Revenues', formData: formData })
         });
         const result = await response.json();
-        if (result.success) { alert("تم الحفظ!"); resetForm(); loadTable(); }
+        if (result.success) { resetForm(); loadTable(); }
     }
 
-    // 5. وضع البيانات في الفورم للتعديل
     function editRow(rowData, headers) {
         headers.forEach((h, i) => {
             const el = document.getElementById(h);
@@ -200,9 +315,9 @@
         });
         document.getElementById('submitBtn').classList.add('hidden');
         document.getElementById('updateBtn').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 6. تحديث البيانات
     async function updateRevenue() {
         const formData = {
             ID: document.getElementById('ID').value,
@@ -221,7 +336,7 @@
             body: JSON.stringify({ action: 'updateData', sheetName: 'Revenues', formData: formData })
         });
         const result = await response.json();
-        if (result.success) { alert("تم التحديث!"); resetForm(); loadTable(); }
+        if (result.success) { resetForm(); loadTable(); }
     }
 
     function resetForm() {
