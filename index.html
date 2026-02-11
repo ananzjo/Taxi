@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة التاكسي الشامل</title>
+    <title>نظام إدارة التاكسي</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -39,6 +39,7 @@
         .container { padding: 20px; max-width: 1300px; margin: auto; }
         .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
         
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; }
         input, select, textarea { 
             width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 8px; font-family: 'Tajawal'; font-size: 1rem; box-sizing: border-box;
@@ -66,7 +67,7 @@
     <input type="text" id="username" placeholder="اسم المستخدم" style="margin-bottom:15px">
     <input type="password" id="password" placeholder="كلمة المرور" style="margin-bottom:15px">
     <button class="btn btn-success" style="width:100%; background: var(--taxi-black); color: var(--taxi-yellow);" onclick="login()">دخول</button>
-    <div class="version-tag">Version 1.2.3</div>
+    <div class="version-tag">Version 1.2.4</div>
 </div>
 
 <div id="mainSection" class="hidden">
@@ -84,7 +85,7 @@
             <h3 id="formTitle"></h3>
             <form id="dynamicForm">
                 <input type="hidden" id="ID">
-                <div id="fieldsArea" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;"></div>
+                <div id="fieldsArea" class="form-grid"></div>
                 <div style="margin-top: 25px; display: flex; gap: 10px;">
                     <button type="button" id="submitBtn" class="btn btn-success" onclick="handleSubmit()">حفظ السجل</button>
                     <button type="button" id="updateBtn" class="btn btn-edit hidden" onclick="handleUpdate()">تحديث التعديلات</button>
@@ -111,6 +112,7 @@
     let currentSheet = "Revenues";
     let dropdowns = { cars: [], drivers: [] };
 
+    // ماب لتعريب العناوين
     const labelsMap = {
         'Date': 'التاريخ', 'DATE': 'التاريخ', 'Car_No': 'السيارة', 'Driver_name': 'السائق', 
         'Category': 'الفئة', 'Amount': 'المبلغ', 'Method': 'الدفع', 'Collector': 'المحصل', 
@@ -118,65 +120,21 @@
         'National_No': 'الرقم الوطني', 'Mobile': 'الهاتف', 'Plate_No': 'اللوحة', 
         'Owner': 'المالك', 'Time': 'الوقت', 'Movement_Type': 'الحركة', 'Odometer': 'العداد',
         'Address': 'العنوان', 'Location': 'الموقع', 'Brand': 'الماركة', 'Model': 'الموديل',
-        'In-Charge': 'المسؤول', 'User': 'المستخدم', 'reason': 'السبب', 'Type': 'النوع'
+        'reason': 'السبب', 'Type': 'النوع'
     };
 
+    // القالب لكل شيت
     const schema = {
         Revenues: [
             { id: 'Date', label: 'التاريخ', type: 'text' },
             { id: 'Car_No', label: 'رقم السيارة', type: 'select', options: 'cars' },
             { id: 'Driver_name', label: 'اسم السائق', type: 'select', options: 'drivers' },
             { id: 'Category', label: 'الفئة', type: 'select', values: ['ضمان', 'مخالفات', 'أخرى'] },
-            { id: 'Amount', label: 'المبلغ (JD)', type: 'number' },
+            { id: 'Amount', label: 'المبلغ', type: 'number' },
             { id: 'Method', label: 'طريقة الدفع', type: 'select', values: ['Cash', 'Cliq', 'Transfer', 'Bank'] },
             { id: 'Notes', label: 'ملاحظات', type: 'textarea' }
         ],
         Expenses: [
             { id: 'DATE', label: 'التاريخ', type: 'text' },
             { id: 'Car_No', label: 'رقم السيارة', type: 'select', options: 'cars' },
-            { id: 'Driver_name', label: 'اسم السائق', type: 'select', options: 'drivers' },
-            { id: 'Seller', label: 'المورد', type: 'text' },
-            { id: 'Expense_Type', label: 'نوع المصروف', type: 'text' },
-            { id: 'Amount', label: 'المبلغ', type: 'number' },
-            { id: 'Notes', label: 'ملاحظات', type: 'textarea' }
-        ],
-        Drivers: [
-            { id: 'Name', label: 'الاسم', type: 'text' },
-            { id: 'National_No', label: 'الرقم الوطني', type: 'number' },
-            { id: 'Mobile', label: 'الموبايل', type: 'number' },
-            { id: 'Address', label: 'العنوان', type: 'text' },
-            { id: 'Location', label: 'رابط الموقع', type: 'text' }
-        ],
-        Cars: [
-            { id: 'Plate_No', label: 'رقم اللوحة', type: 'text' },
-            { id: 'Owner', label: 'المالك', type: 'text' },
-            { id: 'Brand', label: 'الماركة', type: 'text' },
-            { id: 'Model', label: 'الموديل', type: 'text' }
-        ],
-        Drivers_Log: [
-            { id: 'Date', label: 'التاريخ', type: 'text' },
-            { id: 'Time', label: 'الوقت', type: 'text' },
-            { id: 'Car_No', label: 'رقم السيارة', type: 'select', options: 'cars' },
-            { id: 'Driver_name', label: 'السائق', type: 'select', options: 'drivers' },
-            { id: 'Movement_Type', label: 'الحركة', type: 'select', values: ['تسليم', 'استلام'] },
-            { id: 'Odometer', label: 'العداد', type: 'number' }
-        ],
-        Discounts: [
-            { id: 'DATE', label: 'التاريخ', type: 'text' },
-            { id: 'Car_No', label: 'السيارة', type: 'select', options: 'cars' },
-            { id: 'Driver_name', label: 'السائق', type: 'select', options: 'drivers' },
-            { id: 'reason', label: 'السبب', type: 'text' },
-            { id: 'Type', label: 'النوع', type: 'select', values: ['صيانة', 'ترخيص', 'أخرى'] },
-            { id: 'Amount', label: 'القيمة', type: 'number' }
-        ]
-    };
-
-    async function login() {
-        const user = document.getElementById('username').value;
-        const pass = document.getElementById('password').value;
-        try {
-            const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'login', username: user, password: pass }) });
-            const result = await res.json();
-            if (result.success) {
-                loggedInUser = result.user;
-                document.getElementById('loginSection').classList.add('hidden
+            { id: 'Driver_name', label: 'اسم السائق
