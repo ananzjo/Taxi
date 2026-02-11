@@ -3,104 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fleet Master v4.0</title>
+    <title>Fleet Master v4.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Tajawal', sans-serif; background: #0f172a; color: white; }
         .taxi-gold { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #000; }
-        .nav-tab { cursor: pointer; padding: 1rem; color: #94a3b8; border-bottom: 3px solid transparent; transition: 0.3s; }
-        .nav-active { color: #fbbf24; border-bottom-color: #fbbf24; font-weight: bold; }
         .card { background: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; }
-        input, select { background: #0f172a !important; color: white !important; border: 1px solid #334155 !important; padding: 10px; border-radius: 6px; width: 100%; }
-        th { color: #fbbf24; background: #000; padding: 12px; text-align: right; }
-        td { padding: 10px; border-bottom: 1px solid #334155; }
+        .input-style { background: #0f172a !important; color: white !important; border: 1px solid #334155 !important; padding: 10px; border-radius: 6px; width: 100%; margin-top: 4px; }
+        .nav-tab { cursor: pointer; padding: 1rem; border-bottom: 3px solid transparent; transition: 0.3s; color: #94a3b8; }
+        .nav-active { color: #fbbf24; border-bottom-color: #fbbf24; font-weight: bold; }
     </style>
 </head>
 <body class="pb-10">
 
-    <header class="bg-black py-4 border-b border-yellow-500/30 text-center text-yellow-500 text-2xl font-bold">
+    <header class="bg-black py-4 border-b border-yellow-500/30 text-center text-yellow-500 text-2xl font-black">
         FLEET MASTER
     </header>
 
-    <nav class="bg-slate-900 border-b border-yellow-500/10 flex justify-center gap-4 overflow-x-auto">
+    <nav class="bg-slate-900 border-b border-yellow-500/10 flex justify-center gap-2 overflow-x-auto shadow-lg">
         <div onclick="showModule('Revenues')" id="n-Revenues" class="nav-tab nav-active">الإيرادات</div>
         <div onclick="showModule('Expenses')" id="n-Expenses" class="nav-tab">المصاريف</div>
         <div onclick="showModule('Drivers_Log')" id="n-Drivers_Log" class="nav-tab">استلام/تسليم</div>
-        <div onclick="showModule('Reports')" id="n-Reports" class="nav-tab">التقارير</div>
     </nav>
 
-    <div class="max-w-6xl mx-auto px-4 mt-6">
+    <div class="max-w-4xl mx-auto px-4 mt-8">
         <div id="view-add" class="card">
-            <h2 id="module-title" class="text-xl font-bold mb-4 text-yellow-500">إدارة الإيرادات</h2>
+            <h2 id="module-title" class="text-xl font-bold mb-6 text-yellow-500 border-r-4 border-yellow-500 pr-3">تحميل البيانات...</h2>
             <form id="mainForm" onsubmit="handleFormSubmit(event)">
                 <input type="hidden" name="sheetName" id="current-sheet" value="Revenues">
-                <div id="form-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                <button type="submit" id="submit-btn" class="taxi-gold w-full mt-6 py-3 rounded-lg font-bold">حفظ البيانات</button>
+                <div id="form-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    </div>
+                <button type="submit" id="submit-btn" class="taxi-gold w-full mt-8 py-4 rounded-xl font-black text-lg shadow-lg active:scale-95 transition-transform">حفظ البيانات</button>
             </form>
-        </div>
-
-        <div id="view-Reports" class="hidden space-y-4">
-             <button onclick="runPerformanceReport()" class="taxi-gold p-3 rounded-lg w-full font-bold">تحديث تقرير الأداء</button>
-             <div class="card overflow-x-auto">
-                 <table class="w-full text-right">
-                     <thead id="rep-head"></thead>
-                     <tbody id="rep-body"></tbody>
-                 </table>
-             </div>
         </div>
     </div>
 
     <script>
-        // ضع رابط الـ Web App الخاص بك هنا
-        const API_URL = "";
+        // ضع رابط الـ Web App الخاص بك هنا بعد التحديث
+        const API_URL = "https://script.google.com/macros/s/AKfycbx5iOIdfREJxHZuYOUAHfPtCNeHF6jKT_ZNHR7TF-ugKX9hd3frMzfSVP8NObZ7yZssVw/exec";
 
         async function showModule(m) {
-            document.getElemehttps://script.google.com/macros/s/AKfycbxeoDOw8PycX32XtPe108puIc9Ik-7jkVhDSw72fEd_dyTSfedShCQm9Va3l-LWUajMFw/execntById('current-sheet').value = m;
+            document.getElementById('current-sheet').value = m;
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('nav-active'));
             document.getElementById('n-' + m).classList.add('nav-active');
             
-            if (m === 'Reports') {
-                document.getElementById('view-add').classList.add('hidden');
-                document.getElementById('view-Reports').classList.remove('hidden');
-            } else {
-                document.getElementById('view-add').classList.remove('hidden');
-                document.getElementById('view-Reports').classList.add('hidden');
-                renderFields(m);
-            }
+            const titles = {'Revenues': 'إدارة الإيرادات', 'Expenses': 'إدارة المصاريف', 'Drivers_Log': 'تسليم واستلام السيارات'};
+            document.getElementById('module-title').innerText = titles[m];
+            
+            await renderFields(m);
         }
 
         async function renderFields(m) {
             const container = document.getElementById('form-container');
-            container.innerHTML = "جاري التحميل...";
-            const drivers = await callAPI('getDrivers');
-            const cars = await callAPI('getCars');
+            container.innerHTML = '<div class="col-span-full text-center py-10 text-yellow-500 italic">⏳ جاري جلب القوائم...</div>';
             
-            const dOpts = drivers.map(d => `<option value="${d}">${d}</option>`).join('');
-            const cOpts = cars.map(c => `<option value="${c}">${c}</option>`).join('');
-            const today = new Date().toISOString().split('T')[0];
+            try {
+                const [drivers, cars] = await Promise.all([callAPI('getDrivers'), callAPI('getCars')]);
+                
+                const dOpts = drivers.map(d => `<option value="${d}">${d}</option>`).join('');
+                const cOpts = cars.map(c => `<option value="${c}">${c}</option>`).join('');
+                const today = new Date().toISOString().split('T')[0];
 
-            let html = `<div><label>التاريخ</label><input type="date" name="Date" value="${today}"></div>
-                        <div><label>السيارة</label><select name="Car_No">${cOpts}</select></div>
-                        <div><label>السائق</label><select name="Driver_name">${dOpts}</select></div>`;
+                let html = `
+                    <div><label class="text-xs text-slate-400">التاريخ</label><input type="date" name="Date" value="${today}" class="input-style"></div>
+                    <div><label class="text-xs text-slate-400">رقم السيارة (من العمود B)</label><select name="Car_No" class="input-style">${cOpts}</select></div>
+                    <div><label class="text-xs text-slate-400">اسم السائق (من العمود B)</label><select name="Driver_name" class="input-style">${dOpts}</select></div>
+                `;
 
-            if (m === 'Revenues') {
-                html += `<div><label>المبلغ</label><input type="number" step="0.01" name="Amount"></div>
-                         <div><label>الفئة</label><select name="Category"><option>ضمان</option><option>مخالفات</option></select></div>`;
-            } else if (m === 'Expenses') {
-                html += `<div><label>المبلغ</label><input type="number" step="0.01" name="Amount"></div>
-                         <div><label>النوع</label><input type="text" name="Expense_Type"></div>`;
+                if (m === 'Revenues') {
+                    html += `
+                        <div><label class="text-xs text-slate-400">المبلغ</label><input type="number" step="0.01" name="Amount" class="input-style" required></div>
+                        <div><label class="text-xs text-slate-400">الفئة</label><select name="Category" class="input-style"><option>ضمان</option><option>مخالفات</option><option>أخرى</option></select></div>
+                    `;
+                } else if (m === 'Expenses') {
+                    html += `
+                        <div><label class="text-xs text-slate-400">المبلغ</label><input type="number" step="0.01" name="Amount" class="input-style" required></div>
+                        <div><label class="text-xs text-slate-400">نوع المصروف</label><input type="text" name="Expense_Type" placeholder="مثال: زيت" class="input-style"></div>
+                    `;
+                } else if (m === 'Drivers_Log') {
+                    html += `
+                        <div><label class="text-xs text-slate-400">نوع الحركة</label><select name="Movement_Type" class="input-style"><option>استلام</option><option>تسليم</option></select></div>
+                        <div><label class="text-xs text-slate-400">قراءة العداد</label><input type="number" name="Odometer" class="input-style"></div>
+                    `;
+                }
+
+                container.innerHTML = html;
+            } catch (err) {
+                container.innerHTML = '<div class="col-span-full text-red-500 font-bold">❌ فشل الاتصال بالبيانات</div>';
             }
-
-            container.innerHTML = html;
         }
 
         function callAPI(action, sheet = '') {
-            return new Promise((resolve) => {
-                const cb = 'cb_' + Math.round(Math.random() * 1000000);
+            return new Promise((resolve, reject) => {
+                const callbackName = 'cb_' + Math.round(Math.random() * 1000000);
                 const script = document.createElement('script');
-                window[cb] = (data) => { delete window[cb]; document.body.removeChild(script); resolve(data); };
-                script.src = `${API_URL}?action=${action}&sheetName=${sheet}&callback=${cb}`;
+                
+                window[callbackName] = (data) => {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    if (data && data.error) reject(data.error);
+                    else resolve(data);
+                };
+
+                script.onerror = () => reject('Script load error');
+                script.src = `${API_URL}?action=${action}&sheetName=${sheet}&callback=${callbackName}`;
                 document.body.appendChild(script);
             });
         }
@@ -108,9 +115,21 @@
         function handleFormSubmit(event) {
             event.preventDefault();
             const btn = document.getElementById('submit-btn');
-            btn.disabled = true; btn.innerText = "جاري الحفظ...";
-            fetch(API_URL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(new FormData(event.target)) })
-                .then(() => { alert("تم الحفظ!"); location.reload(); });
+            btn.disabled = true;
+            btn.innerText = "⏳ جاري الحفظ...";
+            
+            fetch(API_URL, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                body: new URLSearchParams(new FormData(event.target)) 
+            }).then(() => {
+                alert("✅ تم حفظ البيانات بنجاح!");
+                location.reload();
+            }).catch(() => {
+                alert("❌ حدث خطأ في الحفظ");
+                btn.disabled = false;
+                btn.innerText = "حفظ البيانات";
+            });
         }
 
         window.onload = () => showModule('Revenues');
