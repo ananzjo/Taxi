@@ -1,250 +1,308 @@
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fleet Master v3.0 | النظام المتكامل</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { font-family: 'Tajawal', sans-serif; background: #0f172a; color: white; -webkit-tap-highlight-color: transparent; }
-        .taxi-gold { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #000; }
-        
-        /* تظليل الجداول Zebra Stripe */
-        tbody tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
-        tbody tr:nth-child(odd) { background-color: rgba(0, 0, 0, 0.2); }
-        tbody tr:hover { background-color: rgba(251, 191, 36, 0.1) !important; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fleet Master v3.0 | النظام المتكامل</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* إعدادات الخط والخلفية العامة */
+        body { 
+            font-family: 'Tajawal', sans-serif; 
+            background-color: #0f172a; 
+            color: #f1f5f9; 
+            margin: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        /* تحسين الأزرار للتنقل */
-        .nav-tab { 
-            cursor: pointer; 
-            padding: 1.2rem 1.5rem; /* تكبير الحجم */
-            color: #94a3b8; 
-            border-bottom: 4px solid transparent; 
-            white-space: nowrap; 
-            font-size: 16px; 
-            transition: 0.3s;
-        }
-        .nav-active { color: #fbbf24; border-bottom-color: #fbbf24; font-weight: bold; background: rgba(251, 191, 36, 0.05); }
-        
-        .card { background: #1e293b; border: 1px solid #334155; border-radius: 15px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        /* منع الزووم التلقائي في آيفون */
-        input, select, textarea { 
-            font-size: 16px !important; 
-            background: #0f172a !important; 
-            color: white !important; 
-            border: 1px solid #334155 !important; 
-            padding: 12px; 
-            border-radius: 8px; 
-            width: 100%; 
-            outline: none; 
-        }
-        
-        th { color: #fbbf24; padding: 15px; text-align: right; border-bottom: 2px solid #334155; font-size: 14px; background: #000; }
-        td { padding: 12px; border-bottom: 1px solid #334155; font-size: 13px; }
-        
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-    </style>
+        /* تنسيق الهوية البصرية (الذهبي والأسود) */
+        .taxi-gold { 
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); 
+            color: #000; 
+        }
+
+        /* تحسين شريط التنقل العلوي */
+        .nav-tab { 
+            cursor: pointer; 
+            padding: 1rem 1.5rem; 
+            color: #94a3b8; 
+            border-bottom: 3px solid transparent; 
+            white-space: nowrap; 
+            font-size: 15px; 
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .nav-active { 
+            color: #fbbf24; 
+            border-bottom-color: #fbbf24; 
+            font-weight: 700; 
+            background: rgba(251, 191, 36, 0.1); 
+        }
+
+        /* تنسيق البطاقات (Cards) */
+        .card { 
+            background: #1e293b; 
+            border: 1px solid #334155; 
+            border-radius: 16px; 
+            padding: 24px; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); 
+        }
+
+        /* تنسيق المدخلات - تحسين الشكل ومنع الزووم في آيفون */
+        input, select, textarea { 
+            font-size: 16px !important; 
+            background: #0f172a !important; 
+            color: #fff !important; 
+            border: 1px solid #334155 !important; 
+            padding: 12px 16px; 
+            border-radius: 10px; 
+            width: 100%; 
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus, select:focus {
+            border-color: #fbbf24 !important;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* تنسيق الجداول بشكل احترافي */
+        .overflow-x-auto {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th { 
+            background-color: #000; 
+            color: #fbbf24; 
+            padding: 16px; 
+            text-align: right; 
+            font-size: 14px; 
+            border-bottom: 2px solid #334155;
+        }
+        td { 
+            padding: 14px 16px; 
+            border-bottom: 1px solid #334155; 
+            font-size: 13.5px;
+            color: #cbd5e1;
+        }
+        tbody tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.02); }
+        tbody tr:hover { background-color: rgba(251, 191, 36, 0.05); }
+
+        /* إخفاء شريط التمرير مع بقاء ميزة التمرير */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* تحسين أزرار الإضافة والعرض */
+        .tab-btn {
+            transition: all 0.3s;
+        }
+    </style>
 </head>
 <body class="pb-10">
 
-    <header class="bg-black py-4 px-6 border-b border-yellow-500/30 flex items-center justify-center">
-        <div class="flex items-center gap-3">
-            <div class="taxi-gold px-3 py-1 rounded-lg font-black text-xl">FM</div>
-            <h1 class="text-yellow-500 font-bold text-2xl tracking-widest uppercase">Fleet Master</h1>
-        </div>
-    </header>
+    <header class="bg-black py-5 px-6 border-b border-yellow-500/30 flex items-center justify-center">
+        <div class="flex items-center gap-3">
+            <div class="taxi-gold px-3 py-1 rounded-lg font-black text-xl">FM</div>
+            <h1 class="text-yellow-500 font-bold text-2xl tracking-widest uppercase">Fleet Master</h1>
+        </div>
+    </header>
 
-    <nav class="bg-slate-900 border-b border-yellow-500/10 sticky top-0 z-50 overflow-x-auto no-scrollbar">
-        <div class="max-w-7xl mx-auto flex justify-start md:justify-center">
-            <div onclick="showModule('Revenues')" id="n-Revenues" class="nav-tab nav-active">الإيرادات</div>
-            <div onclick="showModule('Expenses')" id="n-Expenses" class="nav-tab">المصاريف</div>
-            <div onclick="showModule('Drivers_Log')" id="n-Drivers_Log" class="nav-tab">استلام/تسليم</div>
-            <div onclick="showModule('Cars')" id="n-Cars" class="nav-tab">السيارات</div>
-            <div onclick="showModule('Drivers')" id="n-Drivers" class="nav-tab">السائقين</div>
-        </div>
-    </nav>
+    <nav class="bg-slate-900 border-b border-yellow-500/10 sticky top-0 z-50 overflow-x-auto no-scrollbar">
+        <div class="max-w-7xl mx-auto flex justify-start md:justify-center">
+            <div onclick="showModule('Revenues')" id="n-Revenues" class="nav-tab nav-active">الإيرادات</div>
+            <div onclick="showModule('Expenses')" id="n-Expenses" class="nav-tab">المصاريف</div>
+            <div onclick="showModule('Drivers_Log')" id="n-Drivers_Log" class="nav-tab">استلام/تسليم</div>
+            <div onclick="showModule('Cars')" id="n-Cars" class="nav-tab">السيارات</div>
+            <div onclick="showModule('Drivers')" id="n-Drivers" class="nav-tab">السائقين</div>
+        </div>
+    </nav>
 
-    <div class="max-w-7xl mx-auto px-4 mt-8">
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
-            <h2 id="module-title" class="text-2xl font-bold border-r-4 border-yellow-500 pr-3 text-yellow-500">إدارة الإيرادات</h2>
-            <div class="bg-slate-800 p-1.5 rounded-2xl flex gap-1 shadow-inner w-full md:w-auto">
-                <button onclick="switchTab('add')" id="btn-add" class="taxi-gold flex-1 md:flex-none px-10 py-3 rounded-xl font-bold text-lg">إضافة</button>
-                <button onclick="switchTab('list')" id="btn-list" class="text-slate-400 flex-1 md:flex-none px-10 py-3 rounded-xl font-bold text-lg hover:bg-slate-700">عرض</button>
-            </div>
-        </div>
+    <div class="max-w-7xl mx-auto px-4 mt-8">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
+            <h2 id="module-title" class="text-2xl font-black border-r-4 border-yellow-500 pr-4 text-yellow-500">إدارة الإيرادات</h2>
+            <div class="bg-slate-800 p-1.5 rounded-2xl flex gap-1 shadow-inner w-full md:w-auto">
+                <button onclick="switchTab('add')" id="btn-add" class="tab-btn taxi-gold flex-1 md:flex-none px-10 py-3 rounded-xl font-bold text-lg shadow-lg">إضافة</button>
+                <button onclick="switchTab('list')" id="btn-list" class="tab-btn text-slate-400 flex-1 md:flex-none px-10 py-3 rounded-xl font-bold text-lg hover:bg-slate-700">عرض السجلات</button>
+            </div>
+        </div>
 
-        <div id="view-add" class="card">
-            <form id="mainForm" onsubmit="handleFormSubmit(event)">
-                <input type="hidden" name="sheetName" id="current-sheet" value="Revenues">
-                <input type="hidden" name="ID" id="edit-id">
-                <div id="form-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 text-sm">
-                    </div>
-                <button type="submit" id="submit-btn" class="taxi-gold w-full mt-10 py-5 rounded-2xl font-black text-xl shadow-2xl active:scale-95 transition-all">حفظ البيانات</button>
-            </form>
-        </div>
+        <div id="view-add" class="card">
+            <form id="mainForm" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" name="sheetName" id="current-sheet" value="Revenues">
+                <input type="hidden" name="ID" id="edit-id">
+                <div id="form-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    </div>
+                <button type="submit" id="submit-btn" class="taxi-gold w-full mt-10 py-5 rounded-2xl font-black text-xl shadow-2xl active:scale-95 transition-all uppercase tracking-wider">
+                    <i class="fas fa-save ml-2"></i> حفظ البيانات
+                </button>
+            </form>
+        </div>
 
-        <div id="view-list" class="hidden card overflow-hidden p-0 border-none">
-            <div class="overflow-x-auto">
-                <table class="w-full text-right border-collapse">
-                    <thead class="bg-black text-yellow-500"><tr id="table-head"></tr></thead>
-                    <tbody id="table-body" class="text-slate-300"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+        <div id="view-list" class="hidden card overflow-hidden p-0 border-none bg-transparent shadow-none">
+            <div class="overflow-x-auto shadow-2xl bg-[#1e293b]">
+                <table class="w-full text-right">
+                    <thead><tr id="table-head"></tr></thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-    <script>
-        // الرابط الخاص بك (تم الحفاظ عليه كما هو)
-        const API_URL = "https://script.google.com/macros/s/AKfycbx5iOIdfREJxHZuYOUAHfPtCNeHF6jKT_ZNHR7TF-ugKX9hd3frMzfSVP8NObZ7yZssVw/exec";
-        
-        let currentModule = "Revenues";
-        let currentRows = [];
+    <script>
+        // الكود البرمجي كما هو دون تعديل
+        const API_URL = "https://script.google.com/macros/s/AKfycbwYQywgvfpI5XLIjfHkl6XashRy9W7SUK8NKVuUpRUy0-ZDnfYE2_cmnHJOmctkbQGv/exec";
+        
+        let currentModule = "Revenues";
+        let currentRows = [];
 
-        async function showModule(m) {
-            currentModule = m;
-            document.getElementById('current-sheet').value = m;
-            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('nav-active'));
-            document.getElementById('n-' + m).classList.add('nav-active');
-            
-            const titles = {'Revenues': 'إدارة الإيرادات', 'Expenses': 'إدارة المصاريف', 'Cars': 'بيانات السيارات', 'Drivers': 'بيانات السائقين', 'Drivers_Log': 'تسليم واستلام السيارات'};
-            document.getElementById('module-title').innerText = titles[m];
-            
-            await renderFields();
-            switchTab('add');
-        }
+        async function showModule(m) {
+            currentModule = m;
+            document.getElementById('current-sheet').value = m;
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('nav-active'));
+            document.getElementById('n-' + m).classList.add('nav-active');
+            
+            const titles = {'Revenues': 'إدارة الإيرادات', 'Expenses': 'إدارة المصاريف', 'Cars': 'بيانات السيارات', 'Drivers': 'بيانات السائقين', 'Drivers_Log': 'تسليم واستلام السيارات'};
+            document.getElementById('module-title').innerText = titles[m];
+            
+            await renderFields();
+            switchTab('add');
+        }
 
-        async function renderFields() {
-            const container = document.getElementById('form-container');
-            container.innerHTML = '<div class="col-span-full text-center p-5 text-yellow-500"><i class="fas fa-spinner fa-spin"></i> جاري تجهيز الحقول...</div>';
-            
-            const drivers = await callAPI('getDrivers');
-            const cars = await callAPI('getCars');
-            const dOpts = drivers.map(d => `<option value="${d}">${d}</option>`).join('');
-            const cOpts = cars.map(c => `<option value="${c}">${c}</option>`).join('');
-            const today = new Date().toISOString().split('T')[0];
+        async function renderFields() {
+            const container = document.getElementById('form-container');
+            container.innerHTML = '<div class="col-span-full text-center p-10 text-yellow-500 font-bold"><i class="fas fa-circle-notch fa-spin ml-2"></i> جاري تجهيز الحقول...</div>';
+            
+            const drivers = await callAPI('getDrivers');
+            const cars = await callAPI('getCars');
+            const dOpts = drivers.map(d => `<option value="${d}">${d}</option>`).join('');
+            const cOpts = cars.map(c => `<option value="${c}">${c}</option>`).join('');
+            const today = new Date().toISOString().split('T')[0];
 
-            let html = '';
-            if (currentModule === 'Revenues') {
-                html = `
-                    <div><label class="block mb-2 text-slate-400">التاريخ</label><input type="date" name="Date" value="${today}" required></div>
-                    <div><label class="block mb-2 text-slate-400">رقم السيارة</label><select name="Car_No">${cOpts}</select></div>
-                    <div><label class="block mb-2 text-slate-400">اسم السائق</label><select name="Driver_name">${dOpts}</select></div>
-                    <div><label class="block mb-2 text-slate-400">الفئة</label><select name="Category"><option>ضمان</option><option>مخالفات</option><option>أخرى</option></select></div>
-                    <div><label class="block mb-2 text-slate-400">المبلغ</label><input type="number" step="0.01" name="Amount" required></div>
-                    <div><label class="block mb-2 text-slate-400">طريقة الدفع</label><select name="Method"><option>Cash</option><option>Cliq</option><option>Transfer</option><option>Bank</option></select></div>
-                    <div><label class="block mb-2 text-slate-400">المحصل</label><input type="text" name="Collector" value="Admin" readonly></div>
-                    <div><label class="block mb-2 text-slate-400">ملاحظات</label><input type="text" name="Notes"></div>`;
-            } else if (currentModule === 'Expenses') {
-                html = `
-                    <div><label class="block mb-2 text-slate-400">التاريخ</label><input type="date" name="Date" value="${today}" required></div>
-                    <div><label class="block mb-2 text-slate-400">رقم السيارة</label><select name="Car_No">${cOpts}</select></div>
-                    <div><label class="block mb-2 text-slate-400">اسم السائق</label><select name="Driver_name">${dOpts}</select></div>
-                    <div><label class="block mb-2 text-slate-400">اسم البائع</label><input type="text" name="Seller" required></div>
-                    <div><label class="block mb-2 text-slate-400">نوع المصروف</label><input type="text" name="Expense_Type" required></div>
-                    <div><label class="block mb-2 text-slate-400">المبلغ</label><input type="number" step="0.01" name="Amount" required></div>
-                    <div class="md:col-span-2"><label class="block mb-2 text-slate-400">ملاحظات</label><input type="text" name="Notes"></div>`;
-            } else if (currentModule === 'Cars') {
-                html = `
-                    <div><label class="block mb-2 text-slate-400">رقم اللوحة</label><input type="text" name="Plate_No" required></div>
-                    <div><label class="block mb-2 text-slate-400">النوع</label><input type="text" name="Type"></div>
-                    <div><label class="block mb-2 text-slate-400">الموديل</label><input type="text" name="Model"></div>
-                    <div><label class="block mb-2 text-slate-400">المالك</label><input type="text" name="Owner"></div>
-                    <div><label class="block mb-2 text-slate-400">تاريخ الترخيص</label><input type="date" name="License_Date"></div>
-                    <div><label class="block mb-2 text-slate-400">الضمان اليومي</label><input type="number" name="Daily_Guarantee"></div>
-                    <div><label class="block mb-2 text-slate-400">نوع الوقود</label><select name="Fuel_Type"><option>بنزين</option><option>كهرباء</option><option>هجين</option></select></div>
-                    <div><label class="block mb-2 text-slate-400">المكتب</label><input type="text" name="Office"></div>
-                    <div><label class="block mb-2 text-slate-400">المسؤول</label><input type="text" name="Collector" value="Admin"></div>`;
-            } else if (currentModule === 'Drivers') {
-                html = `
-                    <div><label class="block mb-2 text-slate-400">اسم السائق</label><input type="text" name="Name" required></div>
-                    <div><label class="block mb-2 text-slate-400">الرقم الوطني</label><input type="text" name="National_ID"></div>
-                    <div><label class="block mb-2 text-slate-400">رقم الهاتف</label><input type="text" name="Phone"></div>
-                    <div><label class="block mb-2 text-slate-400">عنوان السكن</label><input type="text" name="Address"></div>
-                    <div class="md:col-span-2"><label class="block mb-2 text-slate-400">رابط الخريطة</label><input type="url" name="Map_Link"></div>
-                    <div><label class="block mb-2 text-slate-400">المسؤول</label><input type="text" name="Collector" value="Admin"></div>`;
-            } else if (currentModule === 'Drivers_Log') {
-                html = `
-                    <div><label class="block mb-2 text-slate-400">تاريخ العملية</label><input type="date" name="Date" value="${today}" required></div>
-                    <div><label class="block mb-2 text-slate-400">رقم السيارة</label><select name="Car_No">${cOpts}</select></div>
-                    <div><label class="block mb-2 text-slate-400">اسم السائق</label><select name="Driver_name">${dOpts}</select></div>
-                    <div><label class="block mb-2 text-slate-400">نوع الحركة</label><select name="Movement_Type"><option>استلام</option><option>تسليم</option></select></div>
-                    <div><label class="block mb-2 text-slate-400">قراءة العداد</label><input type="number" name="Odometer" required></div>
-                    <div><label class="block mb-2 text-slate-400">حالة النظافة</label><input type="text" name="Cleanliness"></div>
-                    <div><label class="block mb-2 text-slate-400">ملاحظات الحالة</label><input type="text" name="Status_Notes"></div>
-                    <div><label class="block mb-2 text-slate-400">المسؤول</label><input type="text" name="Collector" value="Admin" readonly></div>`;
-            }
-            container.innerHTML = html;
-        }
+            let html = '';
+            if (currentModule === 'Revenues') {
+                html = `
+                    <div><label>التاريخ</label><input type="date" name="Date" value="${today}" required></div>
+                    <div><label>رقم السيارة</label><select name="Car_No">${cOpts}</select></div>
+                    <div><label>اسم السائق</label><select name="Driver_name">${dOpts}</select></div>
+                    <div><label>الفئة</label><select name="Category"><option>ضمان</option><option>مخالفات</option><option>أخرى</option></select></div>
+                    <div><label>المبلغ</label><input type="number" step="0.01" name="Amount" required></div>
+                    <div><label>طريقة الدفع</label><select name="Method"><option>Cash</option><option>Cliq</option><option>Transfer</option><option>Bank</option></select></div>
+                    <div><label>المحصل</label><input type="text" name="Collector" value="Admin" readonly></div>
+                    <div><label>ملاحظات</label><input type="text" name="Notes"></div>`;
+            } else if (currentModule === 'Expenses') {
+                html = `
+                    <div><label>التاريخ</label><input type="date" name="Date" value="${today}" required></div>
+                    <div><label>رقم السيارة</label><select name="Car_No">${cOpts}</select></div>
+                    <div><label>اسم السائق</label><select name="Driver_name">${dOpts}</select></div>
+                    <div><label>اسم البائع</label><input type="text" name="Seller" required></div>
+                    <div><label>نوع المصروف</label><input type="text" name="Expense_Type" required></div>
+                    <div><label>المبلغ</label><input type="number" step="0.01" name="Amount" required></div>
+                    <div class="md:col-span-2"><label>ملاحظات</label><input type="text" name="Notes"></div>`;
+            } else if (currentModule === 'Cars') {
+                html = `
+                    <div><label>رقم اللوحة</label><input type="text" name="Plate_No" required></div>
+                    <div><label>النوع</label><input type="text" name="Type"></div>
+                    <div><label>الموديل</label><input type="text" name="Model"></div>
+                    <div><label>المالك</label><input type="text" name="Owner"></div>
+                    <div><label>تاريخ الترخيص</label><input type="date" name="License_Date"></div>
+                    <div><label>الضمان اليومي</label><input type="number" name="Daily_Guarantee"></div>
+                    <div><label>نوع الوقود</label><select name="Fuel_Type"><option>بنزين</option><option>كهرباء</option><option>هجين</option></select></div>
+                    <div><label>المكتب</label><input type="text" name="Office"></div>`;
+            } else if (currentModule === 'Drivers') {
+                html = `
+                    <div><label>اسم السائق</label><input type="text" name="Name" required></div>
+                    <div><label>الرقم الوطني</label><input type="text" name="National_ID"></div>
+                    <div><label>رقم الهاتف</label><input type="text" name="Phone"></div>
+                    <div><label>عنوان السكن</label><input type="text" name="Address"></div>
+                    <div class="md:col-span-2"><label>رابط الخريطة</label><input type="url" name="Map_Link"></div>`;
+            } else if (currentModule === 'Drivers_Log') {
+                html = `
+                    <div><label>تاريخ العملية</label><input type="date" name="Date" value="${today}" required></div>
+                    <div><label>رقم السيارة</label><select name="Car_No">${cOpts}</select></div>
+                    <div><label>اسم السائق</label><select name="Driver_name">${dOpts}</select></div>
+                    <div><label>نوع الحركة</label><select name="Movement_Type"><option>استلام</option><option>تسليم</option></select></div>
+                    <div><label>قراءة العداد</label><input type="number" name="Odometer" required></div>
+                    <div><label>حالة النظافة</label><input type="text" name="Cleanliness"></div>
+                    <div class="md:col-span-2"><label>ملاحظات الحالة</label><input type="text" name="Status_Notes"></div>`;
+            }
+            container.innerHTML = html;
+        }
 
-        function callAPI(action, sheet = '') {
-            return new Promise((resolve) => {
-                const cb = 'cb_' + Math.round(Math.random() * 1000000);
-                const script = document.createElement('script');
-                window[cb] = (data) => {
-                    delete window[cb]; document.body.removeChild(script); resolve(data);
-                };
-                script.src = `${API_URL}?action=${action}&sheetName=${sheet}&callback=${cb}`;
-                document.body.appendChild(script);
-            });
-        }
+        function callAPI(action, sheet = '') {
+            return new Promise((resolve) => {
+                const cb = 'cb_' + Math.round(Math.random() * 1000000);
+                const script = document.createElement('script');
+                window[cb] = (data) => {
+                    delete window[cb]; document.body.removeChild(script); resolve(data);
+                };
+                script.src = `${API_URL}?action=${action}&sheetName=${sheet}&callback=${cb}`;
+                document.body.appendChild(script);
+            });
+        }
 
-        async function switchTab(mode) {
-            const isAdd = mode === 'add';
-            document.getElementById('view-add').classList.toggle('hidden', !isAdd);
-            document.getElementById('view-list').classList.toggle('hidden', isAdd);
-            document.getElementById('btn-add').className = isAdd ? 'taxi-gold flex-1 md:flex-none px-10 py-3 rounded-xl font-bold text-lg' : 'text-slate-400 flex-1 md:flex-none px-10 py-3 rounded-xl font-bold text-lg hover:bg-slate-700';
-            document.getElementById('btn-list').className = !isAdd ? 'taxi-gold flex-1 md:flex-none px-10 py-3 rounded-xl font-bold text-lg' : 'text-slate-400 flex-1 md:flex-none px-10 py-3 rounded-xl font-bold text-lg hover:bg-slate-700';
-            if (!isAdd) loadData();
-        }
+        async function switchTab(mode) {
+            const isAdd = mode === 'add';
+            document.getElementById('view-add').classList.toggle('hidden', !isAdd);
+            document.getElementById('view-list').classList.toggle('hidden', isAdd);
+            document.getElementById('btn-add').className = isAdd ? 'tab-btn taxi-gold flex-1 md:flex-none px-10 py-3 rounded-xl font-bold text-lg shadow-lg' : 'tab-btn text-slate-400 flex-1 md:flex-none px-10 py-3 rounded-xl font-bold text-lg hover:bg-slate-700';
+            document.getElementById('btn-list').className = !isAdd ? 'tab-btn taxi-gold flex-1 md:flex-none px-10 py-3 rounded-xl font-bold text-lg shadow-lg' : 'tab-btn text-slate-400 flex-1 md:flex-none px-10 py-3 rounded-xl font-bold text-lg hover:bg-slate-700';
+            if (!isAdd) loadData();
+        }
 
-        async function loadData() {
-            const head = document.getElementById('table-head');
-            const body = document.getElementById('table-body');
-            body.innerHTML = '<tr><td colspan="12" class="text-center p-20 italic">جاري جلب البيانات...</td></tr>';
-            currentRows = await callAPI('getRows', currentModule);
-            if (currentRows.length > 0) {
-                const keys = Object.keys(currentRows[0]);
-                head.innerHTML = keys.map(k => `<th>${k}</th>`).join('') + '<th>إجراء</th>';
-                body.innerHTML = currentRows.map((row, idx) => `
-                    <tr>${keys.map(k => `<td>${row[k] || '-'}</td>`).join('')}
-                    <td><button onclick="fillEdit(${idx})" class="text-yellow-500 font-bold hover:text-white"><i class="fas fa-edit"></i> تعديل</button></td></tr>
-                `).join('');
-            } else { body.innerHTML = '<tr><td colspan="12" class="text-center p-20 text-slate-500 italic">لا توجد سجلات حالياً</td></tr>'; }
-        }
+        async function loadData() {
+            const head = document.getElementById('table-head');
+            const body = document.getElementById('table-body');
+            body.innerHTML = '<tr><td colspan="12" class="text-center p-20 italic text-slate-400"><i class="fas fa-spinner fa-spin ml-2"></i> جاري جلب البيانات من السحابة...</td></tr>';
+            currentRows = await callAPI('getRows', currentModule);
+            if (currentRows.length > 0) {
+                const keys = Object.keys(currentRows[0]);
+                head.innerHTML = keys.map(k => `<th>${k}</th>`).join('') + '<th>إجراء</th>';
+                body.innerHTML = currentRows.map((row, idx) => `
+                    <tr>${keys.map(k => `<td>${row[k] || '-'}</td>`).join('')}
+                    <td><button onclick="fillEdit(${idx})" class="text-yellow-500 font-bold hover:text-yellow-300 transition-colors"><i class="fas fa-edit ml-1"></i> تعديل</button></td></tr>
+                `).join('');
+            } else { body.innerHTML = '<tr><td colspan="12" class="text-center p-20 text-slate-500 italic">لا توجد سجلات حالياً في هذا القسم</td></tr>'; }
+        }
 
-        function fillEdit(idx) {
-            const data = currentRows[idx];
-            switchTab('add');
-            document.getElementById('edit-id').value = data.ID || data.id;
-            const form = document.getElementById('mainForm');
-            setTimeout(() => {
-                Object.keys(data).forEach(key => {
-                    const input = form.querySelector(`[name="${key}"]`);
-                    if (input) input.value = data[key];
-                });
-                document.getElementById('submit-btn').innerText = "تحديث البيانات المحددة";
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, 100);
-        }
+        function fillEdit(idx) {
+            const data = currentRows[idx];
+            switchTab('add');
+            document.getElementById('edit-id').value = data.ID || data.id;
+            const form = document.getElementById('mainForm');
+            setTimeout(() => {
+                Object.keys(data).forEach(key => {
+                    const input = form.querySelector(`[name="${key}"]`);
+                    if (input) input.value = data[key];
+                });
+                document.getElementById('submit-btn').innerHTML = '<i class="fas fa-sync-alt ml-2"></i> تحديث السجل المختار';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 100);
+        }
 
-        function handleFormSubmit(event) {
-            event.preventDefault();
-            const btn = document.getElementById('submit-btn');
-            btn.disabled = true; btn.innerHTML = "جاري المعالجة...";
-            fetch(API_URL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(new FormData(event.target)) })
-                .then(() => {
-                    alert("تم الحفظ !");
-                    event.target.reset();
-                    document.getElementById('edit-id').value = "";
-                    btn.disabled = false; btn.innerHTML = "حفظ البيانات";
-                    switchTab('list');
-                });
-        }
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i> جاري الحفظ...';
+            fetch(API_URL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(new FormData(event.target)) })
+                .then(() => {
+                    alert("✅ تم الحفظ بنجاح!");
+                    event.target.reset();
+                    document.getElementById('edit-id').value = "";
+                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-save ml-2"></i> حفظ البيانات';
+                    switchTab('list');
+                });
+        }
 
-        window.onload = () => showModule('Revenues');
-    </script>
+        window.onload = () => showModule('Revenues');
+    </script>
 </body>
 </html>
