@@ -219,4 +219,115 @@
         ],
         Drivers_Log: [
             { id: 'Date', label: 'التاريخ', type: 'date' },
-            { id: 'Time
+            { id: 'Time', label: 'الوقت', type: 'time' },
+            { id: 'Car_No', label: 'رقم السيارة', type: 'select', options: 'cars' },
+            { id: 'Driver_name', label: 'السائق', type: 'select', options: 'drivers' },
+            { id: 'Movement_Type', label: 'الحركة', type: 'select', values: ['تسليم', 'استلام'] },
+            { id: 'Odometer', label: 'العداد', type: 'number' }
+        ],
+        Discounts: [
+            { id: 'DATE', label: 'التاريخ', type: 'date' },
+            { id: 'Car_No', label: 'السيارة', type: 'select', options: 'cars' },
+            { id: 'Driver_name', label: 'السائق', type: 'select', options: 'drivers' },
+            { id: 'reason', label: 'السبب', type: 'text' },
+            { id: 'Type', label: 'النوع', type: 'select', values: ['صيانة', 'ترخيص', 'أخرى'] },
+            { id: 'Amount', label: 'القيمة', type: 'number' }
+        ]
+    };
+
+    // حافظت على دوال الـ Logic كما هي لضمان عمل النظام
+    async function login() {
+        const user = document.getElementById('username').value;
+        const pass = document.getElementById('password').value;
+        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'login', username: user, password: pass }) });
+        const result = await res.json();
+        if (result.success) {
+            loggedInUser = result.user;
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('mainSection').classList.remove('hidden');
+            await loadDropdowns();
+            showTab('Revenues', document.querySelector('.tab-btn'));
+        } else alert("بيانات الدخول غير صحيحة");
+    }
+
+    async function loadDropdowns() {
+        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'getDropdowns' }) });
+        dropdowns = await res.json();
+    }
+
+    function showTab(sheetName, btn) {
+        currentSheet = sheetName;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('formTitle').innerText = btn.innerText;
+        document.getElementById('tableBody').innerHTML = ""; 
+        renderForm();
+    }
+
+    function renderForm() {
+        const area = document.getElementById('fieldsArea');
+        area.innerHTML = '';
+        schema[currentSheet].forEach(f => {
+            let inputHtml = '';
+            if (f.type === 'select') {
+                let opts = f.values ? f.values : dropdowns[f.options];
+                inputHtml = `<select id="${f.id}"><option value="">اختر...</option>${opts.map(o => `<option value="${o}">${o}</option>`).join('')}</select>`;
+            } else if (f.type === 'textarea') {
+                inputHtml = `<textarea id="${f.id}" rows="1"></textarea>`;
+            } else {
+                inputHtml = `<input type="${f.type}" id="${f.id}">`;
+            }
+            area.innerHTML += `<div><label>${f.label}</label>${inputHtml}</div>`;
+        });
+        resetForm();
+    }
+
+    async function loadTable() {
+        document.getElementById('tableBody').innerHTML = "<tr><td colspan='100%'>جاري جلب البيانات...</td></tr>";
+        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: currentSheet }) });
+        const data = await res.json();
+        const head = document.getElementById('tableHeaders');
+        const body = document.getElementById('tableBody');
+        const filteredHeaders = data.headers.filter(h => h !== 'ID');
+        head.innerHTML = filteredHeaders.map(h => `<th>${labelsMap[h] || h}</th>`).join('') + "<th>فعل</th>";
+        body.innerHTML = data.rows.map(row => {
+            const displayRow = row.slice(1);
+            return `<tr>${displayRow.map(c => `<td>${c}</td>`).join('')}<td><button class="btn-edit" onclick='editRow(${JSON.stringify(row)}, ${JSON.stringify(data.headers)})'>تعديل</button></td></tr>`;
+        }).reverse().join('');
+    }
+
+    async function handleSubmit() {
+        const formData = { Collector: loggedInUser, User: loggedInUser, "In-Charge": loggedInUser };
+        schema[currentSheet].forEach(f => formData[f.id] = document.getElementById(f.id).value);
+        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'submitForm', sheetName: currentSheet, formData: formData }) });
+        const result = await res.json();
+        if (result.success) { alert("تم الحفظ بنجاح"); resetForm(); }
+    }
+
+    async function handleUpdate() {
+        const formData = { ID: document.getElementById('ID').value };
+        schema[currentSheet].forEach(f => formData[f.id] = document.getElementById(f.id).value);
+        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'updateData', sheetName: currentSheet, formData: formData }) });
+        const result = await res.json();
+        if (result.success) { alert("تم تحديث البيانات"); resetForm(); }
+    }
+
+    function editRow(row, headers) {
+        headers.forEach((h, i) => {
+            if (h === 'ID') document.getElementById('ID').value = row[i];
+            else { const el = document.getElementById(h); if (el) el.value = row[i]; }
+        });
+        document.getElementById('submitBtn').classList.add('hidden');
+        document.getElementById('updateBtn').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetForm() {
+        document.getElementById('dynamicForm').reset();
+        document.getElementById('ID').value = "";
+        document.getElementById('submitBtn').classList.remove('hidden');
+        document.getElementById('updateBtn').classList.add('hidden');
+    }
+</script>
+</body>
+</html>
