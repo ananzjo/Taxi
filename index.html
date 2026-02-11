@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة التاكسي الذكي v1.4.5</title>
+    <title>نظام إدارة التاكسي الذكي v1.4.6</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -17,13 +17,13 @@
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulseBorder { 0% { border-color: #333; } 50% { border-color: var(--taxi-yellow); } 100% { border-color: #333; } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        body { font-family: 'Tajawal', sans-serif; background-color: var(--dark-bg); color: var(--text-main); margin: 0; padding: 0; overflow-x: hidden; }
+        body { font-family: 'Tajawal', sans-serif; background-color: var(--dark-bg); color: var(--text-main); margin: 0; padding: 0; }
 
         /* شاشة تسجيل الدخول */
         #loginSection {
-            max-width: 400px; margin: 100px auto; padding: 40px;
+            max-width: 380px; margin: 100px auto; padding: 40px;
             background: var(--card-bg); border-radius: 24px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.6);
             border: 1px solid var(--border-color); text-align: center;
@@ -31,54 +31,60 @@
         }
         .login-field { 
             width: 100%; padding: 15px; background: var(--field-bg); border: 1px solid var(--border-color); 
-            border-radius: 12px; color: #fff; margin-bottom: 15px; box-sizing: border-box; font-size: 1rem; transition: var(--transition);
+            border-radius: 12px; color: #fff; margin-bottom: 15px; box-sizing: border-box; font-size: 1rem;
         }
-        .login-field:focus { border-color: var(--taxi-yellow); outline: none; box-shadow: 0 0 10px rgba(241, 196, 15, 0.2); }
+        
+        /* أيقونة العين المحدثة */
+        .pass-wrapper { position: relative; width: 100%; }
+        .eye-icon { 
+            position: absolute; left: 15px; top: 15px; cursor: pointer; 
+            font-size: 1.2rem; color: var(--taxi-yellow); transition: var(--transition);
+        }
+        .eye-icon:hover { transform: scale(1.1); }
 
-        /* شريط العنوان العلوي */
-        .system-header { background: #000; padding: 25px 0; text-align: center; border-bottom: 4px solid var(--taxi-yellow); box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
-        .system-header h1 { margin: 0; font-size: 2rem; color: var(--taxi-yellow); text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        /* مربع تذكرني الصغير القياسي */
+        .remember-wrap { display: flex; align-items: center; justify-content: flex-start; gap: 8px; margin-bottom: 25px; font-size: 0.9rem; color: #888; }
+        .remember-wrap input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--taxi-yellow); }
 
-        /* أزرار التنقل */
-        .nav-tabs { background: #111; display: flex; justify-content: center; flex-wrap: wrap; padding: 20px; gap: 15px; border-bottom: 1px solid var(--border-color); }
+        /* أزرار الأكشن والتنقل */
+        .system-header { background: #000; padding: 20px 0; text-align: center; border-bottom: 4px solid var(--taxi-yellow); }
+        .system-header h1 { margin: 0; color: var(--taxi-yellow); font-size: 1.8rem; }
+
+        .nav-tabs { background: #111; display: flex; justify-content: center; flex-wrap: wrap; padding: 15px; gap: 10px; border-bottom: 1px solid var(--border-color); }
         .tab-btn { 
             background: #222; border: 1px solid var(--border-color); color: #888; 
-            padding: 14px 28px; cursor: pointer; border-radius: 14px; font-weight: bold; 
-            font-size: 1.15rem; display: flex; align-items: center; gap: 10px; transition: var(--transition);
+            padding: 12px 24px; cursor: pointer; border-radius: 12px; font-weight: bold; transition: var(--transition);
         }
-        .tab-btn:hover { color: var(--taxi-yellow); border-color: var(--taxi-yellow); transform: translateY(-3px); background: #282828; }
-        .tab-btn.active { background: var(--taxi-yellow); color: #000; transform: scale(1.05); box-shadow: 0 5px 15px rgba(241, 196, 15, 0.3); }
+        .tab-btn.active { background: var(--taxi-yellow); color: #000; transform: scale(1.05); }
 
-        /* النماذج والحقول */
-        .container { padding: 30px; max-width: 1400px; margin: auto; animation: fadeIn 0.5s ease-in-out; }
-        .card { background: var(--card-bg); padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-bottom: 35px; border: 1px solid var(--border-color); transition: var(--transition); }
-        .card:hover { border-color: #444; }
+        .container { padding: 25px; max-width: 1400px; margin: auto; animation: fadeIn 0.5s ease-in-out; }
+        .card { background: var(--card-bg); padding: 25px; border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 30px; }
         
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; }
-        .field-group label { display: block; margin-bottom: 10px; font-weight: bold; color: var(--taxi-yellow); font-size: 0.95rem; transition: var(--transition); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+        .field-group label { display: block; margin-bottom: 8px; font-weight: bold; color: var(--taxi-yellow); font-size: 0.9rem; }
         
-        /* استايل حديث للقوائم المنسدلة والحقول */
         select, input, textarea { 
-            width: 100%; padding: 14px; background: var(--field-bg); border: 2px solid var(--border-color); 
-            border-radius: 10px; color: #fff; font-family: 'Tajawal'; font-size: 1rem; box-sizing: border-box; transition: var(--transition);
-            appearance: none; /* إخفاء سهم المتصفح الافتراضي */
+            width: 100%; padding: 12px; background: var(--field-bg); border: 2px solid var(--border-color); 
+            border-radius: 10px; color: #fff; font-family: 'Tajawal'; box-sizing: border-box; transition: var(--transition);
         }
-        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23f1c40f' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 15px center; }
-        input:focus, select:focus, textarea:focus { border-color: var(--taxi-yellow); outline: none; background: #2a2a2a; }
+        input:focus, select:focus { border-color: var(--taxi-yellow); outline: none; }
 
-        /* أزرار الأكشن */
-        .btn-action { padding: 15px 35px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.1rem; transition: var(--transition); }
-        .btn-action:active { transform: scale(0.95); }
-        .btn-save { background: #27ae60; color: #fff; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); }
-        .btn-save:hover { background: #2ecc71; box-shadow: 0 6px 15px rgba(39, 174, 96, 0.5); }
-        .btn-load { background: var(--taxi-yellow); color: #000; font-size: 0.9rem; padding: 10px 20px; }
+        /* زر التحميل (Spinner) */
+        .loader { 
+            display: inline-block; width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); 
+            border-radius: 50%; border-top-color: #fff; animation: spin 0.8s linear infinite; 
+            margin-left: 10px; vertical-align: middle; display: none;
+        }
 
-        /* الجداول */
-        .table-container { overflow-x: auto; border-radius: 16px; border: 1px solid var(--border-color); background: #151515; }
+        .btn-action { padding: 14px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; transition: var(--transition); position: relative; }
+        .btn-save { background: #27ae60; color: #fff; }
+        .btn-load { background: var(--taxi-yellow); color: #000; }
+        .btn-action:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .table-container { overflow-x: auto; border-radius: 15px; border: 1px solid var(--border-color); }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #222; color: var(--taxi-yellow); padding: 18px; text-align: right; border-bottom: 2px solid var(--border-color); }
-        td { padding: 16px; border-bottom: 1px solid #222; font-size: 0.95rem; transition: var(--transition); }
-        tr:hover td { background: #1d1d1d; color: #fff; }
+        th { background: #222; color: var(--taxi-yellow); padding: 15px; text-align: right; }
+        td { padding: 12px; border-bottom: 1px solid #222; }
 
         .hidden { display: none; }
     </style>
@@ -86,21 +92,25 @@
 <body>
 
 <div id="loginSection">
-    <div style="font-size: 4rem; margin-bottom: 10px;">🚖</div>
-    <h2 style="color: var(--taxi-yellow); margin-bottom: 30px;">دخول النظام الذكي</h2>
+    <div style="font-size: 3.5rem; margin-bottom: 10px;">🚖</div>
+    <h2 style="color: var(--taxi-yellow); margin-bottom: 25px;">دخول النظام</h2>
     <input type="text" id="username" class="login-field" placeholder="اسم المستخدم">
-    <div style="position: relative;">
+    <div class="pass-wrapper">
         <input type="password" id="password" class="login-field" placeholder="كلمة المرور">
-        <span style="position: absolute; left: 15px; top: 15px; cursor: pointer; color: var(--taxi-yellow); font-size: 0.8rem;" onclick="togglePass()">👁️ إظهار</span>
+        <span class="eye-icon" id="eyeToggle" onclick="togglePass()">👁️</span>
     </div>
-    <div style="text-align: right; margin-bottom: 25px; color: #888;">
-        <label style="cursor: pointer;"><input type="checkbox" id="rememberMe"> تذكر بيانات الدخول</label>
+    <div class="remember-wrap">
+        <input type="checkbox" id="rememberMe">
+        <label for="rememberMe">تذكر بياناتي</label>
     </div>
-    <button class="btn-action btn-save" style="width: 100%; background: var(--taxi-yellow); color: #000;" onclick="login()">تسجيل الدخول</button>
+    <button class="btn-action btn-save" style="width: 100%; background: var(--taxi-yellow); color: #000;" id="loginBtn" onclick="login()">
+        <span class="loader" id="loginLoader"></span>
+        <span>دخول</span>
+    </button>
 </div>
 
 <div id="mainSection" class="hidden">
-    <div class="system-header"><h1>نظام إدارة التاكسي الذكي v1.4.5</h1></div>
+    <div class="system-header"><h1>نظام إدارة التاكسي الذكي</h1></div>
     <div class="nav-tabs" id="navTabs">
         <button class="tab-btn active" onclick="showTab('Revenues', this)">💰 الإيرادات</button>
         <button class="tab-btn" onclick="showTab('Expenses', this)">💸 المصاريف</button>
@@ -116,18 +126,24 @@
             <form id="dynamicForm">
                 <input type="hidden" id="ID">
                 <div id="fieldsArea" class="form-grid"></div>
-                <div style="margin-top: 35px; display: flex; gap: 20px;">
-                    <button type="button" id="submitBtn" class="btn-action btn-save" onclick="handleSubmit()">حفظ السجل</button>
-                    <button type="button" id="updateBtn" class="btn-action" style="background: #e67e22; color: #fff;" onclick="handleUpdate()">تحديث السجل</button>
+                <div style="margin-top: 30px; display: flex; gap: 15px;">
+                    <button type="button" id="submitBtn" class="btn-action btn-save" onclick="handleSubmit()">
+                        <span class="loader" id="submitLoader"></span>
+                        <span class="btn-text">حفظ السجل</span>
+                    </button>
+                    <button type="button" id="updateBtn" class="btn-action hidden" style="background: #e67e22; color: #fff;" onclick="handleUpdate()">تحديث</button>
                     <button type="button" class="btn-action" style="background: #444; color: #fff;" onclick="resetForm()">إلغاء</button>
                 </div>
             </form>
         </div>
 
         <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="margin: 0;">📊 قاعدة البيانات</h3>
-                <button class="btn-action btn-load" onclick="loadTable()">🔄 عرض/تحديث السجلات</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0;">📊 السجلات</h3>
+                <button class="btn-action btn-load" id="loadBtn" onclick="loadTable()">
+                    <span class="loader" id="loadLoader"></span>
+                    <span>تحديث البيانات</span>
+                </button>
             </div>
             <div class="table-container">
                 <table>
@@ -150,137 +166,99 @@
         if(u && p) { document.getElementById('username').value = u; document.getElementById('password').value = p; document.getElementById('rememberMe').checked = true; }
     };
 
-    function togglePass() { const p = document.getElementById('password'); p.type = p.type === "password" ? "text" : "password"; }
+    function togglePass() {
+        const p = document.getElementById('password');
+        const eye = document.getElementById('eyeToggle');
+        if(p.type === "password") {
+            p.type = "text"; eye.innerText = "🙈";
+        } else {
+            p.type = "password"; eye.innerText = "👁️";
+        }
+    }
 
     async function login() {
         const user = document.getElementById('username').value;
         const pass = document.getElementById('password').value;
-        const rem = document.getElementById('rememberMe').checked;
-        if(!user || !pass) return alert("أكمل البيانات أولاً");
+        const btn = document.getElementById('loginBtn');
+        const loader = document.getElementById('loginLoader');
+
+        if(!user || !pass) return alert("يرجى ملء الحقول");
+
+        btn.disabled = true; loader.style.display = "inline-block";
+
         try {
             const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'login', username: user, password: pass }) });
             const result = await res.json();
             if(result.success) {
-                if(rem) { localStorage.setItem('taxi_u', user); localStorage.setItem('taxi_p', pass); }
-                else { localStorage.clear(); }
+                if(document.getElementById('rememberMe').checked) {
+                    localStorage.setItem('taxi_u', user); localStorage.setItem('taxi_p', pass);
+                } else { localStorage.clear(); }
                 loggedInUser = result.user;
                 document.getElementById('loginSection').classList.add('hidden');
                 document.getElementById('mainSection').classList.remove('hidden');
                 await loadDropdowns();
                 showTab('Revenues', document.querySelector('.tab-btn'));
-            } else alert("خطأ في بيانات الدخول");
-        } catch(e) { alert("تعذر الاتصال بالسيرفر"); }
+            } else alert("بيانات خاطئة");
+        } catch(e) { alert("خطأ اتصال"); }
+        btn.disabled = false; loader.style.display = "none";
     }
 
+    // منطق التحكم بالواجهة (الشاشات والحقول) مطابقة لجدولك بدقة
     const labelsMap = { 'Date':'التاريخ','DATE':'التاريخ','Car_No':'السيارة','Driver_name':'السائق','Category':'الفئة','Amount':'المبلغ','Method':'الدفع','Collector':'المحصل','Notes':'ملاحظات','Seller':'المورد','User':'المستخدم','Expense_Type':'النوع','Name':'الاسم','National_No':'الرقم الوطني','Mobile':'الهاتف','Address':'العنوان','Location':'الموقع','Plate_No':'اللوحة','Owner':'المالك','In-Charge':'المسؤول','Brand':'الماركة','Model':'الموديل','License_Expiry_date':'انتهاء الترخيص','Daily_Rent':'الضمان اليومي','Fuel_Type':'الوقود','Office':'المكتب','Time':'الوقت','Movement_Type':'الحركة','Odometer':'العداد','Cleanliness':'النظافة','Status_Notes':'حالة السيارة','reason':'السبب','Type':'النوع' };
 
     const schema = {
-        Revenues: [
-            { id: 'Date', label: 'التاريخ', type: 'date' },
-            { id: 'Car_No', label: 'رقم السيارة', type: 'select', options: 'cars' },
-            { id: 'Driver_name', label: 'اسم السائق', type: 'select', options: 'drivers' },
-            { id: 'Category', label: 'الفئة', type: 'select', values: ['ضمان', 'مخالفات', 'أخرى'] },
-            { id: 'Amount', label: 'المبلغ (JD)', type: 'number' },
-            { id: 'Method', label: 'طريقة الدفع', type: 'select', values: ['Cash', 'Cliq', 'Transfer', 'Bank'] },
-            { id: 'Notes', label: 'ملاحظات عامة', type: 'textarea' }
-        ],
-        Expenses: [
-            { id: 'DATE', label: 'التاريخ', type: 'date' },
-            { id: 'Car_No', label: 'رقم السيارة', type: 'select', options: 'cars' },
-            { id: 'Driver_name', label: 'اسم السائق', type: 'select', options: 'drivers' },
-            { id: 'Seller', label: 'المورد', type: 'text' },
-            { id: 'Expense_Type', label: 'نوع المصروف', type: 'text' },
-            { id: 'Amount', label: 'المبلغ (JD)', type: 'number' },
-            { id: 'Notes', label: 'تفاصيل المصروف', type: 'textarea' }
-        ],
-        Drivers: [
-            { id: 'Name', label: 'اسم السائق', type: 'text' },
-            { id: 'National_No', label: 'الرقم الوطني', type: 'number' },
-            { id: 'Mobile', label: 'رقم الموبايل', type: 'number' },
-            { id: 'Address', label: 'السكن', type: 'text' },
-            { id: 'Location', label: 'رابط الموقع URL', type: 'text' }
-        ],
-        Cars: [
-            { id: 'Plate_No', label: 'رقم اللوحة', type: 'text' },
-            { id: 'Owner', label: 'اسم المالك', type: 'text' },
-            { id: 'Brand', label: 'الماركة', type: 'text' },
-            { id: 'Model', label: 'سنة الصنع', type: 'text' },
-            { id: 'License_Expiry_date', label: 'تاريخ انتهاء الترخيص', type: 'date' },
-            { id: 'Daily_Rent', label: 'الضمان اليومي', type: 'number' },
-            { id: 'Fuel_Type', label: 'نوع الوقود', type: 'select', values: ['HEV', 'Gasoline'] },
-            { id: 'Office', label: 'المكتب المسجل', type: 'text' }
-        ],
-        Drivers_Log: [
-            { id: 'Date', label: 'التاريخ', type: 'date' },
-            { id: 'Time', label: 'الوقت', type: 'time' },
-            { id: 'Car_No', label: 'رقم السيارة', type: 'select', options: 'cars' },
-            { id: 'Driver_name', label: 'اسم السائق', type: 'select', options: 'drivers' },
-            { id: 'Movement_Type', label: 'نوع الحركة', type: 'select', values: ['تسليم', 'استلام'] },
-            { id: 'Odometer', label: 'عداد الكيلومتر', type: 'number' },
-            { id: 'Cleanliness', label: 'مستوى النظافة', type: 'text' },
-            { id: 'Status_Notes', label: 'ملاحظات الحالة', type: 'textarea' }
-        ],
-        Discounts: [
-            { id: 'DATE', label: 'التاريخ', type: 'date' },
-            { id: 'Car_No', label: 'رقم السيارة', type: 'select', options: 'cars' },
-            { id: 'Driver_name', label: 'اسم السائق', type: 'select', options: 'drivers' },
-            { id: 'reason', label: 'السبب', type: 'text' },
-            { id: 'Type', label: 'النوع', type: 'select', values: ['صيانة', 'ترخيص', 'أخرى'] },
-            { id: 'Amount', label: 'قيمة الخصم', type: 'number' },
-            { id: 'Notes', label: 'ملاحظات إضافية', type: 'textarea' }
-        ]
+        Revenues: [ { id: 'Date', label: 'التاريخ', type: 'date' }, { id: 'Car_No', label: 'السيارة', type: 'select', options: 'cars' }, { id: 'Driver_name', label: 'السائق', type: 'select', options: 'drivers' }, { id: 'Category', label: 'الفئة', type: 'select', values: ['ضمان', 'مخالفات', 'أخرى'] }, { id: 'Amount', label: 'المبلغ (JD)', type: 'number' }, { id: 'Method', label: 'الدفع', type: 'select', values: ['Cash', 'Cliq', 'Transfer', 'Bank'] }, { id: 'Notes', label: 'ملاحظات', type: 'textarea' } ],
+        Expenses: [ { id: 'DATE', label: 'التاريخ', type: 'date' }, { id: 'Car_No', label: 'السيارة', type: 'select', options: 'cars' }, { id: 'Driver_name', label: 'السائق', type: 'select', options: 'drivers' }, { id: 'Seller', label: 'المورد', type: 'text' }, { id: 'Expense_Type', label: 'النوع', type: 'text' }, { id: 'Amount', label: 'المبلغ', type: 'number' }, { id: 'Notes', label: 'ملاحظات', type: 'textarea' } ],
+        Drivers: [ { id: 'Name', label: 'الاسم', type: 'text' }, { id: 'National_No', label: 'الرقم الوطني', type: 'number' }, { id: 'Mobile', label: 'الموبايل', type: 'number' }, { id: 'Address', label: 'العنوان', type: 'text' }, { id: 'Location', label: 'الموقع URL', type: 'text' } ],
+        Cars: [ { id: 'Plate_No', label: 'اللوحة', type: 'text' }, { id: 'Owner', label: 'المالك', type: 'text' }, { id: 'Brand', label: 'الماركة', type: 'text' }, { id: 'Model', label: 'الموديل', type: 'text' }, { id: 'License_Expiry_date', label: 'انتهاء الترخيص', type: 'date' }, { id: 'Daily_Rent', label: 'الضمان اليومي', type: 'number' }, { id: 'Fuel_Type', label: 'الوقود', type: 'select', values: ['HEV', 'Gasoline'] }, { id: 'Office', label: 'المكتب', type: 'text' } ],
+        Drivers_Log: [ { id: 'Date', label: 'التاريخ', type: 'date' }, { id: 'Time', label: 'الوقت', type: 'time' }, { id: 'Car_No', label: 'السيارة', type: 'select', options: 'cars' }, { id: 'Driver_name', label: 'السائق', type: 'select', options: 'drivers' }, { id: 'Movement_Type', label: 'الحركة', type: 'select', values: ['تسليم', 'استلام'] }, { id: 'Odometer', label: 'العداد', type: 'number' }, { id: 'Cleanliness', label: 'النظافة', type: 'text' }, { id: 'Status_Notes', label: 'حالة السيارة', type: 'textarea' } ],
+        Discounts: [ { id: 'DATE', label: 'التاريخ', type: 'date' }, { id: 'Car_No', label: 'السيارة', type: 'select', options: 'cars' }, { id: 'Driver_name', label: 'السائق', type: 'select', options: 'drivers' }, { id: 'reason', label: 'السبب', type: 'text' }, { id: 'Type', label: 'النوع', type: 'select', values: ['صيانة', 'ترخيص', 'أخرى'] }, { id: 'Amount', label: 'المبلغ', type: 'number' }, { id: 'Notes', label: 'ملاحظات', type: 'textarea' } ]
     };
 
-    async function loadDropdowns() { const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'getDropdowns' }) }); dropdowns = await res.json(); }
-    function showTab(sheetName, btn) { currentSheet = sheetName; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); document.getElementById('formTitle').innerText = btn.innerText; document.getElementById('tableBody').innerHTML = ""; renderForm(); }
+    async function loadDropdowns() { try { const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'getDropdowns' }) }); dropdowns = await res.json(); } catch(e){} }
+    function showTab(sheetName, btn) { currentSheet = sheetName; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); document.getElementById('formTitle').innerText = btn.innerText; renderForm(); }
     
     function renderForm() {
         const area = document.getElementById('fieldsArea'); area.innerHTML = '';
         schema[currentSheet].forEach(f => {
-            let html = '';
-            if (f.type === 'select') {
-                let opts = f.values ? f.values : dropdowns[f.options];
-                html = `<select id="${f.id}"><option value="">اختر من القائمة...</option>${opts.map(o => `<option value="${o}">${o}</option>`).join('')}</select>`;
-            } else if (f.type === 'textarea') { html = `<textarea id="${f.id}" rows="2"></textarea>`; }
-            else { html = `<input type="${f.type}" id="${f.id}">`; }
+            let html = f.type==='select' ? `<select id="${f.id}"><option value="">اختر...</option>${(f.values||dropdowns[f.options]).map(o=>`<option value="${o}">${o}</option>`).join('')}</select>` : (f.type==='textarea' ? `<textarea id="${f.id}" rows="2"></textarea>` : `<input type="${f.type}" id="${f.id}">`);
             area.innerHTML += `<div class="field-group"><label>${f.label}</label>${html}</div>`;
         });
         resetForm();
     }
 
     async function loadTable() {
-        const b = document.getElementById('tableBody'); b.innerHTML = "<tr><td colspan='100%'>جاري استدعاء البيانات من السيرفر...</td></tr>";
-        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: currentSheet }) });
-        const data = await res.json();
-        const filteredHeaders = data.headers.filter(h => h !== 'ID');
-        document.getElementById('tableHeaders').innerHTML = filteredHeaders.map(h => `<th>${labelsMap[h] || h}</th>`).join('') + "<th>فعل</th>";
-        b.innerHTML = data.rows.map(row => {
-            const displayRow = row.slice(1);
-            return `<tr>${displayRow.map(c => `<td>${c}</td>`).join('')}<td><button class="btn-load" style="background:#e67e22; color:#fff" onclick='editRow(${JSON.stringify(row)}, ${JSON.stringify(data.headers)})'>تعديل</button></td></tr>`;
-        }).reverse().join('');
+        const btn = document.getElementById('loadBtn'); const loader = document.getElementById('loadLoader');
+        btn.disabled = true; loader.style.display = "inline-block";
+        try {
+            const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: currentSheet }) });
+            const data = await res.json();
+            const filteredHeaders = data.headers.filter(h => h !== 'ID');
+            document.getElementById('tableHeaders').innerHTML = filteredHeaders.map(h => `<th>${labelsMap[h]||h}</th>`).join('') + "<th>فعل</th>";
+            document.getElementById('tableBody').innerHTML = data.rows.map(row => `<tr>${row.slice(1).map(c=>`<td>${c}</td>`).join('')}<td><button class="btn-load" style="padding:4px 10px; background:#e67e22; color:#fff" onclick='editRow(${JSON.stringify(row)}, ${JSON.stringify(data.headers)})'>تعديل</button></td></tr>`).reverse().join('');
+        } catch(e){}
+        btn.disabled = false; loader.style.display = "none";
     }
 
     async function handleSubmit() {
+        const btn = document.getElementById('submitBtn'); const loader = document.getElementById('submitLoader');
         const formData = { Collector: loggedInUser, User: loggedInUser, "In-Charge": loggedInUser };
         schema[currentSheet].forEach(f => formData[f.id] = document.getElementById(f.id).value);
-        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'submitForm', sheetName: currentSheet, formData: formData }) });
-        const r = await res.json(); if(r.success) { alert("تم الحفظ بنجاح"); resetForm(); }
-    }
-
-    async function handleUpdate() {
-        const formData = { ID: document.getElementById('ID').value };
-        schema[currentSheet].forEach(f => formData[f.id] = document.getElementById(f.id).value);
-        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'updateData', sheetName: currentSheet, formData: formData }) });
-        const r = await res.json(); if(r.success) { alert("تم التحديث بنجاح"); resetForm(); }
+        btn.disabled = true; loader.style.display = "inline-block";
+        try {
+            const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'submitForm', sheetName: currentSheet, formData: formData }) });
+            const r = await res.json(); if(r.success) { alert("تم الحفظ"); resetForm(); }
+        } catch(e){}
+        btn.disabled = false; loader.style.display = "none";
     }
 
     function editRow(row, headers) {
-        headers.forEach((h, i) => { if(h === 'ID') document.getElementById('ID').value = row[i]; else { const el = document.getElementById(h); if(el) el.value = row[i]; } });
+        headers.forEach((h, i) => { if(h==='ID') document.getElementById('ID').value=row[i]; else { const el=document.getElementById(h); if(el) el.value=row[i]; } });
         document.getElementById('submitBtn').classList.add('hidden'); document.getElementById('updateBtn').classList.remove('hidden');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function resetForm() { document.getElementById('dynamicForm').reset(); document.getElementById('ID').value = ""; document.getElementById('submitBtn').classList.remove('hidden'); document.getElementById('updateBtn').classList.add('hidden'); }
+    function resetForm() { document.getElementById('dynamicForm').reset(); document.getElementById('ID').value=""; document.getElementById('submitBtn').classList.remove('hidden'); document.getElementById('updateBtn').classList.add('hidden'); }
 </script>
 </body>
 </html>
