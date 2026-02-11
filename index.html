@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة التاكسي</title>
+    <title>نظام إدارة التاكسي v1.4.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -11,9 +11,10 @@
             --taxi-black: #2c3e50;
             --white: #ffffff;
             --table-head: #34495e;
+            --bg-body: #f0f2f5; /* رمادي هادئ للثيم */
         }
 
-        body { font-family: 'Tajawal', sans-serif; background-color: #f8f9fa; margin: 0; padding: 0; }
+        body { font-family: 'Tajawal', sans-serif; background-color: var(--bg-body); margin: 0; padding: 0; }
 
         /* شاشة تسجيل الدخول */
         #loginSection {
@@ -22,38 +23,47 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 8px solid var(--taxi-yellow);
             position: relative; text-align: center;
         }
-        .version-tag { position: absolute; bottom: 10px; left: 15px; font-size: 11px; color: #999; }
 
         /* قائمة الشاشات - خطوط أكبر */
         .nav-tabs {
             background: var(--taxi-black); display: flex; overflow-x: auto;
-            padding: 12px; gap: 10px; border-bottom: 4px solid var(--taxi-yellow);
+            padding: 10px; gap: 10px; border-bottom: 4px solid var(--taxi-yellow);
         }
         .tab-btn {
             background: rgba(255,255,255,0.1); border: none; color: white;
             padding: 15px 25px; cursor: pointer; border-radius: 8px;
-            white-space: nowrap; font-size: 1.2rem; font-weight: bold; transition: 0.3s;
+            white-space: nowrap; font-size: 1.25rem; font-weight: bold; transition: 0.3s;
         }
         .tab-btn.active { background: var(--taxi-yellow); color: var(--taxi-black); }
 
         .container { padding: 20px; max-width: 1300px; margin: auto; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        
+        /* تصميم الكروت والحقول المضغوطة */
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; font-size: 0.95rem; }
         
         input, select, textarea { 
-            width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 8px; font-family: 'Tajawal'; font-size: 1rem;
+            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; 
+            font-family: 'Tajawal'; font-size: 0.95rem; box-sizing: border-box;
         }
+        input:focus { border-color: var(--taxi-yellow); outline: none; background: #fffdfa; }
 
-        /* الجداول العصرية */
-        .table-container { overflow-x: auto; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; background: white; min-width: 900px; }
-        th { background: var(--table-head); color: white; padding: 18px; text-align: right; font-size: 1rem; }
-        td { padding: 15px; border-bottom: 1px solid #f1f1f1; font-size: 1rem; }
-        tr:nth-child(even) { background: #fcfcfc; }
-        tr:hover { background: #fff9e6; transition: 0.2s; }
+        /* الجداول */
+        .table-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .table-container { overflow-x: auto; border-radius: 10px; border: 1px solid #eee; background: white; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th { background: var(--table-head); color: white; padding: 12px; text-align: right; font-size: 0.9rem; }
+        td { padding: 10px 12px; border-bottom: 1px solid #f5f5f5; font-size: 0.9rem; color: #444; }
+        tr:nth-child(even) { background: #fafafa; }
+        tr:hover { background: #fff9e6; }
 
-        .btn { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem; transition: 0.2s; }
         .btn-success { background: #27ae60; color: white; }
-        .btn-edit { background: #e67e22; color: white; padding: 6px 15px; font-size: 0.9rem; border-radius: 5px; }
+        .btn-load { background: var(--taxi-black); color: var(--taxi-yellow); font-size: 0.85rem; }
+        .btn-edit { background: #e67e22; color: white; padding: 4px 12px; font-size: 0.85rem; }
         
         .hidden { display: none; }
     </style>
@@ -61,11 +71,11 @@
 <body>
 
 <div id="loginSection">
-    <h2>🚖 دخول النظام</h2>
+    <h2 style="margin-bottom:25px;">🚖 دخول النظام</h2>
     <input type="text" id="username" placeholder="اسم المستخدم" style="margin-bottom:15px">
     <input type="password" id="password" placeholder="كلمة المرور" style="margin-bottom:15px">
     <button class="btn btn-success" style="width:100%; background: var(--taxi-black); color: var(--taxi-yellow);" onclick="login()">دخول</button>
-    <div class="version-tag">Version 1.2.2</div>
+    <p style="font-size: 11px; color: #999; margin-top: 20px;">Version 1.4.0</p>
 </div>
 
 <div id="mainSection" class="hidden">
@@ -80,188 +90,6 @@
 
     <div class="container">
         <div class="card">
-            <h3 id="formTitle"></h3>
+            <h3 id="formTitle" style="margin-top:0; color: var(--taxi-black); border-right: 4px solid var(--taxi-yellow); padding-right: 10px;"></h3>
             <form id="dynamicForm">
-                <input type="hidden" id="ID">
-                <div id="fieldsArea" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;"></div>
-                <div style="margin-top: 25px; display: flex; gap: 10px;">
-                    <button type="button" id="submitBtn" class="btn btn-success" onclick="handleSubmit()">حفظ السجل</button>
-                    <button type="button" id="updateBtn" class="btn btn-edit hidden" onclick="handleUpdate()">تحديث التعديلات</button>
-                    <button type="button" class="btn" style="background:#bdc3c7" onclick="resetForm()">إلغاء</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="card">
-            <h3>📊 السجلات الحالية</h3>
-            <div class="table-container">
-                <table>
-                    <thead><tr id="tableHeaders"></tr></thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbxXl_1lmAK1HRSemLmW1z9XDPcOPqu8hmKEtaPFRYG8qtmbgKraI-a9ADW0R_EObuel/exec";
-    let loggedInUser = "";
-    let currentSheet = "Revenues";
-    let dropdowns = { cars: [], drivers: [] };
-
-    const labelsMap = {
-        'Date': 'التاريخ', 'DATE': 'التاريخ', 'Car_No': 'السيارة', 'Driver_name': 'السائق', 
-        'Category': 'الفئة', 'Amount': 'المبلغ', 'Method': 'الدفع', 'Collector': 'المحصل', 
-        'Notes': 'ملاحظات', 'Seller': 'المورد', 'Expense_Type': 'النوع', 'Name': 'الاسم', 
-        'National_No': 'الرقم الوطني', 'Mobile': 'الهاتف', 'Plate_No': 'اللوحة', 
-        'Owner': 'المالك', 'Time': 'الوقت', 'Movement_Type': 'الحركة', 'Odometer': 'العداد'
-    };
-
-    const schema = {
-        Revenues: [
-            { id: 'Date', label: 'التاريخ', type: 'text' },
-            { id: 'Car_No', label: 'رقم السيارة', type: 'select', options: 'cars' },
-            { id: 'Driver_name', label: 'اسم السائق', type: 'select', options: 'drivers' },
-            { id: 'Category', label: 'الفئة', type: 'select', values: ['ضمان', 'مخالفات', 'أخرى'] },
-            { id: 'Amount', label: 'المبلغ (JD)', type: 'number' },
-            { id: 'Method', label: 'طريقة الدفع', type: 'select', values: ['Cash', 'Cliq', 'Transfer', 'Bank'] },
-            { id: 'Notes', label: 'ملاحظات', type: 'textarea' }
-        ],
-        Expenses: [
-            { id: 'DATE', label: 'التاريخ', type: 'text' },
-            { id: 'Car_No', label: 'رقم السيارة', type: 'select', options: 'cars' },
-            { id: 'Driver_name', label: 'اسم السائق', type: 'select', options: 'drivers' },
-            { id: 'Seller', label: 'المورد', type: 'text' },
-            { id: 'Expense_Type', label: 'نوع المصروف', type: 'text' },
-            { id: 'Amount', label: 'المبلغ', type: 'number' },
-            { id: 'Notes', label: 'ملاحظات', type: 'textarea' }
-        ],
-        Drivers: [
-            { id: 'Name', label: 'الاسم', type: 'text' },
-            { id: 'National_No', label: 'الرقم الوطني', type: 'number' },
-            { id: 'Mobile', label: 'الموبايل', type: 'number' },
-            { id: 'Address', label: 'العنوان', type: 'text' },
-            { id: 'Location', label: 'رابط الموقع', type: 'text' }
-        ],
-        Cars: [
-            { id: 'Plate_No', label: 'رقم اللوحة', type: 'text' },
-            { id: 'Owner', label: 'المالك', type: 'text' },
-            { id: 'Brand', label: 'الماركة', type: 'text' },
-            { id: 'Model', label: 'الموديل', type: 'text' },
-            { id: 'Fuel_Type', label: 'الوقود', type: 'select', values: ['HEV', 'Gasoline'] }
-        ],
-        Drivers_Log: [
-            { id: 'Date', label: 'التاريخ', type: 'text' },
-            { id: 'Time', label: 'الوقت', type: 'text' },
-            { id: 'Car_No', label: 'رقم السيارة', type: 'select', options: 'cars' },
-            { id: 'Driver_name', label: 'السائق', type: 'select', options: 'drivers' },
-            { id: 'Movement_Type', label: 'الحركة', type: 'select', values: ['تسليم', 'استلام'] },
-            { id: 'Odometer', label: 'العداد', type: 'number' }
-        ],
-        Discounts: [
-            { id: 'DATE', label: 'التاريخ', type: 'text' },
-            { id: 'Car_No', label: 'السيارة', type: 'select', options: 'cars' },
-            { id: 'Driver_name', label: 'السائق', type: 'select', options: 'drivers' },
-            { id: 'reason', label: 'السبب', type: 'text' },
-            { id: 'Type', label: 'النوع', type: 'select', values: ['صيانة', 'ترخيص', 'أخرى'] },
-            { id: 'Amount', label: 'القيمة', type: 'number' }
-        ]
-    };
-
-    async function login() {
-        const user = document.getElementById('username').value;
-        const pass = document.getElementById('password').value;
-        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'login', username: user, password: pass }) });
-        const result = await res.json();
-        if (result.success) {
-            loggedInUser = result.user;
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('mainSection').classList.remove('hidden');
-            await loadDropdowns();
-            showTab('Revenues', document.querySelector('.tab-btn'));
-        } else alert("خطأ في الدخول");
-    }
-
-    async function loadDropdowns() {
-        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'getDropdowns' }) });
-        dropdowns = await res.json();
-    }
-
-    function showTab(sheetName, btn) {
-        currentSheet = sheetName;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('formTitle').innerText = btn.innerText;
-        renderForm();
-        loadTable();
-    }
-
-    function renderForm() {
-        const area = document.getElementById('fieldsArea');
-        area.innerHTML = '';
-        schema[currentSheet].forEach(f => {
-            let inputHtml = '';
-            if (f.type === 'select') {
-                let opts = f.values ? f.values : dropdowns[f.options];
-                inputHtml = `<select id="${f.id}"><option value="">اختر...</option>${opts.map(o => `<option value="${o}">${o}</option>`).join('')}</select>`;
-            } else if (f.type === 'textarea') {
-                inputHtml = `<textarea id="${f.id}" rows="2"></textarea>`;
-            } else {
-                inputHtml = `<input type="${f.type}" id="${f.id}">`;
-            }
-            area.innerHTML += `<div><label>${f.label}</label>${inputHtml}</div>`;
-        });
-        resetForm();
-    }
-
-    async function loadTable() {
-        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: currentSheet }) });
-        const data = await res.json();
-        const head = document.getElementById('tableHeaders');
-        const body = document.getElementById('tableBody');
-        
-        const filteredHeaders = data.headers.filter(h => h !== 'ID');
-        head.innerHTML = filteredHeaders.map(h => `<th>${labelsMap[h] || h}</th>`).join('') + "<th>فعل</th>";
-        
-        body.innerHTML = data.rows.map(row => {
-            const displayRow = row.slice(1);
-            return `<tr>${displayRow.map(c => `<td>${c}</td>`).join('')}<td><button class="btn-edit" onclick='editRow(${JSON.stringify(row)}, ${JSON.stringify(data.headers)})'>تعديل</button></td></tr>`;
-        }).reverse().join('');
-    }
-
-    async function handleSubmit() {
-        const formData = { Collector: loggedInUser, User: loggedInUser, "In-Charge": loggedInUser };
-        schema[currentSheet].forEach(f => formData[f.id] = document.getElementById(f.id).value);
-        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'submitForm', sheetName: currentSheet, formData: formData }) });
-        const result = await res.json();
-        if (result.success) { loadTable(); resetForm(); }
-    }
-
-    async function handleUpdate() {
-        const formData = { ID: document.getElementById('ID').value };
-        schema[currentSheet].forEach(f => formData[f.id] = document.getElementById(f.id).value);
-        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'updateData', sheetName: currentSheet, formData: formData }) });
-        const result = await res.json();
-        if (result.success) { loadTable(); resetForm(); }
-    }
-
-    function editRow(row, headers) {
-        headers.forEach((h, i) => {
-            if (h === 'ID') document.getElementById('ID').value = row[i];
-            else { const el = document.getElementById(h); if (el) el.value = row[i]; }
-        });
-        document.getElementById('submitBtn').classList.add('hidden');
-        document.getElementById('updateBtn').classList.remove('hidden');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function resetForm() {
-        document.getElementById('dynamicForm').reset();
-        document.getElementById('ID').value = "";
-        document.getElementById('submitBtn').classList.remove('hidden');
-        document.getElementById('updateBtn').classList.add('hidden');
-    }
-</script>
-</body>
-</html>
+                <input type="hidden"
