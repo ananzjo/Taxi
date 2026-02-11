@@ -2,235 +2,97 @@
 <html dir="rtl" lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fleet Master v4.0 | النظام المتكامل</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fleet Master v4.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Tajawal', sans-serif; background: #0f172a; color: white; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Tajawal', sans-serif; background: #0f172a; color: white; }
         .taxi-gold { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #000; }
-        tbody tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
-        tbody tr:nth-child(odd) { background-color: rgba(0, 0, 0, 0.2); }
-        .nav-tab { cursor: pointer; padding: 1.2rem 1.5rem; color: #94a3b8; border-bottom: 4px solid transparent; white-space: nowrap; font-size: 16px; transition: 0.3s; }
-        .nav-active { color: #fbbf24; border-bottom-color: #fbbf24; font-weight: bold; background: rgba(251, 191, 36, 0.05); }
-        .card { background: #1e293b; border: 1px solid #334155; border-radius: 15px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input, select { font-size: 16px !important; background: #0f172a !important; color: white !important; border: 1px solid #334155 !important; padding: 12px; border-radius: 8px; width: 100%; outline: none; }
-        th { color: #fbbf24; padding: 15px; text-align: right; border-bottom: 2px solid #334155; font-size: 14px; background: #000; }
-        td { padding: 12px; border-bottom: 1px solid #334155; font-size: 13px; }
-        .rep-card { background: #0f172a; border-radius: 10px; padding: 15px; margin-bottom: 10px; border-right: 4px solid #fbbf24; }
+        .nav-tab { cursor: pointer; padding: 1rem; color: #94a3b8; border-bottom: 3px solid transparent; transition: 0.3s; }
+        .nav-active { color: #fbbf24; border-bottom-color: #fbbf24; font-weight: bold; }
+        .card { background: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; }
+        input, select { background: #0f172a !important; color: white !important; border: 1px solid #334155 !important; padding: 10px; border-radius: 6px; width: 100%; }
+        th { color: #fbbf24; background: #000; padding: 12px; text-align: right; }
+        td { padding: 10px; border-bottom: 1px solid #334155; }
     </style>
 </head>
 <body class="pb-10">
 
-    <header class="bg-black py-4 px-6 border-b border-yellow-500/30 flex items-center justify-center">
-        <div class="flex items-center gap-3">
-            <div class="taxi-gold px-3 py-1 rounded-lg font-black text-xl text-black">FM</div>
-            <h1 class="text-yellow-500 font-bold text-2xl tracking-widest uppercase">Fleet Master</h1>
-        </div>
+    <header class="bg-black py-4 border-b border-yellow-500/30 text-center text-yellow-500 text-2xl font-bold">
+        FLEET MASTER
     </header>
 
-    <nav class="bg-slate-900 border-b border-yellow-500/10 sticky top-0 z-50 overflow-x-auto no-scrollbar">
-        <div class="max-w-7xl mx-auto flex justify-start md:justify-center">
-            <div onclick="showModule('Revenues')" id="n-Revenues" class="nav-tab nav-active">الإيرادات</div>
-            <div onclick="showModule('Expenses')" id="n-Expenses" class="nav-tab">المصاريف</div>
-            <div onclick="showModule('Drivers_Log')" id="n-Drivers_Log" class="nav-tab">استلام/تسليم</div>
-            <div onclick="showModule('Cars')" id="n-Cars" class="nav-tab">السيارات</div>
-            <div onclick="showModule('Reports')" id="n-Reports" class="nav-tab text-yellow-500 font-bold"><i class="fas fa-chart-bar ml-1"></i> التقارير</div>
-        </div>
+    <nav class="bg-slate-900 border-b border-yellow-500/10 flex justify-center gap-4 overflow-x-auto">
+        <div onclick="showModule('Revenues')" id="n-Revenues" class="nav-tab nav-active">الإيرادات</div>
+        <div onclick="showModule('Expenses')" id="n-Expenses" class="nav-tab">المصاريف</div>
+        <div onclick="showModule('Drivers_Log')" id="n-Drivers_Log" class="nav-tab">استلام/تسليم</div>
+        <div onclick="showModule('Reports')" id="n-Reports" class="nav-tab">التقارير</div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-4 mt-8">
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
-            <h2 id="module-title" class="text-2xl font-bold border-r-4 border-yellow-500 pr-3 text-yellow-500">إدارة الإيرادات</h2>
-            <div id="tab-controls" class="bg-slate-800 p-1.5 rounded-2xl flex gap-1 shadow-inner w-full md:w-auto">
-                <button onclick="switchTab('add')" id="btn-add" class="taxi-gold px-10 py-3 rounded-xl font-bold text-lg">إضافة</button>
-                <button onclick="switchTab('list')" id="btn-list" class="text-slate-400 px-10 py-3 rounded-xl font-bold text-lg hover:bg-slate-700">عرض</button>
-            </div>
-        </div>
-
+    <div class="max-w-6xl mx-auto px-4 mt-6">
         <div id="view-add" class="card">
+            <h2 id="module-title" class="text-xl font-bold mb-4 text-yellow-500">إدارة الإيرادات</h2>
             <form id="mainForm" onsubmit="handleFormSubmit(event)">
                 <input type="hidden" name="sheetName" id="current-sheet" value="Revenues">
-                <input type="hidden" name="ID" id="edit-id">
-                <div id="form-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 text-sm"></div>
-                <button type="submit" id="submit-btn" class="taxi-gold w-full mt-10 py-5 rounded-2xl font-black text-xl shadow-2xl transition-all">حفظ البيانات</button>
+                <div id="form-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                <button type="submit" id="submit-btn" class="taxi-gold w-full mt-6 py-3 rounded-lg font-bold">حفظ البيانات</button>
             </form>
         </div>
 
-        <div id="view-list" class="hidden card overflow-hidden p-0 border-none">
-            <div class="overflow-x-auto"><table class="w-full text-right"><thead class="bg-black text-yellow-500"><tr id="table-head"></tr></thead><tbody id="table-body"></tbody></table></div>
-        </div>
-
-        <div id="view-Reports" class="hidden space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <button onclick="runPerformanceReport()" class="taxi-gold p-4 rounded-xl font-bold shadow-lg">أداء السائقين (لليوم)</button>
-                <button onclick="runOwnersReport()" class="bg-slate-800 border border-blue-500 p-4 rounded-xl font-bold text-blue-400">أرباح الملاك</button>
-                <button onclick="runCarAnalysisReport()" class="bg-slate-800 border border-emerald-500 p-4 rounded-xl font-bold text-emerald-400">كشف حساب سيارة 🔍</button>
-            </div>
-            
-            <div id="report-status" class="text-center text-yellow-500 font-bold italic"></div>
-
-            <div id="report-container" class="card p-0 overflow-hidden border-none shadow-2xl min-h-[300px]">
-                <table class="w-full text-right">
-                    <thead id="rep-head" class="bg-black text-yellow-500"></thead>
-                    <tbody id="rep-body" class="text-slate-200">
-                        <tr><td colspan="10" class="p-20 text-center text-slate-500 italic">بانتظار اختيار التقرير...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+        <div id="view-Reports" class="hidden space-y-4">
+             <button onclick="runPerformanceReport()" class="taxi-gold p-3 rounded-lg w-full font-bold">تحديث تقرير الأداء</button>
+             <div class="card overflow-x-auto">
+                 <table class="w-full text-right">
+                     <thead id="rep-head"></thead>
+                     <tbody id="rep-body"></tbody>
+                 </table>
+             </div>
         </div>
     </div>
 
     <script>
-        // رابط الـ Web App الخاص بك
+        // ضع رابط الـ Web App الخاص بك هنا
         const API_URL = "https://script.google.com/macros/s/AKfycbycjF1PKP7hqiRntX_Q45-eMNTDBQXEhfx70cYpDiDcuBgD4t-3Ta4pgVxuVHKNxPFOMA/exec";
-        
+
         async function showModule(m) {
             document.getElementById('current-sheet').value = m;
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('nav-active'));
             document.getElementById('n-' + m).classList.add('nav-active');
-            const titles = {'Revenues': 'إدارة الإيرادات', 'Expenses': 'إدارة المصاريف', 'Cars': 'بيانات السيارات', 'Reports': 'لوحة التقارير الذكية', 'Drivers_Log': 'تسليم واستلام السيارات'};
-            document.getElementById('module-title').innerText = titles[m];
             
-            document.getElementById('view-add').classList.add('hidden');
-            document.getElementById('view-list').classList.add('hidden');
-            document.getElementById('view-Reports').classList.add('hidden');
-            document.getElementById('tab-controls').classList.remove('hidden');
-
             if (m === 'Reports') {
+                document.getElementById('view-add').classList.add('hidden');
                 document.getElementById('view-Reports').classList.remove('hidden');
-                document.getElementById('tab-controls').classList.add('hidden');
             } else {
-                await renderFields();
-                switchTab('add');
+                document.getElementById('view-add').classList.remove('hidden');
+                document.getElementById('view-Reports').classList.add('hidden');
+                renderFields(m);
             }
         }
 
-        // --- التقرير المطلوب: كشف حساب سيارة تفصيلي ---
-        async function runCarAnalysisReport() {
-            const carId = prompt("أدخل رقم السيارة (مثال: 10-12345):");
-            if (!carId) return;
-            const status = document.getElementById('report-status');
-            const body = document.getElementById('rep-body');
-            const head = document.getElementById('rep-head');
-            status.innerText = "⏳ جاري تجميع كشف الحساب...";
-
-            try {
-                const [revs, exps, logs] = await Promise.all([callAPI('getRows','Revenues'), callAPI('getRows','Expenses'), callAPI('getRows','Drivers_Log')]);
-                const now = new Date();
-                const currentMonth = now.getMonth();
-                const daysInMonth = new Date(now.getFullYear(), currentMonth + 1, 0).getDate();
-                const elapsed = now.getDate();
-                const remaining = daysInMonth - elapsed;
-
-                const carLogs = logs.filter(l => String(l.Car_No || l["رقم السيارة"]).trim() === carId).sort((a,b) => new Date(b.Date) - new Date(a.Date));
-                const lastLog = carLogs.find(l => l.Movement_Type === "استلام");
-                let driver = "غير محدد"; let daysSinceReceipt = 0;
-                if(lastLog) {
-                    driver = lastLog.Driver_name || lastLog["اسم السائق"];
-                    daysSinceReceipt = Math.floor((now - new Date(lastLog.Date)) / (1000*60*60*24));
-                }
-
-                const carRevs = revs.filter(r => String(r.Car_No).trim() === carId && new Date(r.Date).getMonth() === currentMonth);
-                const totalIn = carRevs.reduce((s, r) => s + parseFloat(r.Amount || 0), 0);
-                const totalOut = exps.filter(e => String(e.Car_No).trim() === carId && new Date(e.Date).getMonth() === currentMonth).reduce((s, e) => s + parseFloat(e.Amount || 0), 0);
-                const deductions = carRevs.filter(r => r.Category !== "ضمان").reduce((s, r) => s + parseFloat(r.Amount || 0), 0);
-
-                head.innerHTML = `<tr><th colspan="2" class="text-center text-xl bg-slate-900">تحليل السيارة [ ${carId} ]</th></tr>`;
-                body.innerHTML = `
-                    <tr class="rep-card"><td>👤 السائق الحالي</td><td class="text-blue-400 font-bold">${driver}</td></tr>
-                    <tr><td>📅 أيام الاستلام (منذ تاريخ الاستلام)</td><td class="text-yellow-500">${daysSinceReceipt} يوم</td></tr>
-                    <tr class="bg-green-900/20"><td>💰 إجمالي ما جلبته (إيراد)</td><td class="text-green-400 font-bold">${totalIn.toLocaleString()} د.أ</td></tr>
-                    <tr class="bg-red-900/20"><td>🛠️ إجمالي ما صرفته</td><td class="text-red-400 font-bold">${totalOut.toLocaleString()} د.أ</td></tr>
-                    <tr><td>📉 خصومات على السائق (مخالفات/أخرى)</td><td class="text-orange-400">${deductions.toLocaleString()} د.أ</td></tr>
-                    <tr class="bg-slate-700"><td>🏁 صافي الربح الحالي</td><td class="text-white font-black">${(totalIn - totalOut).toLocaleString()} د.أ</td></tr>
-                    <tr class="border-t border-slate-600"><td>🕒 أيام الشهر المنقضية</td><td>${elapsed} يوم</td></tr>
-                    <tr><td>⏳ أيام متبقية لنهاية الشهر</td><td>${remaining} يوم</td></tr>
-                `;
-                status.innerText = "✅ تم استخراج الكشف بنجاح";
-            } catch(e) { status.innerText = "❌ فشل: تأكد من رقم السيارة وصحة البيانات"; }
-        }
-
-        // --- تقرير الأداء اليومي ---
-        async function runPerformanceReport() {
-            const status = document.getElementById('report-status');
-            status.innerText = "⏳ جاري حساب الأداء لغاية اليوم...";
-            const [cars, revs, logs] = await Promise.all([callAPI('getRows','Cars'), callAPI('getRows','Revenues'), callAPI('getRows','Drivers_Log')]);
-            
-            let workDays = 0; const now = new Date();
-            for (let i = 1; i <= now.getDate(); i++) if (new Date(now.getFullYear(), now.getMonth(), i).getDay() !== 5) workDays++;
-            
-            document.getElementById('rep-head').innerHTML = `<tr><th>السيارة</th><th>السائق</th><th>المستهدف</th><th>المحصل</th><th>الفارق</th></tr>`;
-            let html = "";
-            cars.forEach(car => {
-                const p = String(car["رقم السيارة"] || car["Plate_No"] || "").trim();
-                const target = parseFloat(car["الضمان اليومي"] || car["Daily_Guarantee"] || 0) * workDays;
-                const coll = revs.filter(r => String(r.Car_No).trim() === p && new Date(r.Date).getMonth() === now.getMonth()).reduce((s, r) => s + parseFloat(r.Amount || 0), 0);
-                const diff = coll - target;
-                html += `<tr><td>${p}</td><td class="text-xs text-slate-400">${car.Owner || ''}</td><td>${target}</td><td class="text-green-400">${coll}</td><td class="${diff<0?'text-red-500':'text-green-500'}">${diff}</td></tr>`;
-            });
-            document.getElementById('rep-body').innerHTML = html;
-            status.innerText = `✅ أداء لغاية اليوم (${workDays} يوم عمل)`;
-        }
-
-        // --- تقرير الملاك ---
-        async function runOwnersReport() {
-            const status = document.getElementById('report-status');
-            status.innerText = "⏳ جاري توزيع الأرباح حسب الملاك...";
-            const [cars, revs, exps] = await Promise.all([callAPI('getRows','Cars'), callAPI('getRows','Revenues'), callAPI('getRows','Expenses')]);
-            let owners = {};
-            cars.forEach(c => {
-                let o = c.Owner || "غير معروف"; let p = String(c["رقم السيارة"] || c["Plate_No"] || "").trim();
-                if (!owners[o]) owners[o] = { plates: [], inc: 0, exp: 0 };
-                owners[o].plates.push(p);
-            });
-            revs.forEach(r => { let p = String(r.Car_No).trim(); for (let o in owners) if (owners[o].plates.includes(p)) owners[o].inc += parseFloat(r.Amount || 0); });
-            exps.forEach(e => { let p = String(e.Car_No).trim(); for (let o in owners) if (owners[o].plates.includes(p)) owners[o].exp += parseFloat(e.Amount || 0); });
-            
-            document.getElementById('rep-head').innerHTML = `<tr><th>المالك</th><th>السيارات</th><th>إيراد</th><th>مصروف</th><th>الصافي</th></tr>`;
-            let html = "";
-            for (let o in owners) {
-                let net = owners[o].inc - owners[o].exp;
-                html += `<tr><td class="font-bold">${o}</td><td>${owners[o].plates.length}</td><td class="text-green-400">${owners[o].inc}</td><td class="text-red-400">${owners[o].exp}</td><td class="text-yellow-500 font-black">${net}</td></tr>`;
-            }
-            document.getElementById('rep-body').innerHTML = html;
-            status.innerText = "✅ كشف الملاك جاهز";
-        }
-
-        // --- المحرك المساعد (تعديل القراءة من العمود B) ---
-        async function renderFields() {
+        async function renderFields(m) {
             const container = document.getElementById('form-container');
-            const currentModule = document.getElementById('current-sheet').value;
-            container.innerHTML = '<div class="col-span-full text-center p-5 text-yellow-500"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>';
-            try {
-                const driversData = await callAPI('getDrivers');
-                const carsData = await callAPI('getCars');
+            container.innerHTML = "جاري التحميل...";
+            const drivers = await callAPI('getDrivers');
+            const cars = await callAPI('getCars');
+            
+            const dOpts = drivers.map(d => `<option value="${d}">${d}</option>`).join('');
+            const cOpts = cars.map(c => `<option value="${c}">${c}</option>`).join('');
+            const today = new Date().toISOString().split('T')[0];
 
-                // التعديل لقراءة العمود B (العنصر [1] في المصفوفة)
-                const dOpts = driversData.map(d => {
-                    const val = Array.isArray(d) ? d[1] : d;
-                    return `<option value="${val}">${val}</option>`;
-                }).join('');
+            let html = `<div><label>التاريخ</label><input type="date" name="Date" value="${today}"></div>
+                        <div><label>السيارة</label><select name="Car_No">${cOpts}</select></div>
+                        <div><label>السائق</label><select name="Driver_name">${dOpts}</select></div>`;
 
-                const cOpts = carsData.map(c => {
-                    const val = Array.isArray(c) ? c[1] : c;
-                    return `<option value="${val}">${val}</option>`;
-                }).join('');
+            if (m === 'Revenues') {
+                html += `<div><label>المبلغ</label><input type="number" step="0.01" name="Amount"></div>
+                         <div><label>الفئة</label><select name="Category"><option>ضمان</option><option>مخالفات</option></select></div>`;
+            } else if (m === 'Expenses') {
+                html += `<div><label>المبلغ</label><input type="number" step="0.01" name="Amount"></div>
+                         <div><label>النوع</label><input type="text" name="Expense_Type"></div>`;
+            }
 
-                const today = new Date().toISOString().split('T')[0];
-                let html = '';
-                if (currentModule === 'Revenues') {
-                    html = `<div><label class="block mb-2 text-slate-400 text-xs">التاريخ</label><input type="date" name="Date" value="${today}"></div><div><label class="block mb-2 text-slate-400 text-xs">السيارة</label><select name="Car_No">${cOpts}</select></div><div><label class="block mb-2 text-slate-400 text-xs">السائق</label><select name="Driver_name">${dOpts}</select></div><div><label class="block mb-2 text-slate-400 text-xs">الفئة</label><select name="Category"><option>ضمان</option><option>مخالفات</option><option>أخرى</option></select></div><div><label class="block mb-2 text-slate-400 text-xs">المبلغ</label><input type="number" step="0.01" name="Amount"></div><div><label class="block mb-2 text-slate-400 text-xs">الدفع</label><select name="Method"><option>Cash</option><option>Cliq</option></select></div><div><label class="block mb-2 text-slate-400 text-xs">ملاحظات</label><input type="text" name="Notes"></div>`;
-                } else if (currentModule === 'Expenses') {
-                    html = `<div><label class="block mb-2 text-slate-400 text-xs">التاريخ</label><input type="date" name="Date" value="${today}"></div><div><label class="block mb-2 text-slate-400 text-xs">السيارة</label><select name="Car_No">${cOpts}</select></div><div><label class="block mb-2 text-slate-400 text-xs">السائق</label><select name="Driver_name">${dOpts}</select></div><div><label class="block mb-2 text-slate-400 text-xs">المصرف</label><input type="text" name="Expense_Type" placeholder="زيت، بنزين.."></div><div><label class="block mb-2 text-slate-400 text-xs">المبلغ</label><input type="number" step="0.01" name="Amount"></div>`;
-                } else if (currentModule === 'Cars') {
-                    html = `<div><label class="block mb-2 text-slate-400 text-xs">رقم اللوحة</label><input type="text" name="Plate_No"></div><div><label class="block mb-2 text-slate-400 text-xs">المالك</label><input type="text" name="Owner"></div><div><label class="block mb-2 text-slate-400 text-xs">الضمان اليومي</label><input type="number" name="Daily_Guarantee"></div>`;
-                } else if (currentModule === 'Drivers_Log') {
-                    html = `<div><label class="block mb-2 text-slate-400 text-xs">التاريخ</label><input type="date" name="Date" value="${today}"></div><div><label class="block mb-2 text-slate-400 text-xs">السيارة</label><select name="Car_No">${cOpts}</select></div><div><label class="block mb-2 text-slate-400 text-xs">السائق</label><select name="Driver_name">${dOpts}</select></div><div><label class="block mb-2 text-slate-400 text-xs">نوع الحركة</label><select name="Movement_Type"><option>استلام</option><option>تسليم</option></select></div><div><label class="block mb-2 text-slate-400 text-xs">العداد</label><input type="number" name="Odometer"></div>`;
-                }
-                container.innerHTML = html;
-            } catch(e) { container.innerHTML = "فشل تحميل البيانات. تحقق من الـ API"; }
+            container.innerHTML = html;
         }
 
         function callAPI(action, sheet = '') {
@@ -243,32 +105,12 @@
             });
         }
 
-        async function switchTab(mode) {
-            const isAdd = mode === 'add';
-            document.getElementById('view-add').classList.toggle('hidden', !isAdd);
-            document.getElementById('view-list').classList.toggle('hidden', isAdd);
-            document.getElementById('btn-add').className = isAdd ? 'taxi-gold px-10 py-3 rounded-xl font-bold text-lg' : 'text-slate-400 px-10 py-3 rounded-xl font-bold text-lg hover:bg-slate-700';
-            document.getElementById('btn-list').className = !isAdd ? 'taxi-gold px-10 py-3 rounded-xl font-bold text-lg' : 'text-slate-400 px-10 py-3 rounded-xl font-bold text-lg hover:bg-slate-700';
-            if (!isAdd) loadData();
-        }
-
-        async function loadData() {
-            const body = document.getElementById('table-body');
-            body.innerHTML = '<tr><td colspan="10" class="text-center p-10 italic">جاري جلب السجلات...</td></tr>';
-            const rows = await callAPI('getRows', document.getElementById('current-sheet').value);
-            if (rows.length > 0) {
-                const keys = Object.keys(rows[0]);
-                document.getElementById('table-head').innerHTML = keys.map(k => `<th>${k}</th>`).join('') + '<th></th>';
-                body.innerHTML = rows.map((row, idx) => `<tr>${keys.map(k => `<td>${row[k] || '-'}</td>`).join('')}<td><button class="text-yellow-500">📝</button></td></tr>`).join('');
-            } else { body.innerHTML = '<tr><td colspan="10" class="text-center p-10">لا توجد سجلات</td></tr>'; }
-        }
-
         function handleFormSubmit(event) {
             event.preventDefault();
             const btn = document.getElementById('submit-btn');
             btn.disabled = true; btn.innerText = "جاري الحفظ...";
             fetch(API_URL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(new FormData(event.target)) })
-                .then(() => { alert("تمت العملية بنجاح!"); location.reload(); });
+                .then(() => { alert("تم الحفظ!"); location.reload(); });
         }
 
         window.onload = () => showModule('Revenues');
