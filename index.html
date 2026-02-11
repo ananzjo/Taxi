@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة التاكسي | الإيرادات</title>
+    <title>نظام إدارة التاكسي الشامل</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,22 +13,18 @@
             --white: #ffffff;
             --accent: #e67e22;
             --success: #27ae60;
+            --danger: #e74c3c;
         }
 
         body {
             font-family: 'Tajawal', sans-serif;
             background-color: var(--bg-light);
             margin: 0;
-            padding: 20px;
+            padding: 0;
             color: var(--taxi-black);
         }
 
-        .container {
-            max-width: 1100px;
-            margin: auto;
-        }
-
-        /* شاشة تسجيل الدخول بتصميم عصري */
+        /* شاشة تسجيل الدخول */
         #loginSection {
             max-width: 400px;
             margin: 80px auto;
@@ -37,197 +33,129 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             border-top: 8px solid var(--taxi-yellow);
+            position: relative;
         }
 
-        #loginSection h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: var(--taxi-black);
+        .version-tag {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            font-size: 12px;
+            color: #999;
         }
 
-        /* الهيدر العلوي */
+        /* الهيدر والتنقل */
         .header-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             background: var(--taxi-black);
             color: var(--taxi-yellow);
             padding: 15px 25px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* تصميم الفورم */
-        .card {
-            background: var(--white);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
+        .nav-tabs {
+            background: #1a252f;
+            display: flex;
+            overflow-x: auto;
+            padding: 5px 10px;
+            gap: 5px;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+        .tab-btn {
+            background: none;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            white-space: nowrap;
+            transition: 0.3s;
         }
 
+        .tab-btn.active {
+            background: var(--taxi-yellow);
+            color: var(--taxi-black);
+            font-weight: bold;
+        }
+
+        /* المحتوى */
+        .container { padding: 20px; max-width: 1200px; margin: auto; }
+        .card { background: var(--white); padding: 25px; border-radius: 12px; box-shadow: 0 2px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 0.9rem; }
+        input, select, textarea { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 8px; box-sizing: border-box; font-family: 'Tajawal'; }
         
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #eee;
-            border-radius: 8px;
-            transition: all 0.3s;
-            font-family: 'Tajawal', sans-serif;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--taxi-yellow);
-            outline: none;
-            box-shadow: 0 0 8px rgba(241, 196, 15, 0.2);
-        }
-
-        /* الأزرار */
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: transform 0.2s, opacity 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn:active { transform: scale(0.98); }
+        /* الأزرار والجداول */
+        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .btn-primary { background: var(--taxi-yellow); color: var(--taxi-black); }
         .btn-success { background: var(--success); color: white; }
-        .btn-edit { background: var(--accent); color: white; }
-        .btn-secondary { background: #95a5a6; color: white; }
-
-        /* جدول زيبرا المطور */
-        .table-container {
-            overflow-x: auto;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--white);
-        }
-
-        th {
-            background-color: var(--taxi-black);
-            color: var(--taxi-yellow);
-            padding: 15px;
-            text-align: right;
-            font-weight: bold;
-        }
-
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-        }
-
-        tr:nth-child(even) { background-color: #fafafa; }
-        tr:hover { background-color: #fff9e6; }
-
+        .btn-edit { background: var(--accent); color: white; padding: 5px 12px; font-size: 12px; }
+        
+        .table-container { overflow-x: auto; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th { background: var(--taxi-black); color: var(--taxi-yellow); padding: 12px; text-align: right; }
+        td { padding: 10px; border-bottom: 1px solid #eee; }
+        tr:nth-child(even) { background: #fafafa; }
+        
         .hidden { display: none; }
-        .loader { color: var(--accent); font-size: 0.8rem; margin-right: 10px; }
-
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="loginSection">
-        <h2>🚖 تسجيل الدخول</h2>
-        <div class="form-group">
-            <label>اسم المستخدم</label>
-            <input type="text" id="username" placeholder="اسم المستخدم">
-        </div>
-        <div class="form-group">
-            <label>كلمة المرور</label>
-            <input type="password" id="password" placeholder="••••••••">
-        </div>
-        <button class="btn btn-primary" style="width: 100%;" onclick="login()">دخول للنظام</button>
+<div id="loginSection">
+    <h2 style="text-align:center;">🚖 دخول النظام</h2>
+    <div class="form-group">
+        <label>اسم المستخدم</label>
+        <input type="text" id="username" placeholder="User Name">
+    </div>
+    <div class="form-group">
+        <label>كلمة المرور</label>
+        <input type="password" id="password" placeholder="Pass">
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="login()">دخول</button>
+    <div class="version-tag">Version 1.1.0</div>
+</div>
+
+<div id="mainSection" class="hidden">
+    <div class="header-bar">
+        <h3>نظام إدارة التاكسي 🚕</h3>
+        <div>المستخدم: <span id="currentUser"></span></div>
     </div>
 
-    <div id="mainSection" class="hidden">
-        <div class="header-bar">
-            <h2 style="margin:0;">🚖 إدارة الإيرادات</h2>
-            <div>
-                مرحباً: <span id="currentUser"></span>
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="showTab('Revenues')">الإيرادات</button>
+        <button class="tab-btn" onclick="showTab('Expenses')">المصاريف</button>
+        <button class="tab-btn" onclick="showTab('Drivers')">السائقين</button>
+        <button class="tab-btn" onclick="showTab('Cars')">السيارات</button>
+        <button class="tab-btn" onclick="showTab('Drivers_Log')">الاستلام/التسليم</button>
+        <button class="tab-btn" onclick="showTab('Discounts')">الخصومات والتوقف</button>
+    </div>
+
+    <div class="container">
+        <div id="activeTabContent">
+            <div class="card" id="formContainer">
+                <h3 id="formTitle"></h3>
+                <form id="dynamicForm">
+                    <input type="hidden" id="ID">
+                    <div id="fieldsArea" class="form-grid"></div>
+                    <div style="margin-top: 20px;">
+                        <button type="button" id="submitBtn" class="btn btn-success" onclick="handleSubmit()">حفظ</button>
+                        <button type="button" id="updateBtn" class="btn btn-edit hidden" onclick="handleUpdate()">تحديث</button>
+                        <button type="button" class="btn" style="background:#bdc3c7" onclick="resetForm()">إلغاء</button>
+                    </div>
+                </form>
             </div>
-        </div>
 
-        <div class="card">
-            <form id="revenueForm">
-                <input type="hidden" id="ID">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>التاريخ (dd mm yyyy)</label>
-                        <input type="text" id="Date" placeholder="11 02 2026">
-                    </div>
-                    <div class="form-group">
-                        <label>رقم السيارة</label>
-                        <select id="Car_No"><option value="">جاري التحميل...</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label>اسم السائق</label>
-                        <select id="Driver_name"><option value="">جاري التحميل...</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label>الفئة</label>
-                        <select id="Category">
-                            <option value="ضمان">ضمان</option>
-                            <option value="مخالفات">مخالفات</option>
-                            <option value="أخرى">أخرى</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>المبلغ (JD)</label>
-                        <input type="number" id="Amount" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label>طريقة الدفع</label>
-                        <select id="Method">
-                            <option value="Cash">Cash</option>
-                            <option value="Cliq">Cliq</option>
-                            <option value="Transfer">Transfer</option>
-                            <option value="Bank">Bank</option>
-                        </select>
-                    </div>
+            <div class="card">
+                <h3>السجلات المسجلة</h3>
+                <div class="table-container">
+                    <table id="dataTable">
+                        <thead><tr id="tableHeaders"></tr></thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
                 </div>
-                <div class="form-group">
-                    <label>ملاحظات عامة</label>
-                    <textarea id="Notes" rows="2" placeholder="أضف أي ملاحظات إضافية هنا..."></textarea>
-                </div>
-                
-                <div style="margin-top: 10px;">
-                    <button type="button" id="submitBtn" class="btn btn-success" onclick="submitRevenue()">حفظ السجل</button>
-                    <button type="button" id="updateBtn" class="btn btn-edit hidden" onclick="updateRevenue()">تحديث البيانات</button>
-                    <button type="button" class="btn btn-secondary" onclick="resetForm()">إلغاء</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="card">
-            <h3 style="margin-top:0;">📊 سجل البيانات المسجلة</h3>
-            <div class="table-container">
-                <table id="revenueTable">
-                    <thead>
-                        <tr id="tableHeaders"></tr>
-                    </thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
             </div>
         </div>
     </div>
@@ -236,116 +164,163 @@
 <script>
     const scriptUrl = "https://script.google.com/macros/s/AKfycbxXl_1lmAK1HRSemLmW1z9XDPcOPqu8hmKEtaPFRYG8qtmbgKraI-a9ADW0R_EObuel/exec";
     let loggedInUser = "";
+    let currentSheet = "Revenues";
+    let dropdowns = { cars: [], drivers: [] };
 
+    // تعريف الحقول لكل شيت كما في التصميم
+    const schema = {
+        Revenues: [
+            { id: 'Date', label: 'التاريخ', type: 'text', placeholder: 'dd mm yyyy' },
+            { id: 'Car_No', label: 'رقم السيارة', type: 'select', options: 'cars' },
+            { id: 'Driver_name', label: 'اسم السائق', type: 'select', options: 'drivers' },
+            { id: 'Category', label: 'الفئة', type: 'select', values: ['ضمان', 'مخالفات', 'أخرى'] },
+            { id: 'Amount', label: 'المبلغ (JD)', type: 'number' },
+            { id: 'Method', label: 'الطريقة', type: 'select', values: ['Cash', 'Cliq', 'Transfer', 'Bank'] },
+            { id: 'Notes', label: 'ملاحظات', type: 'textarea' }
+        ],
+        Expenses: [
+            { id: 'DATE', label: 'التاريخ', type: 'text' },
+            { id: 'Car_No', label: 'رقم السيارة', type: 'select', options: 'cars' },
+            { id: 'Driver_name', label: 'اسم السائق', type: 'select', options: 'drivers' },
+            { id: 'Seller', label: 'المورد/البائع', type: 'text' },
+            { id: 'Expense_Type', label: 'نوع المصروف', type: 'text' },
+            { id: 'Amount', label: 'المبلغ', type: 'number' },
+            { id: 'Notes', label: 'ملاحظات', type: 'textarea' }
+        ],
+        Drivers: [
+            { id: 'Name', label: 'الاسم الكامل', type: 'text' },
+            { id: 'National_No', label: 'الرقم الوطني', type: 'number' },
+            { id: 'Mobile', label: 'الموبايل', type: 'number' },
+            { id: 'Address', label: 'العنوان', type: 'text' },
+            { id: 'Location', label: 'رابط الموقع (URL)', type: 'text' }
+        ],
+        Cars: [
+            { id: 'Plate_No', label: 'رقم اللوحة', type: 'text' },
+            { id: 'Owner', label: 'المالك', type: 'text' },
+            { id: 'Brand', label: 'الماركة', type: 'text' },
+            { id: 'Model', label: 'الموديل (السنة)', type: 'text' },
+            { id: 'License_Expiry_date', label: 'انتهاء الترخيص', type: 'text' },
+            { id: 'Daily_Rent', label: 'الأجرة اليومية', type: 'number' },
+            { id: 'Fuel_Type', label: 'نوع الوقود', type: 'select', values: ['HEV', 'Gasoline'] },
+            { id: 'Office', label: 'المكتب المسجل', type: 'text' }
+        ],
+        Drivers_Log: [
+            { id: 'Date', label: 'تاريخ الحركة', type: 'text' },
+            { id: 'Time', label: 'وقت الحركة (hh:mm am pm)', type: 'text' },
+            { id: 'Car_No', label: 'رقم السيارة', type: 'select', options: 'cars' },
+            { id: 'Driver_name', label: 'اسم السائق', type: 'select', options: 'drivers' },
+            { id: 'Movement_Type', label: 'نوع الحركة', type: 'select', values: ['تسليم', 'استلام'] },
+            { id: 'Odometer', label: 'عداد المسافة', type: 'number' },
+            { id: 'Cleanliness', label: 'النظافة', type: 'text' },
+            { id: 'Status_Notes', label: 'حالة السيارة', type: 'textarea' }
+        ],
+        Discounts: [
+            { id: 'DATE', label: 'التاريخ', type: 'text' },
+            { id: 'Car_No', label: 'رقم السيارة', type: 'select', options: 'cars' },
+            { id: 'Driver_name', label: 'اسم السائق', type: 'select', options: 'drivers' },
+            { id: 'reason', label: 'سبب الخصم/التوقف', type: 'text' },
+            { id: 'Type', label: 'النوع', type: 'select', values: ['صيانة', 'ترخيص', 'أخرى'] },
+            { id: 'Amount', label: 'القيمة المخصومة', type: 'number' },
+            { id: 'Notes', label: 'ملاحظات', type: 'textarea' }
+        ]
+    };
+
+    // وظيفة الدخول
     async function login() {
         const user = document.getElementById('username').value;
         const pass = document.getElementById('password').value;
-        if(!user || !pass) return alert("يرجى تعبئة الحقول");
-
-        try {
-            const response = await fetch(scriptUrl, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'login', username: user, password: pass })
-            });
-            const result = await response.json();
-            
-            if (result.success) {
-                loggedInUser = result.user;
-                document.getElementById('loginSection').classList.add('hidden');
-                document.getElementById('mainSection').classList.remove('hidden');
-                document.getElementById('currentUser').innerText = loggedInUser;
-                loadInitialData();
-            } else {
-                alert("خطأ في بيانات الدخول!");
-            }
-        } catch(e) { alert("فشل الاتصال بالسيرفر"); }
+        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'login', username: user, password: pass }) });
+        const result = await res.json();
+        if (result.success) {
+            loggedInUser = result.user;
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('mainSection').classList.remove('hidden');
+            document.getElementById('currentUser').innerText = loggedInUser;
+            await loadDropdowns();
+            showTab('Revenues');
+        } else alert("خطأ في الدخول");
     }
 
-    async function loadInitialData() {
-        const dropRes = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'getDropdowns' }) });
-        const dropData = await dropRes.json();
+    async function loadDropdowns() {
+        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'getDropdowns' }) });
+        dropdowns = await res.json();
+    }
+
+    // تبديل الشاشات
+    function showTab(sheetName) {
+        currentSheet = sheetName;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event?.target?.classList?.add('active') || [...document.querySelectorAll('.tab-btn')].find(b => b.innerText.includes(sheetName === 'Drivers_Log' ? 'استلام' : ''))?.classList.add('active');
         
-        document.getElementById('Car_No').innerHTML = dropData.cars.map(c => `<option value="${c}">${c}</option>`).join('');
-        document.getElementById('Driver_name').innerHTML = dropData.drivers.map(d => `<option value="${d}">${d}</option>`).join('');
-        
+        renderForm();
         loadTable();
     }
 
-    async function loadTable() {
-        const response = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: 'Revenues' }) });
-        const result = await response.json();
-        
-        if (result.success) {
-            const head = document.getElementById('tableHeaders');
-            const body = document.getElementById('tableBody');
-            
-            head.innerHTML = result.headers.map(h => `<th>${h}</th>`).join('') + "<th>الإجراء</th>";
-            
-            body.innerHTML = result.rows.map((row) => {
-                let rowHtml = row.map(cell => `<td>${cell}</td>`).join('');
-                return `<tr>${rowHtml}<td><button class="btn btn-edit" style="padding:4px 10px; font-size:12px;" onclick='editRow(${JSON.stringify(row)}, ${JSON.stringify(result.headers)})'>تعديل</button></td></tr>`;
-            }).reverse().join(''); // عرض الأحدث أولاً
-        }
-    }
-
-    async function submitRevenue() {
-        const formData = {
-            Date: document.getElementById('Date').value,
-            Car_No: document.getElementById('Car_No').value,
-            Driver_name: document.getElementById('Driver_name').value,
-            Category: document.getElementById('Category').value,
-            Amount: document.getElementById('Amount').value,
-            Method: document.getElementById('Method').value,
-            Collector: loggedInUser,
-            Notes: document.getElementById('Notes').value
-        };
-
-        const response = await fetch(scriptUrl, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'submitForm', sheetName: 'Revenues', formData: formData })
+    function renderForm() {
+        const area = document.getElementById('fieldsArea');
+        area.innerHTML = '';
+        schema[currentSheet].forEach(f => {
+            let inputHtml = '';
+            if (f.type === 'select') {
+                let opts = f.values ? f.values : dropdowns[f.options];
+                inputHtml = `<select id="${f.id}"><option value="">اختر...</option>${opts.map(o => `<option value="${o}">${o}</option>`).join('')}</select>`;
+            } else if (f.type === 'textarea') {
+                inputHtml = `<textarea id="${f.id}" rows="2"></textarea>`;
+            } else {
+                inputHtml = `<input type="${f.type}" id="${f.id}" placeholder="${f.placeholder || ''}">`;
+            }
+            area.innerHTML += `<div class="form-group"><label>${f.label}</label>${inputHtml}</div>`;
         });
-        const result = await response.json();
-        if (result.success) { resetForm(); loadTable(); }
+        resetForm();
     }
 
-    function editRow(rowData, headers) {
+    async function loadTable() {
+        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: currentSheet }) });
+        const data = await res.json();
+        const head = document.getElementById('tableHeaders');
+        const body = document.getElementById('tableBody');
+        
+        head.innerHTML = data.headers.map(h => `<th>${h}</th>`).join('') + "<th>فعل</th>";
+        body.innerHTML = data.rows.map(row => {
+            return `<tr>${row.map(c => `<td>${c}</td>`).join('')}<td><button class="btn-edit" onclick='editRow(${JSON.stringify(row)}, ${JSON.stringify(data.headers)})'>تعديل</button></td></tr>`;
+        }).reverse().join('');
+    }
+
+    async function handleSubmit() {
+        const formData = { Collector: loggedInUser, User: loggedInUser, "In-Charge": loggedInUser };
+        schema[currentSheet].forEach(f => formData[f.id] = document.getElementById(f.id).value);
+        
+        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'submitForm', sheetName: currentSheet, formData: formData }) });
+        const result = await res.json();
+        if (result.success) { loadTable(); resetForm(); if(currentSheet === 'Drivers' || currentSheet === 'Cars') loadDropdowns(); }
+    }
+
+    async function handleUpdate() {
+        const formData = { ID: document.getElementById('ID').value };
+        schema[currentSheet].forEach(f => formData[f.id] = document.getElementById(f.id).value);
+        
+        const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'updateData', sheetName: currentSheet, formData: formData }) });
+        const result = await res.json();
+        if (result.success) { loadTable(); resetForm(); }
+    }
+
+    function editRow(row, headers) {
         headers.forEach((h, i) => {
             const el = document.getElementById(h);
-            if (el) el.value = rowData[i];
+            if (el) el.value = row[i];
+            if (h === 'ID') document.getElementById('ID').value = row[i];
         });
         document.getElementById('submitBtn').classList.add('hidden');
         document.getElementById('updateBtn').classList.remove('hidden');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    async function updateRevenue() {
-        const formData = {
-            ID: document.getElementById('ID').value,
-            Date: document.getElementById('Date').value,
-            Car_No: document.getElementById('Car_No').value,
-            Driver_name: document.getElementById('Driver_name').value,
-            Category: document.getElementById('Category').value,
-            Amount: document.getElementById('Amount').value,
-            Method: document.getElementById('Method').value,
-            Collector: loggedInUser,
-            Notes: document.getElementById('Notes').value
-        };
-
-        const response = await fetch(scriptUrl, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'updateData', sheetName: 'Revenues', formData: formData })
-        });
-        const result = await response.json();
-        if (result.success) { resetForm(); loadTable(); }
+        window.scrollTo(0, 0);
     }
 
     function resetForm() {
-        document.getElementById('revenueForm').reset();
+        document.getElementById('dynamicForm').reset();
         document.getElementById('ID').value = "";
         document.getElementById('submitBtn').classList.remove('hidden');
         document.getElementById('updateBtn').classList.add('hidden');
     }
 </script>
-
 </body>
 </html>
