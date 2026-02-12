@@ -12,9 +12,9 @@
             --text-gray: #b3b3b3; --border: #282828; --success: #2ecc71; --danger: #e74c3c;
         }
 
-        body { font-family: 'Tajawal', sans-serif; background-color: var(--dark-bg); color: #fff; margin: 0; padding: 20px; }
+        body { font-family: 'Tajawal', sans-serif; background-color: var(--dark-bg); color: #fff; margin: 0; padding: 20px; line-height: 1.6; }
 
-        /* الأزرار المحدثة V1.3.0 */
+        /* --- الأزرار الاحترافية (V1.3.2) --- */
         .btn-modern {
             position: relative; padding: 12px 25px; border-radius: 12px; border: none; font-family: 'Tajawal';
             font-weight: bold; cursor: pointer; overflow: hidden; display: flex; align-items: center;
@@ -23,79 +23,83 @@
         }
         .btn-yellow { background: var(--taxi-yellow); }
         .btn-outline { background: #252525; color: #fff; border: 1px solid var(--border); }
-        .btn-modern:hover { transform: translateY(-3px); filter: brightness(1.1); }
+        
+        .btn-modern::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: 0.5s;
+        }
+        .btn-modern:hover::before { left: 100%; }
+        .btn-modern:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 8px 20px rgba(241, 196, 15, 0.2); }
+        .btn-modern:active { transform: scale(0.95); }
+
         .btn-loading { pointer-events: none; opacity: 0.8; color: transparent !important; }
-        .btn-loading::after { content: ""; position: absolute; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #000; animation: spin 0.8s linear infinite; }
+        .btn-loading::after { 
+            content: ""; position: absolute; width: 20px; height: 20px; 
+            border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; 
+            border-top-color: #000; animation: spin 0.8s linear infinite; 
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* الهيدر */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 25px; background: var(--card-bg); border-radius: 20px; border-bottom: 4px solid var(--taxi-yellow); margin-bottom: 30px; }
-        .version-badge { background: #333; color: var(--taxi-yellow); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 25px; background: var(--card-bg); border-radius: 20px; border-bottom: 4px solid var(--taxi-yellow); margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        .version-badge { background: #333; color: var(--taxi-yellow); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; border: 1px solid #444; }
 
-        /* قسم الفلاتر المتقدم */
+        /* الفلاتر */
         .controls-grid { background: var(--card-bg); padding: 25px; border-radius: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px; border: 1px solid var(--border); align-items: flex-end; }
         .control-group { display: flex; flex-direction: column; gap: 8px; }
         label { color: var(--text-gray); font-size: 0.85rem; }
         input, select { padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: #222; color: white; font-family: 'Tajawal'; transition: 0.3s; }
-        input:focus, select:focus { border-color: var(--taxi-yellow); outline: none; }
+        input:focus, select:focus { border-color: var(--taxi-yellow); outline: none; background: #2a2a2a; }
 
-        /* البطاقات */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: var(--card-bg); padding: 25px; border-radius: 20px; text-align: center; border: 1px solid var(--border); transition: 0.4s; }
+        /* البطاقات الإحصائية */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: var(--card-bg); padding: 25px; border-radius: 20px; text-align: center; border: 1px solid var(--border); transition: 0.4s; position: relative; }
         .stat-card:hover { border-color: var(--taxi-yellow); transform: translateY(-5px); }
-        .stat-card .value { font-size: 1.8rem; font-weight: bold; color: var(--taxi-yellow); margin-top: 10px; }
+        .stat-card .value { font-size: 1.8rem; font-weight: bold; color: var(--taxi-yellow); margin-top: 10px; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
         /* الرسوم البيانية */
         .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 25px; }
-        .chart-box { background: var(--card-bg); padding: 25px; border-radius: 24px; border: 1px solid var(--border); }
+        .chart-box { background: var(--card-bg); padding: 25px; border-radius: 24px; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
 
-        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--success); color: #000; padding: 15px 30px; border-radius: 50px; font-weight: bold; transition: 0.5s; z-index: 2000; }
+        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--success); color: #000; padding: 15px 30px; border-radius: 50px; font-weight: bold; transition: 0.5s; z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         #toast.show { transform: translateX(-50%) translateY(0); }
+
+        @media print { .controls-grid, .btn-outline, .version-badge { display: none; } body { background: white; color: black; } .stat-card, .chart-box { border: 1px solid #ccc; background: white; color: black; } }
     </style>
 </head>
 <body>
 
-<div id="toast">✅ تم تحديث التحليلات بنجاح</div>
+<div id="toast">✅ تم تحديث البيانات بنجاح</div>
 
 <div class="header">
     <div>
         <h1 style="margin:0">📊 مركز التقارير الذكي - نظام التاكسي</h1>
         <div style="margin-top: 8px;">
-            <span class="version-badge">V1.3.0</span>
-            <span style="color:var(--text-gray); margin-right: 12px;">تحليل مخصص (سائق / سيارة / مالك)</span>
+            <span class="version-badge">V1.3.2</span>
+            <span style="color:var(--text-gray); margin-right: 12px;">تحليل مخصص دقيق (إيرادات F / مصاريف H)</span>
         </div>
     </div>
-    <button class="btn-modern btn-outline" onclick="window.print()">📄 تصدير PDF</button>
+    <button class="btn-modern btn-outline" onclick="window.print()">
+        <span>📄 تصدير PDF</span>
+    </button>
 </div>
 
 <div class="controls-grid">
-    <div class="control-group">
-        <label>من تاريخ</label>
-        <input type="date" id="startDate">
-    </div>
-    <div class="control-group">
-        <label>إلى تاريخ</label>
-        <input type="date" id="endDate">
-    </div>
-    <div class="control-group">
-        <label>تصفية حسب السائق</label>
-        <select id="driverFilter"><option value="all">كل السائقين</option></select>
-    </div>
-    <div class="control-group">
-        <label>تصفية حسب السيارة</label>
-        <select id="carFilter"><option value="all">كل السيارات</option></select>
-    </div>
-    <div class="control-group">
-        <label>تصفية حسب المالك</label>
-        <select id="ownerFilter"><option value="all">كل الملاك</option></select>
-    </div>
-    <button class="btn-modern btn-yellow" id="refreshBtn" onclick="fetchAllData()">🔄 تحديث</button>
+    <div class="control-group"><label>من تاريخ</label><input type="date" id="startDate"></div>
+    <div class="control-group"><label>إلى تاريخ</label><input type="date" id="endDate"></div>
+    <div class="control-group"><label>السائق</label><select id="driverFilter"><option value="all">الكل</option></select></div>
+    <div class="control-group"><label>السيارة</label><select id="carFilter"><option value="all">الكل</option></select></div>
+    <div class="control-group"><label>المالك</label><select id="ownerFilter"><option value="all">الكل</option></select></div>
+    <button class="btn-modern btn-yellow" id="refreshBtn" onclick="fetchAllData()">
+        <span>🔄 تحديث البيانات</span>
+    </button>
 </div>
 
 <div class="stats-grid">
     <div class="stat-card"><h3>إجمالي الإيرادات</h3><div class="value" id="totalRev">0.00</div></div>
     <div class="stat-card"><h3>إجمالي المصاريف</h3><div class="value" id="totalExp" style="color:var(--danger)">0.00</div></div>
-    <div class="stat-card"><h3>صافي الأرباح</h3><div class="value" id="totalProfit" style="color:var(--success)">0.00</div></div>
+    <div class="stat-card" style="border-bottom: 4px solid var(--success);"><h3>صافي الأرباح</h3><div class="value" id="totalProfit" style="color:var(--success)">0.00</div></div>
     <div class="stat-card"><h3>عدد الرحلات</h3><div class="value" id="totalTrips" style="color:#3498db">0</div></div>
 </div>
 
@@ -106,10 +110,9 @@
 
 <script>
     const scriptUrl = "https://script.google.com/macros/s/AKfycbxXl_1lmAK1HRSemLmW1z9XDPcOPqu8hmKEtaPFRYG8qtmbgKraI-a9ADW0R_EObuel/exec";
-    let rawData = {}; 
+    let rawData = { Revenues: {rows:[]}, Expenses: {rows:[]}, Discounts: {rows:[]} }; 
     let charts = {};
 
-    // جلب البيانات الأساسية وتعبئة القوائم المنسدلة
     async function fetchAllData() {
         const btn = document.getElementById('refreshBtn');
         btn.classList.add('btn-loading');
@@ -121,24 +124,24 @@
                 rawData[s] = await res.json();
             }
             
-            populateFilters(); // تعبئة القوائم بناءً على البيانات المستلمة
-            applyFilters();   // معالجة البيانات وعرضها
+            populateFilters();
+            applyFilters();
             
             const t = document.getElementById('toast');
             t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 3000);
-        } catch (e) { alert("حدث خطأ في الاتصال"); }
-        finally { btn.classList.remove('btn-loading'); }
+        } catch (e) { 
+            console.error(e);
+            alert("فشل في تحديث البيانات. تأكد من اتصال الإنترنت."); 
+        } finally { btn.classList.remove('btn-loading'); }
     }
 
     function populateFilters() {
         const drivers = new Set(), cars = new Set(), owners = new Set();
-        
-        // استخراج القيم الفريدة من جدول الإيرادات (السائق العمود 3، السيارة العمود 2، المالك العمود 4 - حسب ترتيب شيتك)
         rawData.Revenues.rows.forEach(r => {
-            if(r[3]) drivers.add(r[3]);
-            if(r[2]) cars.add(r[2]);
-            if(r[4]) owners.add(r[4]);
+            if(r[3]) drivers.add(r[3]); // السائق
+            if(r[2]) cars.add(r[2]);    // السيارة
+            if(r[4]) owners.add(r[4]);  // المالك
         });
 
         const updateSelect = (id, set) => {
@@ -162,25 +165,26 @@
         const owner = document.getElementById('ownerFilter').value;
 
         const filterFn = (r, dateIdx, carIdx, driverIdx, ownerIdx) => {
-            const dateMatch = (!start || !end) || (r[dateIdx] && r[dateIdx].split('T')[0] >= start && r[dateIdx].split('T')[0] <= end);
+            const rowDate = (r[dateIdx] && typeof r[dateIdx] === 'string') ? r[dateIdx].split('T')[0] : "";
+            const dateMatch = (!start || !end) || (rowDate >= start && rowDate <= end);
             const driverMatch = (driver === 'all' || r[driverIdx] === driver);
             const carMatch = (car === 'all' || r[carIdx] === car);
             const ownerMatch = (owner === 'all' || r[ownerIdx] === owner);
             return dateMatch && driverMatch && carMatch && ownerMatch;
         };
 
-        // تصفية الجداول (تأكد من مطابقة أرقام الأعمدة لهيكل الشيت عندك)
         const fRev = rawData.Revenues.rows.filter(r => filterFn(r, 1, 2, 3, 4));
         const fExp = rawData.Expenses.rows.filter(r => filterFn(r, 1, 2, 3, 4));
         const fDisc = rawData.Discounts.rows.filter(r => filterFn(r, 1, 2, 3, 4));
 
-        const tRev = fRev.reduce((sum, r) => sum + Number(r[5] || 0), 0);
-        const tExp = fExp.reduce((sum, r) => sum + Number(r[6] || 0), 0);
-        const tDisc = fDisc.reduce((sum, r) => sum + Number(r[4] || 0), 0);
+        // الحسابات بناءً على طلبك (V1.3.2)
+        const tRev = fRev.reduce((sum, r) => sum + Number(r[5] || 0), 0);  // عمود F (Index 5)
+        const tExp = fExp.reduce((sum, r) => sum + Number(r[7] || 0), 0);  // عمود H (Index 7)
+        const tDisc = fDisc.reduce((sum, r) => sum + Number(r[7] || 0), 0); // عمود H (Index 7)
 
-        document.getElementById('totalRev').innerText = tRev.toLocaleString() + " JD";
-        document.getElementById('totalExp').innerText = tExp.toLocaleString() + " JD";
-        document.getElementById('totalProfit').innerText = (tRev - tExp - tDisc).toLocaleString() + " JD";
+        document.getElementById('totalRev').innerText = tRev.toLocaleString(undefined, {minimumFractionDigits: 2}) + " JD";
+        document.getElementById('totalExp').innerText = tExp.toLocaleString(undefined, {minimumFractionDigits: 2}) + " JD";
+        document.getElementById('totalProfit').innerText = (tRev - tExp - tDisc).toLocaleString(undefined, {minimumFractionDigits: 2}) + " JD";
         document.getElementById('totalTrips').innerText = fRev.length;
 
         updateCharts(fRev, tRev, tExp);
@@ -191,24 +195,51 @@
         if (charts.compare) charts.compare.destroy();
 
         const methods = {};
-        revData.forEach(r => { methods[r[6]] = (methods[r[6]] || 0) + Number(r[5] || 0); });
+        revData.forEach(r => { 
+            const m = r[6] || 'أخرى';
+            methods[m] = (methods[m] || 0) + Number(r[5] || 0); 
+        });
 
         charts.method = new Chart(document.getElementById('methodChart'), {
             type: 'doughnut',
             data: {
                 labels: Object.keys(methods),
-                datasets: [{ data: Object.values(methods), backgroundColor: ['#f1c40f', '#2ecc71', '#3498db', '#e67e22'] }]
+                datasets: [{ 
+                    data: Object.values(methods), 
+                    backgroundColor: ['#f1c40f', '#2ecc71', '#3498db', '#e67e22', '#9b59b6'],
+                    borderWidth: 0
+                }]
             },
-            options: { plugins: { title: { display: true, text: 'طرق الدفع لهذه الفئة', color: 'white' } } }
+            options: { 
+                responsive: true, 
+                plugins: { 
+                    legend: { position: 'bottom', labels: { color: 'white', font: { family: 'Tajawal' } } },
+                    title: { display: true, text: 'تحليل طرق القبض', color: 'white', font: { size: 16 } }
+                } 
+            }
         });
 
         charts.compare = new Chart(document.getElementById('compareChart'), {
             type: 'bar',
             data: {
                 labels: ['إيرادات', 'مصاريف'],
-                datasets: [{ data: [tRev, tExp], backgroundColor: ['#f1c40f', '#e74c3c'] }]
+                datasets: [{ 
+                    data: [tRev, tExp], 
+                    backgroundColor: ['#f1c40f', '#e74c3c'],
+                    borderRadius: 8
+                }]
             },
-            options: { plugins: { legend: { display: false }, title: { display: true, text: 'مقارنة الأداء المالي', color: 'white' } } }
+            options: { 
+                responsive: true, 
+                plugins: { 
+                    legend: { display: false },
+                    title: { display: true, text: 'الميزان التشغيلي', color: 'white', font: { size: 16 } }
+                },
+                scales: { 
+                    y: { grid: { color: '#333' }, ticks: { color: 'white' } },
+                    x: { ticks: { color: 'white' } }
+                }
+            }
         });
     }
 
