@@ -6,197 +6,202 @@
     <title>مركز التقارير الذكي - نظام التاكسي</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
-            --taxi-yellow: #f1c40f;
-            --dark-bg: #0b0b0b;
-            --card-bg: #161616;
-            --text-gray: #b3b3b3;
-            --border: #282828;
+            --taxi-yellow: #f1c40f; --dark-bg: #0b0b0b; --card-bg: #161616;
+            --text-gray: #b3b3b3; --border: #282828; --success: #2ecc71; --danger: #e74c3c;
         }
 
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background-color: var(--dark-bg);
-            color: #fff;
-            margin: 0;
-            padding: 20px;
-        }
+        body { font-family: 'Tajawal', sans-serif; background-color: var(--dark-bg); color: #fff; margin: 0; padding: 20px; }
 
         /* الهيدر */
-        .report-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background: var(--card-bg);
-            border-radius: 15px;
-            border-bottom: 4px solid var(--taxi-yellow);
-            margin-bottom: 25px;
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: var(--card-bg); border-radius: 15px; border-bottom: 4px solid var(--taxi-yellow); margin-bottom: 25px; }
+        .version-badge { background: #333; color: var(--taxi-yellow); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; }
 
-        /* البطاقات السريعة (KPIs) */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            border: 1px solid var(--border);
-            transition: 0.3s;
-        }
-
-        .stat-card:hover { border-color: var(--taxi-yellow); }
-        .stat-card h3 { color: var(--text-gray); margin: 0; font-size: 1rem; }
+        /* البطاقات الإحصائية */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: var(--card-bg); padding: 20px; border-radius: 15px; text-align: center; border: 1px solid var(--border); transition: 0.3s; }
+        .stat-card h3 { color: var(--text-gray); margin: 0; font-size: 0.9rem; }
         .stat-card .value { font-size: 1.8rem; font-weight: bold; color: var(--taxi-yellow); margin-top: 10px; }
 
-        /* منطقة الرسوم البيانية */
-        .charts-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
+        /* التحكم */
+        .controls { background: var(--card-bg); padding: 20px; border-radius: 12px; display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; align-items: flex-end; border: 1px solid var(--border); }
+        .control-group { display: flex; flex-direction: column; gap: 5px; }
+        input, select, button { padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: #252525; color: white; font-family: 'Tajawal'; }
+        
+        .btn-refresh { background: var(--taxi-yellow); color: #000; font-weight: bold; cursor: pointer; border: none; min-width: 120px; }
+        .btn-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .chart-box {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-        }
+        /* الرسوم البيانية */
+        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 25px; }
+        .chart-box { background: var(--card-bg); padding: 20px; border-radius: 20px; border: 1px solid var(--border); min-height: 350px; }
 
-        /* أدوات التحكم */
-        .controls {
-            background: #1e1e1e;
-            padding: 20px;
-            border-radius: 12px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 25px;
-            align-items: flex-end;
-        }
-
-        input, select, button {
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: #252525;
-            color: white;
-            font-family: 'Tajawal';
-        }
-
-        .btn-print {
-            background: var(--taxi-yellow);
-            color: #000;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-        }
-
-        @media print {
-            .controls { display: none; }
-        }
+        #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        
+        @media print { .controls, .version-badge { display: none; } }
     </style>
 </head>
 <body>
 
-    <div class="report-header">
-        <div>
-            <h1 style="margin:0">📊 لوحة تحكم التقارير التحليلية</h1>
-            <p style="color:var(--text-gray); margin:5px 0 0 0;">استعرض الأداء المالي والتشغيلي لأسطولك</p>
-        </div>
-        <button class="btn-print" onclick="window.print()">طباعة التقرير (PDF)</button>
-    </div>
+<div id="loadingOverlay">جاري جلب البيانات...</div>
 
-    <div class="controls">
-        <div>
-            <label style="display:block; margin-bottom:5px;">من تاريخ</label>
-            <input type="date" id="startDate">
-        </div>
-        <div>
-            <label style="display:block; margin-bottom:5px;">إلى تاريخ</label>
-            <input type="date" id="endDate">
-        </div>
-        <div>
-            <label style="display:block; margin-bottom:5px;">نوع السيارة</label>
-            <select id="carFilter">
-                <option value="all">الكل</option>
-            </select>
-        </div>
-        <button class="btn-print" style="background: #27ae60; color: white;">تحديث البيانات</button>
-    </div>
-
-    <div class="stats-grid">
-        <div class="stat-card">
-            <h3>إجمالي الإيرادات</h3>
-            <div class="value">0.00 JD</div>
-        </div>
-        <div class="stat-card">
-            <h3>إجمالي المصاريف</h3>
-            <div class="value" style="color: #e74c3c;">0.00 JD</div>
-        </div>
-        <div class="stat-card">
-            <h3>صافي الربح</h3>
-            <div class="value" style="color: #2ecc71;">0.00 JD</div>
-        </div>
-        <div class="stat-card">
-            <h3>عدد الرحلات/السجلات</h3>
-            <div class="value" style="color: #3498db;">0</div>
+<div class="header">
+    <div>
+        <h1 style="margin:0">📊 مركز التقارير الذكي - نظام التاكسي</h1>
+        <div style="margin-top: 5px;">
+            <span class="version-badge">V1.1.0</span>
+            <span style="color:var(--text-gray); margin-right: 10px;">تحليلات الأداء المالي</span>
         </div>
     </div>
+    <button class="btn-refresh" onclick="window.print()" style="background:#444; color:white;">تصدير PDF</button>
+</div>
 
-    <div class="charts-container">
-        <div class="chart-box">
-            <h3 style="text-align: center; color: var(--taxi-yellow);">مقارنة الإيراد بالمصاريف</h3>
-            <canvas id="revenueChart"></canvas>
-        </div>
-        <div class="chart-box">
-            <h3 style="text-align: center; color: var(--taxi-yellow);">توزيع المصاريف</h3>
-            <canvas id="expensePieChart"></canvas>
-        </div>
+<div class="controls">
+    <div class="control-group">
+        <label>من تاريخ</label>
+        <input type="date" id="startDate">
     </div>
+    <div class="control-group">
+        <label>إلى تاريخ</label>
+        <input type="date" id="endDate">
+    </div>
+    <button class="btn-refresh" id="refreshBtn" onclick="fetchAllData()">تحديث البيانات</button>
+</div>
 
-    <script>
-        // إعداد الرسم البياني للأعمدة
-        const ctx1 = document.getElementById('revenueChart').getContext('2d');
-        new Chart(ctx1, {
-            type: 'bar',
-            data: {
-                labels: ['الأسبوع 1', 'الأسبوع 2', 'الأسبوع 3', 'الأسبوع 4'],
-                datasets: [{
-                    label: 'الإيرادات',
-                    data: [1200, 1900, 1500, 2100],
-                    backgroundColor: '#f1c40f'
-                }, {
-                    label: 'المصاريف',
-                    data: [800, 1200, 900, 1100],
-                    backgroundColor: '#e74c3c'
-                }]
-            },
-            options: { responsive: true, plugins: { legend: { labels: { color: 'white' } } } }
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>إجمالي الإيرادات</h3>
+        <div class="value" id="totalRev">0.00</div>
+    </div>
+    <div class="stat-card">
+        <h3>إجمالي المصاريف</h3>
+        <div class="value" id="totalExp" style="color: var(--danger);">0.00</div>
+    </div>
+    <div class="stat-card">
+        <h3>صافي الأرباح</h3>
+        <div class="value" id="totalProfit" style="color: var(--success);">0.00</div>
+    </div>
+    <div class="stat-card">
+        <h3>إجمالي الخصومات</h3>
+        <div class="value" id="totalDisc" style="color: #3498db;">0.00</div>
+    </div>
+</div>
+
+<div class="charts-grid">
+    <div class="chart-box">
+        <h3 style="text-align: center; color: var(--taxi-yellow);">توزيع الإيرادات حسب الطريقة</h3>
+        <canvas id="methodChart"></canvas>
+    </div>
+    <div class="chart-box">
+        <h3 style="text-align: center; color: var(--taxi-yellow);">المصاريف مقابل الإيرادات</h3>
+        <canvas id="compareChart"></canvas>
+    </div>
+</div>
+
+<script>
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbxXl_1lmAK1HRSemLmW1z9XDPcOPqu8hmKEtaPFRYG8qtmbgKraI-a9ADW0R_EObuel/exec";
+    let charts = {};
+
+    async function fetchAllData() {
+        const loader = document.getElementById('loadingOverlay');
+        const btn = document.getElementById('refreshBtn');
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+
+        loader.style.display = 'flex';
+        btn.disabled = true;
+
+        try {
+            const sheets = ['Revenues', 'Expenses', 'Discounts'];
+            const results = {};
+
+            for (let s of sheets) {
+                const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: s }) });
+                results[s] = await res.json();
+            }
+
+            processData(results, start, end);
+
+        } catch (e) {
+            console.error(e);
+            alert("فشل في تحديث البيانات حتماً");
+        } finally {
+            loader.style.display = 'none';
+            btn.disabled = false;
+        }
+    }
+
+    function processData(data, start, end) {
+        const filterByDate = (rows, dateIdx) => {
+            if (!start || !end) return rows;
+            return rows.filter(r => {
+                const rowDate = r[dateIdx] ? r[dateIdx].split('T')[0] : "";
+                return rowDate >= start && rowDate <= end;
+            });
+        };
+
+        const revRows = filterByDate(data.Revenues.rows, 1);
+        const expRows = filterByDate(data.Expenses.rows, 1);
+        const discRows = filterByDate(data.Discounts.rows, 1);
+
+        const totalRev = revRows.reduce((sum, r) => sum + Number(r[5] || 0), 0);
+        const totalExp = expRows.reduce((sum, r) => sum + Number(r[6] || 0), 0);
+        const totalDisc = discRows.reduce((sum, r) => sum + Number(r[4] || 0), 0);
+        const netProfit = totalRev - totalExp - totalDisc;
+
+        document.getElementById('totalRev').innerText = totalRev.toFixed(2) + " JD";
+        document.getElementById('totalExp').innerText = totalExp.toFixed(2) + " JD";
+        document.getElementById('totalDisc').innerText = totalDisc.toFixed(2) + " JD";
+        document.getElementById('totalProfit').innerText = netProfit.toFixed(2) + " JD";
+
+        const methods = {};
+        revRows.forEach(r => {
+            const m = r[6] || 'غير محدد';
+            methods[m] = (methods[m] || 0) + Number(r[5] || 0);
         });
 
-        // إعداد الرسم البياني الدائري
-        const ctx2 = document.getElementById('expensePieChart').getContext('2d');
-        new Chart(ctx2, {
+        updateCharts(methods, totalRev, totalExp);
+    }
+
+    function updateCharts(methodsData, tRev, tExp) {
+        if (charts.method) charts.method.destroy();
+        if (charts.compare) charts.compare.destroy();
+
+        charts.method = new Chart(document.getElementById('methodChart'), {
             type: 'doughnut',
             data: {
-                labels: ['وقود', 'صيانة', 'رسوم مكتب', 'أخرى'],
+                labels: Object.keys(methodsData),
                 datasets: [{
-                    data: [40, 25, 20, 15],
-                    backgroundColor: ['#e74c3c', '#3498db', '#9b59b6', '#f39c12']
+                    data: Object.values(methodsData),
+                    backgroundColor: ['#f1c40f', '#2ecc71', '#3498db', '#e67e22', '#9b59b6']
                 }]
             },
-            options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: 'white' } } } }
+            options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: 'white', font: { family: 'Tajawal' } } } } }
         });
-    </script>
+
+        charts.compare = new Chart(document.getElementById('compareChart'), {
+            type: 'bar',
+            data: {
+                labels: ['إيرادات', 'مصاريف'],
+                datasets: [{
+                    label: 'المبلغ الإجمالي',
+                    data: [tRev, tExp],
+                    backgroundColor: ['#f1c40f', '#e74c3c']
+                }]
+            },
+            options: { 
+                responsive: true, 
+                plugins: { legend: { display: false } },
+                scales: { 
+                    y: { ticks: { color: 'white' }, grid: { color: '#333' } },
+                    x: { ticks: { color: 'white' }, grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    window.onload = fetchAllData;
+</script>
+
 </body>
 </html>
