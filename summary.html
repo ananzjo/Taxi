@@ -1,0 +1,153 @@
+<style>
+    /* تصميم كروت الخلاصة العلوي */
+    .summary-header {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 30px;
+        gap: 20px;
+    }
+    .summary-card {
+        background: #fff;
+        color: #000;
+        padding: 15px;
+        border-radius: 15px;
+        border: 2px solid #000;
+        width: 45%;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    .summary-card h4 { margin: 0; color: #2980b9; font-size: 1.1rem; }
+    .summary-card .val { font-size: 2rem; font-weight: bold; margin: 10px 0; }
+    .summary-card.net h4 { color: #e74c3c; }
+    .summary-card.net .val { color: #e74c3c; }
+
+    /* تصميم الجدول كما في الصورة */
+    .report-table-styled {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        color: #000;
+        border: 3px solid #000;
+    }
+    .report-table-styled th {
+        background: #f8f9fa;
+        border: 2px solid #000;
+        padding: 12px;
+        font-size: 1rem;
+    }
+    .report-table-styled td {
+        border: 1px solid #000;
+        padding: 10px;
+        text-align: center;
+        font-weight: bold;
+    }
+    .report-table-styled tr:nth-child(even) { background: #f2f2f2; }
+</style>
+
+<div id="reportContainer" class="container hidden">
+    <div style="text-align: center; margin-bottom: 20px;">
+        <h2 id="reportTitle">خلاصة شهر 1 لعام 2026</h2>
+    </div>
+
+    <div class="summary-header">
+        <div class="summary-card">
+            <h4>مجموع الإيراد الذي تم تحصيله</h4>
+            <div class="val" id="totalActualRev">0</div>
+            <small>دينار</small>
+        </div>
+        <div class="summary-card net">
+            <h4>المبلغ الصافي المتبقي</h4>
+            <div class="val" id="netRemaining">0</div>
+            <small>بعد خصم المصاريف</small>
+        </div>
+    </div>
+
+    <div class="card" style="background: #fff; padding: 10px;">
+        <table class="report-table-styled">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>السيارة</th>
+                    <th>قيمة الضمان</th>
+                    <th>الإيراد المتوقع</th>
+                    <th>الإيراد الفعلي</th>
+                    <th>عدد أيام التوقف</th>
+                    <th>مصاريف إصلاح</th>
+                </tr>
+            </thead>
+            <tbody id="fleetReportBody">
+                </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+// دالة حساب التقرير بناءً على البيانات
+async function generateFleetReport() {
+    const monthDays = 30; // يمكن جعلها ديناميكية
+    showToast("جاري حساب البيانات...");
+
+    try {
+        // جلب البيانات من الجداول الثلاثة (سيارات، إيرادات، مصاريف)
+        const [carsRes, revRes, expRes] = await Promise.all([
+            fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: 'Cars' }) }),
+            fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: 'Revenues' }) }),
+            fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: 'Expenses' }) })
+        ]);
+
+        const cars = await carsRes.json();
+        const revenues = await revRes.json();
+        const expenses = await expRes.json();
+
+        let tableHtml = "";
+        let grandTotalActual = 0;
+        let grandTotalExp = 0;
+
+        // معالجة كل سيارة على حدة
+        cars.rows.forEach((carRow, index) => {
+            const plateNo = carRow[1]; 
+            const dailyRent = parseFloat(carRow[6]) || 0; // قيمة الضمان اليومي
+
+            // 1. حساب الإيراد الفعلي لهذه السيارة
+            let actualRev = 0;
+            revenues.rows.forEach(r => {
+                if(r[1] == plateNo) actualRev += parseFloat(r[5]) || 0;
+            });
+
+            // 2. حساب مصاريف الإصلاح لهذه السيارة
+            let repairExp = 0;
+            expenses.rows.forEach(e => {
+                if(e[1] == plateNo) repairExp += parseFloat(e[6]) || 0;
+            });
+
+            // 3. حساب أيام التوقف (افتراضي أو من جدول الأعطال إذا توفر)
+            let stopDays = 0; // حالياً صفر، يمكن ربطها بجدول الحركة
+
+            // 4. المعادلة: الإيراد المتوقع = (أيام الشهر - التوقف) * الضمان
+            let expectedRev = (monthDays - stopDays) * dailyRent;
+
+            grandTotalActual += actualRev;
+            grandTotalExp += repairExp;
+
+            tableHtml += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${plateNo}</td>
+                    <td>${dailyRent}</td>
+                    <td>${expectedRev}</td>
+                    <td>${actualRev}</td>
+                    <td>${stopDays}</td>
+                    <td>${repairExp}</td>
+                </tr>
+            `;
+        });
+
+        document.getElementById('fleetReportBody').innerHTML = tableHtml;
+        document.getElementById('totalActualRev').innerText = grandTotalActual;
+        document.getElementById('netRemaining').innerText = (grandTotalActual - grandTotalExp);
+
+    } catch (e) {
+        showToast("خطأ في جلب البيانات", "error");
+    }
+}
+</script>
