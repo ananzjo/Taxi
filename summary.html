@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الخلاصة الشهري v2.3.0</title>
+    <title>نظام الخلاصة الذكي v2.3.1</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -44,8 +44,8 @@
 
 <div class="report-page" id="printableArea">
     <div style="text-align: center; border-bottom: 4px solid var(--taxi); margin-bottom: 25px; padding-bottom: 10px;">
-        <h1>خلاصة الحسابات الشهرية - v2.3.0</h1>
-        <p style="font-weight: bold; color: #555;">تحليل الأداء حسب الشهر والمالك</p>
+        <h1>خلاصة الحسابات الشهرية - v2.3.1</h1>
+        <p style="font-weight: bold; color: #555;">فلترة ذكية مع خاصية الحفاظ على الاختيارات</p>
     </div>
 
     <div class="filters-area no-print">
@@ -55,44 +55,27 @@
         </div>
         <div>
             <label>👤 المالك</label>
-            <select id="ownerFilter" onchange="applyFilters()"><option value="all">الكل</option></select>
+            <select id="ownerFilter" onchange="applyFilters()"><option value="all">كل الملاك</option></select>
         </div>
         <div>
             <label>👮 المسؤول</label>
-            <select id="inChargeFilter" onchange="applyFilters()"><option value="all">الكل</option></select>
+            <select id="inChargeFilter" onchange="applyFilters()"><option value="all">كل المسؤولين</option></select>
         </div>
         <div style="display: flex; align-items: flex-end;">
             <button id="refreshBtn" class="btn btn-refresh" onclick="fetchAndCalculate()" style="width: 100%;">
                 <div class="spinner" id="spinRef"></div>
-                <span id="txtRef">تحديث وجلب البيانات</span>
+                <span id="txtRef">تحديث البيانات</span>
             </button>
         </div>
     </div>
 
     <div class="summary-wrapper">
-        <div class="summary-card">
-            <h4>إجمالي التحصيل للشهر</h4>
-            <span class="amount" id="totalActual">0.00</span>
-            <small>دينار أردني</small>
-        </div>
-        <div class="summary-card net">
-            <h4>صافي الربح المتبقي</h4>
-            <span class="amount" id="netProfit">0.00</span>
-            <small>بعد المصاريف</small>
-        </div>
+        <div class="summary-card"><h4>إجمالي تحصيل الشهر</h4><span class="amount" id="totalActual">0.00</span><small>دينار أردني</small></div>
+        <div class="summary-card net"><h4>صافي المبلغ المتبقي</h4><span class="amount" id="netProfit">0.00</span><small>بعد المصاريف</small></div>
     </div>
 
     <table class="main-table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>رقم السيارة</th>
-                <th>الضمان اليومي</th>
-                <th>المتوقع</th>
-                <th>الفعلي (الشهر)</th>
-                <th>المصاريف</th>
-            </tr>
-        </thead>
+        <thead><tr><th>#</th><th>رقم السيارة</th><th>الضمان اليومي</th><th>المتوقع</th><th>الفعلي (الشهر)</th><th>المصاريف</th></tr></thead>
         <tbody id="tableContent"></tbody>
     </table>
 
@@ -112,7 +95,6 @@
         setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 500); }, 4000);
     }
 
-    // توليد قائمة الأشهر (12 شهر للخلف)
     function generateMonthOptions() {
         const select = document.getElementById('monthFilter');
         const now = new Date();
@@ -127,8 +109,15 @@
     async function fetchAndCalculate() {
         const btn = document.getElementById('refreshBtn');
         const spin = document.getElementById('spinRef');
+        const txt = document.getElementById('txtRef');
+
+        // 1. حفظ الاختيارات الحالية
+        const savedOwner = document.getElementById('ownerFilter').value;
+        const savedInCharge = document.getElementById('inChargeFilter').value;
+
         btn.disabled = true; spin.style.display = 'inline-block';
-        showToast("جاري مزامنة البيانات من جوجل شيت...");
+        txt.innerText = "جاري المزامنة...";
+        showToast("جاري جلب البيانات مع حفظ فلاتر البحث...");
 
         try {
             const [carsRes, revRes, expRes] = await Promise.all([
@@ -140,22 +129,31 @@
             masterData.revenues = (await revRes.json()).rows;
             masterData.expenses = (await expRes.json()).rows;
             
-            populateFilters();
+            // 2. تحديث القوائم وإعادة تعيين القيم المحفوظة
+            populateFilters(savedOwner, savedInCharge);
             applyFilters();
             showToast("تم تحديث البيانات بنجاح", "success");
-        } catch (e) { showToast("خطأ في جلب البيانات", "error"); }
-        finally { btn.disabled = false; spin.style.display = 'none'; }
+        } catch (e) { showToast("فشل جلب البيانات", "error"); }
+        finally { btn.disabled = false; spin.style.display = 'none'; txt.innerText = "تحديث البيانات"; }
     }
 
-    function populateFilters() {
+    function populateFilters(savedOwner = 'all', savedInCharge = 'all') {
         const owners = [...new Set(masterData.cars.map(c => String(c[2] || "").trim()))].filter(x => x);
         const inCharges = [...new Set(masterData.cars.map(c => String(c[3] || "").trim()))].filter(x => x);
-        document.getElementById('ownerFilter').innerHTML = '<option value="all">كل الملاك</option>' + owners.map(o => `<option value="${o}">${o}</option>`).join('');
-        document.getElementById('inChargeFilter').innerHTML = '<option value="all">كل المسؤولين</option>' + inCharges.map(i => `<option value="${i}">${i}</option>`).join('');
+
+        const oFilter = document.getElementById('ownerFilter');
+        const iFilter = document.getElementById('inChargeFilter');
+
+        oFilter.innerHTML = '<option value="all">كل الملاك</option>' + owners.map(o => `<option value="${o}">${o}</option>`).join('');
+        iFilter.innerHTML = '<option value="all">كل المسؤولين</option>' + inCharges.map(i => `<option value="${i}">${i}</option>`).join('');
+
+        // 3. إعادة الاختيار التلقائي للمالك والمسؤول
+        if (owners.includes(savedOwner)) oFilter.value = savedOwner;
+        if (inCharges.includes(savedInCharge)) iFilter.value = savedInCharge;
     }
 
     function applyFilters() {
-        const selMonthVal = document.getElementById('monthFilter').value; // "YYYY-M"
+        const selMonthVal = document.getElementById('monthFilter').value;
         const [selYear, selMonth] = selMonthVal.split('-').map(Number);
         const selOwner = document.getElementById('ownerFilter').value.trim();
         const selInCharge = document.getElementById('inChargeFilter').value.trim();
@@ -170,14 +168,12 @@
 
             if ((selOwner === 'all' || owner === selOwner) && (selInCharge === 'all' || inCharge === selInCharge)) {
                 
-                // تصفية الإيرادات للشهر المحدد
                 const carRev = masterData.revenues.filter(r => {
                     const rDate = r[1] ? new Date(r[1]) : null;
                     const isSameMonth = rDate && (rDate.getMonth() + 1 === selMonth) && (rDate.getFullYear() === selYear);
                     return String(r[2] || "").trim() === plate && isSameMonth;
                 }).reduce((s, r) => s + (parseFloat(r[5]) || 0), 0);
 
-                // تصفية المصاريف للشهر المحدد
                 const carExp = masterData.expenses.filter(e => {
                     const eDate = e[1] ? new Date(e[1]) : null;
                     const isSameMonth = eDate && (eDate.getMonth() + 1 === selMonth) && (eDate.getFullYear() === selYear);
@@ -193,18 +189,15 @@
         document.getElementById('totalActual').innerText = gActual.toLocaleString('en-US', {minimumFractionDigits: 2});
         document.getElementById('netProfit').innerText = (gActual - gExpenses).toLocaleString('en-US', {minimumFractionDigits: 2});
         
-        if(counter > 0) showToast(`تم العثور على ${counter} مركبة لهذا الشهر`, "success");
+        if(counter > 0) showToast(`تم العثور على ${counter} مركبة لهذا الفلتر`, "success");
     }
 
     function exportPDF() {
         const element = document.getElementById('printableArea');
-        html2pdf().from(element).set({ margin: 0.5, filename: 'Report_Monthly.pdf', html2canvas: { scale: 2 }, jsPDF: { orientation: 'landscape' } }).save();
+        html2pdf().from(element).set({ margin: 0.5, filename: 'Summary_v2.3.1.pdf', html2canvas: { scale: 2 }, jsPDF: { orientation: 'landscape' } }).save();
     }
 
-    window.onload = () => {
-        generateMonthOptions();
-        fetchAndCalculate();
-    };
+    window.onload = () => { generateMonthOptions(); fetchAndCalculate(); };
 </script>
 </body>
 </html>
