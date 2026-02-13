@@ -3,90 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>خلاصة الحسابات - v1.8.5</title>
+    <title>خلاصة الحسابات المفلترة - v1.9.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body { font-family: 'Tajawal', sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 20px; }
-        .report-page { max-width: 1000px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 0 25px rgba(0,0,0,0.1); border: 1px solid #ddd; }
+        .report-page { max-width: 1100px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 0 25px rgba(0,0,0,0.1); border: 1px solid #ddd; }
         
         .header-title { text-align: center; border-bottom: 4px solid #f1c40f; padding-bottom: 15px; margin-bottom: 30px; }
-        .header-title h1 { margin: 0; font-size: 2rem; color: #000; letter-spacing: 1px; }
+        .header-title h1 { margin: 0; font-size: 2rem; color: #000; }
+
+        /* منطقة الفلاتر */
+        .filters-area { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 20px; 
+            background: #f9f9f9; 
+            padding: 20px; 
+            border-radius: 12px; 
+            border: 1px solid #eee;
+            margin-bottom: 30px;
+        }
+        .filter-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #2c3e50; }
+        select { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-family: 'Tajawal'; font-size: 1rem; outline: none; transition: border-color 0.3s; }
+        select:focus { border-color: #f1c40f; }
 
         /* كروت الخلاصة */
         .summary-wrapper { display: flex; justify-content: space-between; gap: 25px; margin-bottom: 40px; }
         .summary-card { flex: 1; border: 3px solid #000; border-radius: 20px; padding: 25px; text-align: center; background: #fff; transition: transform 0.3s ease; }
-        .summary-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .summary-card h4 { margin: 0; font-size: 1.2rem; color: #2980b9; height: 40px; }
         .summary-card .amount { font-size: 2.8rem; font-weight: bold; margin: 15px 0; display: block; color: #333; }
         .summary-card.net { border-color: #e74c3c; }
         .summary-card.net h4 { color: #e74c3c; }
         .summary-card.net .amount { color: #e74c3c; }
 
-        /* الجدول الرسمي */
-        .main-table { width: 100%; border-collapse: collapse; margin-top: 10px; border: 3px solid #000; }
-        .main-table th { background: #333; color: #fff; border: 2px solid #000; padding: 15px; font-size: 1rem; }
+        /* الجدول */
+        .main-table { width: 100%; border-collapse: collapse; border: 3px solid #000; }
+        .main-table th { background: #333; color: #fff; border: 2px solid #000; padding: 15px; }
         .main-table td { border: 2px solid #000; padding: 12px; text-align: center; font-weight: bold; font-size: 1.1rem; }
         .main-table tr:nth-child(even) { background: #f9f9f9; }
         .main-table tr:hover { background: #fff9e6; }
 
         /* الأزرار التفاعلية */
-        .controls { display: flex; gap: 15px; margin-bottom: 25px; }
+        .controls { display: flex; gap: 15px; margin-top: 20px; }
         .btn { 
-            padding: 12px 25px; 
-            border: none; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-family: 'Tajawal'; 
-            font-size: 1rem;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Tajawal';
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px;
         }
-        
-        /* زر التحديث */
-        .btn-refresh { background: #27ae60; color: white; border: 2px solid #219150; }
-        .btn-refresh:hover { background: #2ecc71; transform: scale(1.05); box-shadow: 0 6px 12px rgba(46, 204, 113, 0.3); }
-        .btn-refresh:active { transform: scale(0.95); }
+        .btn-refresh { background: #27ae60; color: white; }
+        .btn-refresh:hover { transform: scale(1.05); background: #2ecc71; }
+        .btn-pdf { background: #e74c3c; color: white; }
+        .btn-pdf:hover { transform: scale(1.05); background: #ff5e4d; }
+        .btn:active { transform: scale(0.95); }
 
-        /* زر PDF */
-        .btn-pdf { background: #e74c3c; color: white; border: 2px solid #c0392b; }
-        .btn-pdf:hover { background: #ff5e4d; transform: scale(1.05); box-shadow: 0 6px 12px rgba(231, 76, 60, 0.3); }
-        .btn-pdf:active { transform: scale(0.95); }
-
-        @media print { .no-print { display: none; } .report-page { box-shadow: none; border: none; } }
+        @media print { .no-print, .filters-area { display: none; } }
     </style>
 </head>
 <body>
 
 <div class="report-page" id="printableArea">
     <div class="header-title">
-        <h1>خلاصة شهر <span id="currentMonth">2</span> لعام 2026</h1>
-        <p style="font-weight: bold; color: #666;">كشف مالي تفصيلي لإنتاجية السيارات</p>
+        <h1>خلاصة الحسابات - 2026</h1>
+        <p>تحليل مالي مفصل حسب المالك والمسؤول</p>
     </div>
 
-    <div class="no-print controls">
-        <button class="btn btn-refresh" onclick="fetchAndCalculate()">
-            <span>تحديث البيانات</span> 🔄
-        </button>
-        <button class="btn btn-pdf" onclick="exportPDF()">
-            <span>تصدير PDF</span> 📄
-        </button>
+    <div class="filters-area no-print">
+        <div class="filter-group">
+            <label>تصفية حسب المالك</label>
+            <select id="ownerFilter" onchange="applyFilters()">
+                <option value="all">كل الملاك</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>تصفية حسب المسؤول (In-charge)</label>
+            <select id="inChargeFilter" onchange="applyFilters()">
+                <option value="all">كل المسؤولين</option>
+            </select>
+        </div>
+        <div class="filter-group" style="display: flex; align-items: flex-end;">
+            <button class="btn btn-refresh" style="width: 100%;" onclick="fetchAndCalculate()">تحديث البيانات 🔄</button>
+        </div>
     </div>
 
     <div class="summary-wrapper">
         <div class="summary-card">
-            <h4>مجموع الإيراد المحصل</h4>
+            <h4>إجمالي التحصيل المالي</h4>
             <span class="amount" id="totalActual">0.00</span>
             <span style="font-weight: bold;">دينار أردني</span>
         </div>
         <div class="summary-card net">
-            <h4>المبلغ الصافي المتبقي</h4>
+            <h4>صافي المبلغ المتبقي</h4>
             <span class="amount" id="netProfit">0.00</span>
-            <span style="font-weight: bold;">بعد خصم كافة المصاريف</span>
+            <span style="font-weight: bold;">بعد خصم المصاريف</span>
         </div>
     </div>
 
@@ -98,21 +106,22 @@
                 <th>قيمة الضمان</th>
                 <th>الإيراد المتوقع</th>
                 <th>الإيراد الفعلي</th>
-                <th>أيام التوقف</th>
                 <th>مصاريف إصلاح</th>
             </tr>
         </thead>
-        <tbody id="tableContent">
-            </tbody>
+        <tbody id="tableContent"></tbody>
     </table>
+
+    <div class="controls no-print">
+        <button class="btn btn-pdf" onclick="exportPDF()">تصدير كـ PDF 📄</button>
+    </div>
 </div>
 
 <script>
-    // الرابط الخاص بك مدمج وجاهز
     const scriptUrl = "https://script.google.com/macros/s/AKfycbxXl_1lmAK1HRSemLmW1z9XDPcOPqu8hmKEtaPFRYG8qtmbgKraI-a9ADW0R_EObuel/exec";
+    let masterData = { cars: [], revenues: [], expenses: [] };
 
     async function fetchAndCalculate() {
-        const monthDays = 30; 
         try {
             const [carsRes, revRes, expRes] = await Promise.all([
                 fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: 'Cars' }) }),
@@ -120,68 +129,76 @@
                 fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: 'Expenses' }) })
             ]);
 
-            const cars = await carsRes.json();
-            const revenues = await revRes.json();
-            const expenses = await expRes.json();
+            masterData.cars = (await carsRes.json()).rows;
+            masterData.revenues = (await revRes.json()).rows;
+            masterData.expenses = (await expRes.json()).rows;
 
-            let rowsHtml = "";
-            let gActual = 0;
-            let gExpenses = 0;
+            populateFilters();
+            applyFilters();
 
-            cars.rows.forEach((car, index) => {
-                const plate = car[1];
-                const dailyRate = parseFloat(car[6]) || 0; 
+        } catch (e) { console.error("Data Fetch Error:", e); }
+    }
 
-                const carRev = revenues.rows
-                    .filter(r => r[1] == plate)
-                    .reduce((sum, r) => sum + (parseFloat(r[5]) || 0), 0);
+    function populateFilters() {
+        const owners = [...new Set(masterData.cars.map(c => c[2]))]; // عمود المالك (index 2)
+        const inCharges = [...new Set(masterData.cars.map(c => c[8]))]; // عمود المسؤول (index 8)
 
-                const carExp = expenses.rows
-                    .filter(e => e[1] == plate)
-                    .reduce((sum, e) => sum + (parseFloat(e[6]) || 0), 0);
+        const oFilter = document.getElementById('ownerFilter');
+        const iFilter = document.getElementById('inChargeFilter');
 
-                let stopDays = 0; 
-                let expected = (monthDays - stopDays) * dailyRate;
+        oFilter.innerHTML = '<option value="all">كل الملاك</option>' + owners.map(o => `<option value="${o}">${o}</option>`).join('');
+        iFilter.innerHTML = '<option value="all">كل المسؤولين</option>' + inCharges.map(i => `<option value="${i}">${i}</option>`).join('');
+    }
 
+    function applyFilters() {
+        const selectedOwner = document.getElementById('ownerFilter').value;
+        const selectedInCharge = document.getElementById('inChargeFilter').value;
+        const monthDays = 30;
+
+        let rowsHtml = "";
+        let gActual = 0;
+        let gExpenses = 0;
+        let counter = 1;
+
+        masterData.cars.forEach((car) => {
+            const plate = car[1];
+            const owner = car[2];
+            const dailyRate = parseFloat(car[6]) || 0;
+            const inCharge = car[8]; // افترضنا أن In-charge هو العمود التاسع
+
+            // شرط الفلترة
+            if ((selectedOwner === 'all' || owner === selectedOwner) && 
+                (selectedInCharge === 'all' || inCharge === selectedInCharge)) {
+                
+                const carRev = masterData.revenues.filter(r => r[1] == plate).reduce((s, r) => s + (parseFloat(r[5]) || 0), 0);
+                const carExp = masterData.expenses.filter(e => e[1] == plate).reduce((s, e) => s + (parseFloat(e[6]) || 0), 0);
+                
+                let expected = monthDays * dailyRate;
                 gActual += carRev;
                 gExpenses += carExp;
 
-                rowsHtml += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${plate}</td>
-                        <td>${dailyRate}</td>
-                        <td>${expected.toFixed(2)}</td>
-                        <td>${carRev.toFixed(2)}</td>
-                        <td>${stopDays}</td>
-                        <td>${carExp.toFixed(2)}</td>
-                    </tr>
-                `;
-            });
+                rowsHtml += `<tr>
+                    <td>${counter++}</td>
+                    <td>${plate}</td>
+                    <td>${dailyRate}</td>
+                    <td>${expected.toFixed(2)}</td>
+                    <td>${carRev.toFixed(2)}</td>
+                    <td>${carExp.toFixed(2)}</td>
+                </tr>`;
+            }
+        });
 
-            document.getElementById('tableContent').innerHTML = rowsHtml;
-            document.getElementById('totalActual').innerText = gActual.toLocaleString('en-US', {minimumFractionDigits: 2});
-            document.getElementById('netProfit').innerText = (gActual - gExpenses).toLocaleString('en-US', {minimumFractionDigits: 2});
-
-        } catch (e) {
-            console.error("Error fetching data:", e);
-        }
+        document.getElementById('tableContent').innerHTML = rowsHtml;
+        document.getElementById('totalActual').innerText = gActual.toLocaleString('en-US', {minimumFractionDigits: 2});
+        document.getElementById('netProfit').innerText = (gActual - gExpenses).toLocaleString('en-US', {minimumFractionDigits: 2});
     }
 
     function exportPDF() {
         const element = document.getElementById('printableArea');
-        const opt = {
-            margin: 0.5,
-            filename: 'خلاصة_الحسابات_2026.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
-        };
-        html2pdf().set(opt).from(element).save();
+        html2pdf().from(element).set({ margin: 0.5, filename: 'تقرير_مفصل.pdf', html2canvas: { scale: 2 }, jsPDF: { orientation: 'landscape' } }).save();
     }
 
     window.onload = fetchAndCalculate;
 </script>
-
 </body>
 </html>
