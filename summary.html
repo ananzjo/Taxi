@@ -3,85 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>خلاصة الحسابات  - v1.9.0</title>
+    <title>خلاصة الحسابات الاحترافية - v2.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 20px; }
-        .report-page { max-width: 1100px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 0 25px rgba(0,0,0,0.1); border: 1px solid #ddd; }
+        :root { 
+            --taxi-yellow: #f1c40f; 
+            --dark-bg: #f4f4f4;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --info: #2980b9;
+        }
+
+        body { font-family: 'Tajawal', sans-serif; background-color: var(--dark-bg); margin: 0; padding: 20px; }
+        .report-page { max-width: 1100px; margin: auto; background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid #ddd; position: relative; }
         
-        .header-title { text-align: center; border-bottom: 4px solid #f1c40f; padding-bottom: 15px; margin-bottom: 30px; }
-        .header-title h1 { margin: 0; font-size: 2rem; color: #000; }
+        /* Toast Container */
+        #toastBox { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { background: #333; color: white; padding: 12px 25px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease-out forwards; pointer-events: auto; font-weight: bold; }
+        .toast.success { border-right: 6px solid var(--success); }
+        .toast.error { border-right: 6px solid var(--danger); }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* منطقة الفلاتر */
-        .filters-area { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-            gap: 20px; 
-            background: #f9f9f9; 
-            padding: 20px; 
-            border-radius: 12px; 
-            border: 1px solid #eee;
-            margin-bottom: 30px;
-        }
-        .filter-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #2c3e50; }
-        select { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-family: 'Tajawal'; font-size: 1rem; outline: none; transition: border-color 0.3s; }
-        select:focus { border-color: #f1c40f; }
+        /* Header */
+        .header-title { text-align: center; border-bottom: 5px solid var(--taxi-yellow); padding-bottom: 15px; margin-bottom: 30px; }
+        .header-title h1 { margin: 0; font-size: 2.2rem; }
 
-        /* كروت الخلاصة */
-        .summary-wrapper { display: flex; justify-content: space-between; gap: 25px; margin-bottom: 40px; }
-        .summary-card { flex: 1; border: 3px solid #000; border-radius: 20px; padding: 25px; text-align: center; background: #fff; transition: transform 0.3s ease; }
-        .summary-card h4 { margin: 0; font-size: 1.2rem; color: #2980b9; height: 40px; }
-        .summary-card .amount { font-size: 2.8rem; font-weight: bold; margin: 15px 0; display: block; color: #333; }
-        .summary-card.net { border-color: #e74c3c; }
-        .summary-card.net h4 { color: #e74c3c; }
-        .summary-card.net .amount { color: #e74c3c; }
+        /* Filters */
+        .filters-area { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; background: #fdfdfd; padding: 20px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 30px; }
+        .filter-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #444; font-size: 0.9rem; }
+        select { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 10px; font-family: 'Tajawal'; cursor: pointer; transition: all 0.3s; }
+        select:focus { border-color: var(--taxi-yellow); outline: none; }
 
-        /* الجدول */
-        .main-table { width: 100%; border-collapse: collapse; border: 3px solid #000; }
-        .main-table th { background: #333; color: #fff; border: 2px solid #000; padding: 15px; }
-        .main-table td { border: 2px solid #000; padding: 12px; text-align: center; font-weight: bold; font-size: 1.1rem; }
+        /* Summary Cards */
+        .summary-wrapper { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 40px; }
+        .summary-card { flex: 1; border: 3px solid #000; border-radius: 20px; padding: 20px; text-align: center; background: #fff; transition: 0.3s; }
+        .summary-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .summary-card .amount { font-size: 2.5rem; font-weight: bold; display: block; margin: 10px 0; }
+        .summary-card.net { border-color: var(--danger); color: var(--danger); }
+
+        /* Table */
+        .main-table { width: 100%; border-collapse: collapse; border: 3px solid #000; margin-bottom: 20px; }
+        .main-table th { background: #222; color: #fff; padding: 15px; border: 1px solid #000; }
+        .main-table td { padding: 12px; text-align: center; font-weight: bold; border: 1px solid #000; font-size: 1.1rem; }
         .main-table tr:nth-child(even) { background: #f9f9f9; }
-        .main-table tr:hover { background: #fff9e6; }
+        .main-table tr:hover { background: #fff8e1; }
 
-        /* الأزرار التفاعلية */
-        .controls { display: flex; gap: 15px; margin-top: 20px; }
+        /* Buttons & Spinner */
+        .controls { display: flex; gap: 15px; }
         .btn { 
-            padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Tajawal';
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px;
+            padding: 14px 28px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-family: 'Tajawal'; font-size: 1rem;
+            display: flex; align-items: center; gap: 10px; transition: all 0.3s; position: relative; justify-content: center;
         }
-        .btn-refresh { background: #27ae60; color: white; }
-        .btn-refresh:hover { transform: scale(1.05); background: #2ecc71; }
-        .btn-pdf { background: #e74c3c; color: white; }
-        .btn-pdf:hover { transform: scale(1.05); background: #ff5e4d; }
-        .btn:active { transform: scale(0.95); }
+        .btn:disabled { background: #ccc !important; cursor: not-allowed; opacity: 0.8; }
+        .btn-refresh { background: var(--success); color: white; }
+        .btn-pdf { background: var(--danger); color: white; }
+        .btn:hover:not(:disabled) { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        
+        .spinner { 
+            width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; 
+            border-radius: 50%; animation: spin 0.8s linear infinite; display: none; 
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        @media print { .no-print, .filters-area { display: none; } }
+        @media print { .no-print { display: none; } .report-page { box-shadow: none; border: none; } }
     </style>
 </head>
 <body>
 
+<div id="toastBox"></div>
+
 <div class="report-page" id="printableArea">
     <div class="header-title">
         <h1>خلاصة الحسابات - 2026</h1>
-        <p>تحليل مالي مفصل حسب المالك والمسؤول</p>
+        <p>نظام ذكي للتحليل المالي وإدارة الأسطول</p>
     </div>
 
     <div class="filters-area no-print">
         <div class="filter-group">
-            <label>تصفية حسب المالك</label>
-            <select id="ownerFilter" onchange="applyFilters()">
-                <option value="all">كل الملاك</option>
-            </select>
+            <label>🔎 اختيار المالك</label>
+            <select id="ownerFilter" onchange="applyFilters()"><option value="all">كل الملاك</option></select>
         </div>
         <div class="filter-group">
-            <label>تصفية حسب المسؤول (In-charge)</label>
-            <select id="inChargeFilter" onchange="applyFilters()">
-                <option value="all">كل المسؤولين</option>
-            </select>
+            <label>👮 اختيار المسؤول (In-charge)</label>
+            <select id="inChargeFilter" onchange="applyFilters()"><option value="all">كل المسؤولين</option></select>
         </div>
         <div class="filter-group" style="display: flex; align-items: flex-end;">
-            <button class="btn btn-refresh" style="width: 100%;" onclick="fetchAndCalculate()">تحديث البيانات 🔄</button>
+            <button id="refreshBtn" class="btn btn-refresh" onclick="fetchAndCalculate()" style="width: 100%;">
+                <div class="spinner" id="spinRef"></div>
+                <span id="textRef">تحديث البيانات</span>
+            </button>
         </div>
     </div>
 
@@ -89,12 +100,12 @@
         <div class="summary-card">
             <h4>إجمالي التحصيل المالي</h4>
             <span class="amount" id="totalActual">0.00</span>
-            <span style="font-weight: bold;">دينار أردني</span>
+            <small>دينار أردني</small>
         </div>
         <div class="summary-card net">
             <h4>صافي المبلغ المتبقي</h4>
             <span class="amount" id="netProfit">0.00</span>
-            <span style="font-weight: bold;">بعد خصم المصاريف</span>
+            <small>بعد خصم المصاريف</small>
         </div>
     </div>
 
@@ -109,11 +120,16 @@
                 <th>مصاريف إصلاح</th>
             </tr>
         </thead>
-        <tbody id="tableContent"></tbody>
+        <tbody id="tableContent">
+            <tr><td colspan="6" style="color: #888;">الرجاء تحديث البيانات للبدء...</td></tr>
+        </tbody>
     </table>
 
     <div class="controls no-print">
-        <button class="btn btn-pdf" onclick="exportPDF()">تصدير كـ PDF 📄</button>
+        <button id="pdfBtn" class="btn btn-pdf" onclick="exportPDF()">
+            <div class="spinner" id="spinPdf"></div>
+            <span id="textPdf">تصدير كـ PDF</span>
+        </button>
     </div>
 </div>
 
@@ -121,7 +137,30 @@
     const scriptUrl = "https://script.google.com/macros/s/AKfycbxXl_1lmAK1HRSemLmW1z9XDPcOPqu8hmKEtaPFRYG8qtmbgKraI-a9ADW0R_EObuel/exec";
     let masterData = { cars: [], revenues: [], expenses: [] };
 
+    function showToast(msg, type = 'success') {
+        const box = document.getElementById('toastBox');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span> ${msg}`;
+        box.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    }
+
+    function toggleLoading(btnType, isLoading) {
+        const btn = document.getElementById(btnType === 'ref' ? 'refreshBtn' : 'pdfBtn');
+        const spinner = document.getElementById(btnType === 'ref' ? 'spinRef' : 'spinPdf');
+        const text = document.getElementById(btnType === 'ref' ? 'textRef' : 'textPdf');
+        
+        btn.disabled = isLoading;
+        spinner.style.display = isLoading ? 'inline-block' : 'none';
+        if(isLoading) text.innerText = btnType === 'ref' ? 'جاري التحميل...' : 'جاري التصدير...';
+        else text.innerText = btnType === 'ref' ? 'تحديث البيانات' : 'تصدير كـ PDF';
+    }
+
     async function fetchAndCalculate() {
+        toggleLoading('ref', true);
+        showToast("جاري الاتصال بقاعدة البيانات...");
+        
         try {
             const [carsRes, revRes, expRes] = await Promise.all([
                 fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: 'Cars' }) }),
@@ -135,19 +174,19 @@
 
             populateFilters();
             applyFilters();
-
-        } catch (e) { console.error("Data Fetch Error:", e); }
+            showToast("تم تحديث البيانات بنجاح");
+        } catch (e) {
+            showToast("فشل الاتصال! تأكد من إعدادات الـ Script", "error");
+        } finally {
+            toggleLoading('ref', false);
+        }
     }
 
     function populateFilters() {
-        const owners = [...new Set(masterData.cars.map(c => c[2]))]; // عمود المالك (index 2)
-        const inCharges = [...new Set(masterData.cars.map(c => c[8]))]; // عمود المسؤول (index 8)
-
-        const oFilter = document.getElementById('ownerFilter');
-        const iFilter = document.getElementById('inChargeFilter');
-
-        oFilter.innerHTML = '<option value="all">كل الملاك</option>' + owners.map(o => `<option value="${o}">${o}</option>`).join('');
-        iFilter.innerHTML = '<option value="all">كل المسؤولين</option>' + inCharges.map(i => `<option value="${i}">${i}</option>`).join('');
+        const owners = [...new Set(masterData.cars.map(c => c[2]))].filter(x => x); 
+        const inCharges = [...new Set(masterData.cars.map(c => c[8]))].filter(x => x); 
+        document.getElementById('ownerFilter').innerHTML = '<option value="all">كل الملاك</option>' + owners.map(o => `<option value="${o}">${o}</option>`).join('');
+        document.getElementById('inChargeFilter').innerHTML = '<option value="all">كل المسؤولين</option>' + inCharges.map(i => `<option value="${i}">${i}</option>`).join('');
     }
 
     function applyFilters() {
@@ -155,47 +194,36 @@
         const selectedInCharge = document.getElementById('inChargeFilter').value;
         const monthDays = 30;
 
-        let rowsHtml = "";
-        let gActual = 0;
-        let gExpenses = 0;
-        let counter = 1;
+        let rowsHtml = ""; let gActual = 0; let gExpenses = 0; let counter = 1;
 
         masterData.cars.forEach((car) => {
-            const plate = car[1];
-            const owner = car[2];
-            const dailyRate = parseFloat(car[6]) || 0;
-            const inCharge = car[8]; // افترضنا أن In-charge هو العمود التاسع
+            const plate = car[1]; const owner = car[2]; const dailyRate = parseFloat(car[6]) || 0; const inCharge = car[8];
 
-            // شرط الفلترة
-            if ((selectedOwner === 'all' || owner === selectedOwner) && 
-                (selectedInCharge === 'all' || inCharge === selectedInCharge)) {
-                
+            if ((selectedOwner === 'all' || owner === selectedOwner) && (selectedInCharge === 'all' || inCharge === selectedInCharge)) {
                 const carRev = masterData.revenues.filter(r => r[1] == plate).reduce((s, r) => s + (parseFloat(r[5]) || 0), 0);
                 const carExp = masterData.expenses.filter(e => e[1] == plate).reduce((s, e) => s + (parseFloat(e[6]) || 0), 0);
-                
                 let expected = monthDays * dailyRate;
-                gActual += carRev;
-                gExpenses += carExp;
+                gActual += carRev; gExpenses += carExp;
 
-                rowsHtml += `<tr>
-                    <td>${counter++}</td>
-                    <td>${plate}</td>
-                    <td>${dailyRate}</td>
-                    <td>${expected.toFixed(2)}</td>
-                    <td>${carRev.toFixed(2)}</td>
-                    <td>${carExp.toFixed(2)}</td>
-                </tr>`;
+                rowsHtml += `<tr><td>${counter++}</td><td>${plate}</td><td>${dailyRate}</td><td>${expected.toFixed(2)}</td><td>${carRev.toFixed(2)}</td><td>${carExp.toFixed(2)}</td></tr>`;
             }
         });
 
-        document.getElementById('tableContent').innerHTML = rowsHtml;
+        document.getElementById('tableContent').innerHTML = rowsHtml || '<tr><td colspan="6">لا توجد نتائج</td></tr>';
         document.getElementById('totalActual').innerText = gActual.toLocaleString('en-US', {minimumFractionDigits: 2});
         document.getElementById('netProfit').innerText = (gActual - gExpenses).toLocaleString('en-US', {minimumFractionDigits: 2});
     }
 
     function exportPDF() {
+        toggleLoading('pdf', true);
+        showToast("جاري إعداد ملف PDF...");
         const element = document.getElementById('printableArea');
-        html2pdf().from(element).set({ margin: 0.5, filename: 'تقرير_مفصل.pdf', html2canvas: { scale: 2 }, jsPDF: { orientation: 'landscape' } }).save();
+        html2pdf().from(element).set({ 
+            margin: 0.5, filename: 'تقرير_شامل_2026.pdf', html2canvas: { scale: 2 }, jsPDF: { orientation: 'landscape' } 
+        }).save().then(() => {
+            toggleLoading('pdf', false);
+            showToast("تم تحميل الملف بنجاح");
+        });
     }
 
     window.onload = fetchAndCalculate;
