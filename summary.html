@@ -3,64 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>خلاصة الحسابات - v1.8.0</title>
+    <title>خلاصة الحسابات - v1.8.5</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body { font-family: 'Tajawal', sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 20px; }
-        .report-page { max-width: 1000px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        .report-page { max-width: 1000px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 0 25px rgba(0,0,0,0.1); border: 1px solid #ddd; }
         
-        /* الهيدر العلوي */
-        .header-title { text-align: center; border-bottom: 3px solid #f1c40f; padding-bottom: 10px; margin-bottom: 30px; }
-        .header-title h1 { margin: 0; font-size: 1.8rem; color: #000; }
+        .header-title { text-align: center; border-bottom: 4px solid #f1c40f; padding-bottom: 15px; margin-bottom: 30px; }
+        .header-title h1 { margin: 0; font-size: 2rem; color: #000; letter-spacing: 1px; }
 
-        /* كروت الخلاصة الملونة */
-        .summary-wrapper { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 30px; }
-        .summary-card { flex: 1; border: 2px solid #000; border-radius: 15px; padding: 20px; text-align: center; }
-        .summary-card h4 { margin: 0; font-size: 1.1rem; color: #2980b9; height: 50px; display: flex; align-items: center; justify-content: center; }
-        .summary-card .amount { font-size: 2.2rem; font-weight: bold; margin: 10px 0; display: block; }
+        /* كروت الخلاصة */
+        .summary-wrapper { display: flex; justify-content: space-between; gap: 25px; margin-bottom: 40px; }
+        .summary-card { flex: 1; border: 3px solid #000; border-radius: 20px; padding: 25px; text-align: center; background: #fff; transition: transform 0.3s ease; }
+        .summary-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .summary-card h4 { margin: 0; font-size: 1.2rem; color: #2980b9; height: 40px; }
+        .summary-card .amount { font-size: 2.8rem; font-weight: bold; margin: 15px 0; display: block; color: #333; }
         .summary-card.net { border-color: #e74c3c; }
         .summary-card.net h4 { color: #e74c3c; }
         .summary-card.net .amount { color: #e74c3c; }
 
         /* الجدول الرسمي */
-        .main-table { width: 100%; border-collapse: collapse; margin-top: 20px; border: 2px solid #000; }
-        .main-table th { background: #eee; border: 2px solid #000; padding: 12px; font-size: 0.95rem; }
-        .main-table td { border: 1px solid #000; padding: 10px; text-align: center; font-weight: bold; }
-        .main-table tr:nth-child(even) { background: #fafafa; }
+        .main-table { width: 100%; border-collapse: collapse; margin-top: 10px; border: 3px solid #000; }
+        .main-table th { background: #333; color: #fff; border: 2px solid #000; padding: 15px; font-size: 1rem; }
+        .main-table td { border: 2px solid #000; padding: 12px; text-align: center; font-weight: bold; font-size: 1.1rem; }
+        .main-table tr:nth-child(even) { background: #f9f9f9; }
+        .main-table tr:hover { background: #fff9e6; }
 
-        /* أزرار التحكم */
-        .controls { display: flex; gap: 10px; margin-bottom: 20px; no-print { display: block; } }
-        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-family: 'Tajawal'; }
-        .btn-refresh { background: #27ae60; color: #white; }
-        .btn-pdf { background: #e74c3c; color: white; }
+        /* الأزرار التفاعلية */
+        .controls { display: flex; gap: 15px; margin-bottom: 25px; }
+        .btn { 
+            padding: 12px 25px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-family: 'Tajawal'; 
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        /* زر التحديث */
+        .btn-refresh { background: #27ae60; color: white; border: 2px solid #219150; }
+        .btn-refresh:hover { background: #2ecc71; transform: scale(1.05); box-shadow: 0 6px 12px rgba(46, 204, 113, 0.3); }
+        .btn-refresh:active { transform: scale(0.95); }
 
-        @media print { .no-print { display: none; } }
+        /* زر PDF */
+        .btn-pdf { background: #e74c3c; color: white; border: 2px solid #c0392b; }
+        .btn-pdf:hover { background: #ff5e4d; transform: scale(1.05); box-shadow: 0 6px 12px rgba(231, 76, 60, 0.3); }
+        .btn-pdf:active { transform: scale(0.95); }
+
+        @media print { .no-print { display: none; } .report-page { box-shadow: none; border: none; } }
     </style>
 </head>
 <body>
 
 <div class="report-page" id="printableArea">
     <div class="header-title">
-        <h1>خلاصة شهر <span id="currentMonth">1</span> لعام 2026</h1>
-        <p>تقرير أداء الأسطول والتحصيل المالي</p>
+        <h1>خلاصة شهر <span id="currentMonth">2</span> لعام 2026</h1>
+        <p style="font-weight: bold; color: #666;">كشف مالي تفصيلي لإنتاجية السيارات</p>
     </div>
 
     <div class="no-print controls">
-        <button class="btn btn-refresh" onclick="fetchAndCalculate()">تحديث البيانات 🔄</button>
-        <button class="btn btn-pdf" onclick="exportPDF()">تصدير PDF 📄</button>
+        <button class="btn btn-refresh" onclick="fetchAndCalculate()">
+            <span>تحديث البيانات</span> 🔄
+        </button>
+        <button class="btn btn-pdf" onclick="exportPDF()">
+            <span>تصدير PDF</span> 📄
+        </button>
     </div>
 
     <div class="summary-wrapper">
         <div class="summary-card">
-            <h4>مجموع الإيراد الذي تم تحصيله</h4>
-            <span class="amount" id="totalActual">0</span>
-            <span>دينار أردني</span>
+            <h4>مجموع الإيراد المحصل</h4>
+            <span class="amount" id="totalActual">0.00</span>
+            <span style="font-weight: bold;">دينار أردني</span>
         </div>
         <div class="summary-card net">
             <h4>المبلغ الصافي المتبقي</h4>
-            <span class="amount" id="netProfit">0</span>
-            <span>بعد خصم المصاريف</span>
+            <span class="amount" id="netProfit">0.00</span>
+            <span style="font-weight: bold;">بعد خصم كافة المصاريف</span>
         </div>
     </div>
 
@@ -82,18 +108,12 @@
 </div>
 
 <script>
+    // الرابط الخاص بك مدمج وجاهز
     const scriptUrl = "https://script.google.com/macros/s/AKfycbxXl_1lmAK1HRSemLmW1z9XDPcOPqu8hmKEtaPFRYG8qtmbgKraI-a9ADW0R_EObuel/exec";
 
     async function fetchAndCalculate() {
         const monthDays = 30; 
         try {
-            // جلب البيانات من 3 شيتات دفعة واحدة
-            const response = await fetch(scriptUrl, { 
-                method: 'POST', 
-                body: JSON.stringify({ action: 'getAllData' }) // تأكد أن السكريبت يدعم جلب الكل أو جلبهم منفصلين
-            });
-            
-            // في حال كان السكريبت يجلب كل جدول على حدة، نستخدم الوعود المتوازية:
             const [carsRes, revRes, expRes] = await Promise.all([
                 fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: 'Cars' }) }),
                 fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchTable', sheetName: 'Revenues' }) }),
@@ -110,19 +130,16 @@
 
             cars.rows.forEach((car, index) => {
                 const plate = car[1];
-                const dailyRate = parseFloat(car[6]) || 0; // عمود Daily_Rent
+                const dailyRate = parseFloat(car[6]) || 0; 
 
-                // تصفية وحساب الإيراد الفعلي لهذه السيارة
                 const carRev = revenues.rows
                     .filter(r => r[1] == plate)
                     .reduce((sum, r) => sum + (parseFloat(r[5]) || 0), 0);
 
-                // تصفية وحساب مصاريف هذه السيارة
                 const carExp = expenses.rows
                     .filter(e => e[1] == plate)
                     .reduce((sum, e) => sum + (parseFloat(e[6]) || 0), 0);
 
-                // أيام التوقف (يمكن تطويرها لاحقاً لتقرأ من جدول الصيانة)
                 let stopDays = 0; 
                 let expected = (monthDays - stopDays) * dailyRate;
 
@@ -134,29 +151,35 @@
                         <td>${index + 1}</td>
                         <td>${plate}</td>
                         <td>${dailyRate}</td>
-                        <td>${expected}</td>
-                        <td>${carRev}</td>
+                        <td>${expected.toFixed(2)}</td>
+                        <td>${carRev.toFixed(2)}</td>
                         <td>${stopDays}</td>
-                        <td>${carExp}</td>
+                        <td>${carExp.toFixed(2)}</td>
                     </tr>
                 `;
             });
 
             document.getElementById('tableContent').innerHTML = rowsHtml;
-            document.getElementById('totalActual').innerText = gActual.toFixed(2);
-            document.getElementById('netProfit').innerText = (gActual - gExpenses).toFixed(2);
+            document.getElementById('totalActual').innerText = gActual.toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('netProfit').innerText = (gActual - gExpenses).toLocaleString('en-US', {minimumFractionDigits: 2});
 
         } catch (e) {
-            alert("فشل في جلب البيانات، تأكد من اتصال الإنترنت أو رابط الـ Script");
+            console.error("Error fetching data:", e);
         }
     }
 
     function exportPDF() {
         const element = document.getElementById('printableArea');
-        html2pdf().from(element).save('Summary_Report_2026.pdf');
+        const opt = {
+            margin: 0.5,
+            filename: 'خلاصة_الحسابات_2026.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+        };
+        html2pdf().set(opt).from(element).save();
     }
 
-    // تشغيل التقرير فور فتح الصفحة
     window.onload = fetchAndCalculate;
 </script>
 
